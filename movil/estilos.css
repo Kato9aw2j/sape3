@@ -203,6 +203,8 @@ button:disabled { cursor: default; }
 .badge.LINEA { background: #DC2626; }
 .badge.TIERRA { background: #111; }
 .badge.GUARDA { background: #2563EB; }
+.badge.CN, .badge.GN { background: #111111; }
+.badge.CR, .badge.GR { background: #DC143C; }
 
 /* ---------- Lecturas y dictamen ---------- */
 .kt { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }

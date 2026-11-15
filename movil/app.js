@@ -597,6 +597,32 @@ function pasoTtr2() {
       </button>`).join("")}</div>`;
 }
 
+function pasoTtr3() {
+  const d = estado.datosTtr;
+  const [lista, nota] = filasTtr(d.equipo, d.configuracion, d.conexion);
+  if (estado.pruebaTtr >= lista.length) estado.pruebaTtr = 0;
+  const prueba = lista[estado.pruebaTtr];
+  const clave = claveVectorTtr(d.equipo, d.configuracion, d.conexion);
+  const ficha = clave ? VECTORES_TTR[clave] : null;
+  if (!prueba || !ficha) {
+    return `
+      <h2>03. Diagrama vectorial</h2>
+      <p class="nota">${esc(d.equipo)}</p>
+      <div class="aviso">${esc(nota)}</div>`;
+  }
+  return `
+    <h2>03. Diagrama vectorial</h2>
+    <p class="nota">${esc(ficha[0])} · ${esc(ficha[1])} · Desplazamiento ${esc(ficha[2])} · Prueba ${esc(prueba.prueba)} (${esc(prueba.mide)})</p>
+    <div class="diagrama">${svgVectorTtr(clave, prueba)}</div>
+    <h3>Conexiones de esta prueba</h3>
+    <ul class="leyenda">
+      <li><span class="badge CN">CN</span>${esc(prueba.cn)}</li>
+      <li><span class="badge CR">CR</span>${esc(prueba.cr)}</li>
+      <li><span class="badge GN">GN</span>${esc(prueba.gn)}</li>
+      <li><span class="badge GR">GR</span>${esc(prueba.gr)}</li>
+    </ul>`;
+}
+
 function pasoTtrProximamente(titulo) {
   return `
     <h2>${esc(titulo)}</h2>
@@ -607,8 +633,9 @@ function pasoTtrProximamente(titulo) {
 const PASOS_TTR = ["Datos del equipo", "Selección de pruebas", "Diagrama vectorial", "Captura de lecturas"];
 
 function vistaTtr() {
-  const cuerpo = { 1: pasoTtr1, 2: pasoTtr2 }[estado.pasoTtr]
-    ? { 1: pasoTtr1, 2: pasoTtr2 }[estado.pasoTtr]()
+  const pasos = { 1: pasoTtr1, 2: pasoTtr2, 3: pasoTtr3 };
+  const cuerpo = pasos[estado.pasoTtr]
+    ? pasos[estado.pasoTtr]()
     : pasoTtrProximamente(`0${estado.pasoTtr}. ${PASOS_TTR[estado.pasoTtr - 1]}`);
   return `
     <header class="barra">
