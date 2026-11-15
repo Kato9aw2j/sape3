@@ -1512,6 +1512,97 @@ def _filas_ttr(equipo, configuracion, conexion):
     return filas, nota
 
 
+# ---------- Captura y dictamen del paso 04 de TTR ----------
+# Se construye con el procedimiento ST-CT-007: Tabla 1 (relación teórica
+# según conexión) y ecuación 14 (%DIF). No existía una versión previa de
+# este cálculo en SAPE2.
+
+TABS_TTR = {
+    "Sin carga [ 5 TAPs ]": (5, 3),
+    "Bajo carga [ 21 TAPs ]": (21, 11),
+    "Bajo carga [ 23 TAPs ]": (23, 12),
+}
+
+
+def _taps_ttr(tipo_cambiador):
+    """Cuántos taps tiene el cambiador y cuál es el central (neutro)."""
+    return TABS_TTR.get(tipo_cambiador, (5, 3))
+
+
+def _par_mide_ttr(mide):
+    """Qué par de devanados mide la prueba, para elegir los kV de placa."""
+    t = (mide or "").replace("–", "-").replace("—", "-")
+    if "X" in t and "Y" in t and "H" not in t:
+        return "X-Y"
+    if "H" in t and "Y" in t and "X" not in t:
+        return "H-Y"
+    return "H-X"
+
+
+def _leer_ttr(texto):
+    bruto = (texto or "").strip().replace(",", ".")
+    if not bruto:
+        return None
+    try:
+        valor = float(bruto)
+    except ValueError:
+        return None
+    return valor if math.isfinite(valor) else None
+
+
+def _relacion_nominal_ttr(datos, prueba, equipo, conexion):
+    """Relación teórica nominal (tap central), Tabla 1 del ST-CT-007: el
+    factor √3 solo aplica entre devanados Delta-Estrella de un
+    transformador de 2 devanados; en los demás casos se usa la relación
+    directa de los kV de placa del par que mide la prueba."""
+    par = _par_mide_ttr(prueba.get("mide") if prueba else "")
+    campo_p = "voltaje_x" if par == "X-Y" else "voltaje_h"
+    campo_s = "voltaje_x" if par == "H-X" else "voltaje_y"
+    vp = _leer_ttr(datos[campo_p].get())
+    vs = _leer_ttr(datos[campo_s].get())
+    if vp is None or vs is None or vs == 0:
+        return None, par
+    factor = 1.0
+    if par == "H-X" and "2 Devanados" in equipo:
+        if conexion == "Delta - Estrella":
+            factor = 1.73
+        elif conexion == "Estrella - Delta":
+            factor = 1 / 1.73
+    return (vp / vs) * factor, par
+
+
+def _relacion_teorica_tap_ttr(nominal, tap, centro, usar_regulacion):
+    """Regulación CFE: 0.625 % por paso de tap, a partir del tap central."""
+    if nominal is None:
+        return None
+    if not usar_regulacion:
+        return nominal
+    return nominal * (1 + 0.00625 * (tap - centro))
+
+
+def _evaluar_ttr(rt, rm):
+    """%DIF = 100 × (RT − RM) / RT (ecuación 14, ST-CT-007)."""
+    if rt is None or rt == 0 or rm is None:
+        return None
+    dif = 100.0 * (rt - rm) / rt
+    if abs(dif) <= 0.5:
+        estado = "ACEPTADO"
+        frase = (
+            "La diferencia está dentro del 0.5 % que exige ST-CT-007 para "
+            "la primera medición (puesta en servicio contra la relación "
+            "teórica de placa)."
+        )
+    else:
+        estado = "INVESTIGAR"
+        frase = (
+            "La diferencia rebasa el 0.5 %: revise el equipo de medición y "
+            "las conexiones, la ejecución de la prueba, la calibración del "
+            "TTR y, si nada de eso explica la diferencia, investigue "
+            "espiras en corto en el transformador."
+        )
+    return {"dif": dif, "estado": estado, "frase": frase, "rt": rt, "rm": rm}
+
+
 # Diagramas vectoriales de SAPE_1 (ST-CT-007, figuras 5 a 9).
 # Cada grupo: tipo, pie de medición, pie de conexión y bornes.
 _VECTORES_TTR = {
@@ -11329,6 +11420,9 @@ class AppSAPE(tk.Tk):
             "temp_devanado": tk.StringVar(ventana),
             "medicion_realizar": tk.StringVar(ventana, value="Directa"),
             "polaridad": tk.StringVar(ventana, value="Sustractiva"),
+            "tap": tk.StringVar(ventana, value="3"),
+            "relacion_teorica_manual": tk.StringVar(ventana),
+            "relacion_medida": tk.StringVar(ventana),
         }
         self.prueba_ttr = None
         self._parpadeo_ttr = None
@@ -11598,18 +11692,180 @@ class AppSAPE(tk.Tk):
                 font=ctk.CTkFont(family="Segoe UI", size=14),
                 text_color="#475569", fg_color="transparent",
             ).pack(anchor="w")
+            return
+
+        ctk.CTkLabel(
+            frame,
+            text=(
+                f"Prueba {prueba['prueba']}  ·  {prueba['mide']}  ·  "
+                f"CN {prueba['cn']}   CR {prueba['cr']}   "
+                f"GN {prueba['gn']}   GR {prueba['gr']}"
+            ),
+            font=ctk.CTkFont(family="Segoe UI", size=14),
+            text_color="#334155", fg_color="transparent",
+        ).pack(anchor="w", pady=(0, 16))
+
+        conexion = datos["conexion"].get()
+        usar_reg = datos["regulacion_cfe"].get() == "Sí"
+        n_taps, centro = _taps_ttr(datos["tipo_cambiador"].get())
+        if datos["tap"].get() not in [str(t) for t in range(1, n_taps + 1)]:
+            datos["tap"].set(str(centro))
+        nominal, _par = _relacion_nominal_ttr(datos, prueba, equipo, conexion)
+
+        fuente = ctk.CTkFont(family="Segoe UI", size=14, weight="bold")
+        fuente_opcion = ctk.CTkFont(family="Segoe UI", size=14)
+        formulario = tk.Frame(frame, bg="#F8FAFC")
+        formulario.pack(anchor="w", fill="x")
+
+        tk.Label(
+            formulario, text="Tap:", bg="#F8FAFC", fg="#334155", font=fuente,
+        ).grid(row=0, column=0, sticky="e", padx=(0, 20), pady=10)
+        combo_tap = ctk.CTkComboBox(
+            formulario, variable=datos["tap"],
+            values=[str(t) for t in range(1, n_taps + 1)],
+            state="readonly", width=120, font=fuente_opcion,
+            dropdown_font=fuente_opcion,
+            button_color=TTR_MORADO_OSCURO,
+            button_hover_color=TTR_MORADO_HOVER,
+        )
+        combo_tap.grid(row=0, column=1, sticky="w", pady=10)
+        tk.Label(
+            formulario, text=f"(central: {centro})", bg="#F8FAFC",
+            fg="#94A3B8", font=fuente_opcion,
+        ).grid(row=0, column=2, sticky="w", padx=(10, 0))
+
+        if usar_reg:
+            tk.Label(
+                formulario, text="Relación teórica nominal:", bg="#F8FAFC",
+                fg="#334155", font=fuente,
+            ).grid(row=1, column=0, sticky="e", padx=(0, 20), pady=10)
+            tk.Label(
+                formulario,
+                text="—" if nominal is None else f"{nominal:.4f}",
+                bg="#F8FAFC", fg=TTR_MORADO_OSCURO, font=fuente,
+            ).grid(row=1, column=1, sticky="w", pady=10)
+            tk.Label(
+                formulario,
+                text="Relación teórica en este tap (0.625 %/paso):",
+                bg="#F8FAFC", fg="#334155", font=fuente,
+            ).grid(row=2, column=0, sticky="e", padx=(0, 20), pady=10)
+            etiqueta_rt_valor = tk.Label(
+                formulario, text="—", bg="#F8FAFC", fg=TTR_MORADO_OSCURO,
+                font=fuente,
+            )
+            etiqueta_rt_valor.grid(row=2, column=1, sticky="w", pady=10)
+
+            def actualizar_rt_tap(*_a):
+                tap = int(datos["tap"].get())
+                rt_tap = _relacion_teorica_tap_ttr(nominal, tap, centro, True)
+                etiqueta_rt_valor.configure(
+                    text="—" if rt_tap is None else f"{rt_tap:.4f}",
+                )
+
+            combo_tap.configure(command=lambda _v=None: actualizar_rt_tap())
+            actualizar_rt_tap()
+            if nominal is None:
+                tk.Label(
+                    formulario,
+                    text="Falta el kV de placa de este devanado en el paso 01.",
+                    bg="#FEF3C7", fg="#92400E", font=fuente_opcion,
+                    wraplength=420, justify="left", padx=10, pady=6,
+                ).grid(row=3, column=0, columnspan=2, sticky="w", pady=(0, 10))
         else:
-            ctk.CTkLabel(
-                frame,
+            tk.Label(
+                formulario, text="Relación teórica de este tap:",
+                bg="#F8FAFC", fg="#334155", font=fuente,
+            ).grid(row=1, column=0, sticky="e", padx=(0, 20), pady=10)
+            ctk.CTkEntry(
+                formulario, textvariable=datos["relacion_teorica_manual"],
+                width=140, font=fuente_opcion,
+            ).grid(row=1, column=1, sticky="w", pady=10)
+
+        tk.Label(
+            formulario, text="Relación medida (TTR):", bg="#F8FAFC",
+            fg="#334155", font=fuente,
+        ).grid(row=4, column=0, sticky="e", padx=(0, 20), pady=10)
+        ctk.CTkEntry(
+            formulario, textvariable=datos["relacion_medida"],
+            width=140, font=fuente_opcion,
+        ).grid(row=4, column=1, sticky="w", pady=10)
+
+        tk.Label(
+            frame,
+            text=(
+                "%DIF = 100 × (RT − RM) / RT. ST-CT-007 acepta hasta 0.5 % "
+                "en la primera medición."
+            ),
+            bg="#F8FAFC", fg="#64748B", font=fuente_opcion, wraplength=600,
+            justify="left",
+        ).pack(anchor="w", pady=(4, 14))
+
+        panel_resultado = tk.Frame(frame, bg="#F8FAFC")
+        panel_resultado.pack(anchor="w", fill="x")
+
+        def calcular():
+            for hijo in panel_resultado.winfo_children():
+                hijo.destroy()
+            tap = int(datos["tap"].get())
+            if usar_reg:
+                rt = _relacion_teorica_tap_ttr(nominal, tap, centro, True)
+            else:
+                rt = _leer_ttr(datos["relacion_teorica_manual"].get())
+            rm = _leer_ttr(datos["relacion_medida"].get())
+            error = None
+            if rt is None:
+                error = (
+                    "Falta el kV de placa para calcular la relación "
+                    "teórica." if usar_reg else
+                    "Escriba la relación teórica de este tap."
+                )
+            elif rm is None:
+                error = "Escriba la relación medida con el TTR."
+            if error:
+                tk.Label(
+                    panel_resultado, text=error, bg="#FEF3C7", fg="#92400E",
+                    font=fuente_opcion, wraplength=600, justify="left",
+                    padx=10, pady=8,
+                ).pack(anchor="w")
+                return
+            resultado = _evaluar_ttr(rt, rm)
+            aceptado = resultado["estado"] == "ACEPTADO"
+            color_estado = "#007A33" if aceptado else "#F5C400"
+            texto_color = "white" if aceptado else "#1A1A1A"
+            tarjeta = tk.Frame(
+                panel_resultado, bg="#FFFFFF",
+                highlightbackground="#E2E8F0", highlightthickness=1,
+            )
+            tarjeta.pack(anchor="w", fill="x", pady=(0, 10))
+            tk.Label(
+                tarjeta, text=f"DICTAMEN: {resultado['estado']}",
+                bg=color_estado, fg=texto_color,
+                font=("Segoe UI", 13, "bold"), anchor="w", padx=14, pady=10,
+            ).pack(fill="x")
+            cuerpo = tk.Frame(tarjeta, bg="#FFFFFF")
+            cuerpo.pack(fill="x", padx=14, pady=12)
+            tk.Label(
+                cuerpo,
                 text=(
-                    f"Prueba {prueba['prueba']}  ·  {prueba['mide']}  ·  "
-                    f"CN {prueba['cn']}   CR {prueba['cr']}   "
-                    f"GN {prueba['gn']}   GR {prueba['gr']}"
+                    f"Relación teórica: {resultado['rt']:.4f}   ·   "
+                    f"Relación medida: {resultado['rm']:.4f}   ·   "
+                    f"%DIF: {resultado['dif']:.3f} %"
                 ),
-                font=ctk.CTkFont(family="Segoe UI", size=14),
-                text_color="#334155", fg_color="transparent",
+                bg="#FFFFFF", fg="#1E293B", font=("Segoe UI", 13, "bold"),
+                anchor="w",
+            ).pack(anchor="w", pady=(0, 6))
+            tk.Label(
+                cuerpo, text=resultado["frase"], bg="#FFFFFF", fg="#334155",
+                font=fuente_opcion, wraplength=600, justify="left",
+                anchor="w",
             ).pack(anchor="w")
-        return
+
+        ctk.CTkButton(
+            frame, text="CALCULAR DICTAMEN", fg_color=TTR_MORADO,
+            hover_color=TTR_MORADO_OSCURO, text_color="white",
+            font=ctk.CTkFont(size=14, weight="bold"), width=200, height=38,
+            command=calcular,
+        ).pack(anchor="w", pady=(0, 10))
 
     def _formulario_ttr(self, frame, cargar_paso):
         datos = self.datos_ttr
