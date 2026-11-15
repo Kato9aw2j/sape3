@@ -1,0 +1,20 @@
+[
+  {
+    "fecha": "26/10/2026 15:40",
+    "modulo": "Factor de Potencia",
+    "origen": "Dictamen Técnico",
+    "equipo": "Transformadores de 3 Devanados",
+    "fase": "A",
+    "prueba": "Prueba 1 · CH+CHX (HV=H GROUND=X GUARD=Y UST=-----)",
+    "lecturas": {
+      "kV": "10",
+      "mA": "400",
+      "mW": "7"
+    },
+    "fp": "175.000 %",
+    "fp20": "166.250 %",
+    "kt": "0.950",
+    "estado": "RECHAZADO",
+    "descripcion": "Transformadores de 3 Devanados. Trifásico. Fase A. En operación. Aceite 30 °C. Kt = 0.950 (Tabla 4). kV 10, 0.400 mA, 7.000 mW. mVA = 4.000. %FP medido = 175.000 %. %FP a 20 °C = 166.250 %. Capacitancia ≈ 106.1 pF. Puesta en servicio ≤ 0.5 %. En operación, de 0.5 % a 1.0 % se vigila. Arriba de 1.0 % se rechaza. Arriba de 1.0 %: humedad, contaminación o envejecimiento."
+  }
+]

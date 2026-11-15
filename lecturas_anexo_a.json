@@ -1,0 +1,16 @@
+{
+  "Transformadores de 2 Devanados|A|1|RH|H|Tq|X": {
+    "30 s": "123",
+    "1 min": "123",
+    "10 min": "345",
+    "ia": "1.00",
+    "ip": "2.80"
+  },
+  "Transformadores de 2 Devanados|A|4|RH + RHX|H|X+Tq|-----": {
+    "30 s": "123",
+    "1 min": "344",
+    "10 min": "456",
+    "ia": "2.80",
+    "ip": "1.33"
+  }
+}

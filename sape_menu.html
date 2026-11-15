@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>S.A.P.E.</title>
+  <style>
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #000;
+      color: #c9d1d9;
+      font-family: "Courier New", monospace;
+    }
+
+    .window {
+      width: 460px;
+      height: 800px;
+      padding: 6px;
+      border: 2px solid #00e5ff;
+      background: #0a0e14;
+      box-shadow: 0 0 30px rgba(0, 229, 255, .3);
+    }
+
+    .inner-border {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      border: 2px solid #00e5ff;
+    }
+
+    .grid {
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(#111820 1px, transparent 1px),
+        linear-gradient(90deg, #111820 1px, transparent 1px);
+      background-size: 15px 15px;
+      pointer-events: none;
+    }
+
+    .content {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      height: 100%;
+      padding: 10px 15px 6px;
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .top-block { flex-shrink: 0; }
+
+    .cfe-container {
+      position: relative;
+      display: block;
+      width: 220px;
+      height: 110px;
+      margin: 0 auto;
+      padding: 0;
+    }
+
+    .cfe {
+      position: relative;
+      transform: skewX(-2deg);
+      color: transparent;
+      font-family: Impact, "Arial Black", sans-serif;
+      font-size: 110px;
+      font-style: italic;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 12px;
+      -webkit-text-stroke: 3px #39ff14;
+      text-stroke: 3px #39ff14;
+      filter:
+        drop-shadow(0 0 3px rgba(57, 255, 20, .65))
+        drop-shadow(0 0 8px rgba(57, 255, 20, .3));
+    }
+
+    .white-group {
+      display: flex;
+      margin-top: 5px;
+      flex-direction: column;
+      font-weight: bold;
+      letter-spacing: 1.5px;
+      line-height: 1.4;
+      color: #fff;
+      text-shadow: 0 1px rgba(255, 255, 255, .5),
+        0 -1px rgba(0, 0, 0, .8), 0 1px 1px rgba(0, 0, 0, .9),
+        0 0 6px rgba(88, 166, 255, .4);
+    }
+
+    .line-1, .line-2 { font-size: 14px; }
+    .line-3 { font-size: 12px; }
+
+    .system-group { margin-top: 18px; }
+
+    .system-name {
+      color: #00e5ff;
+      font-family: "Segoe UI", Arial, sans-serif;
+      font-size: 22px;
+      font-weight: bold;
+      line-height: 1.4;
+      letter-spacing: 4px;
+      text-shadow: 0 0 3px rgba(0, 229, 255, .9),
+        0 0 6px rgba(0, 229, 255, .7),
+        0 0 12px rgba(0, 229, 255, .5),
+        0 0 20px rgba(0, 229, 255, .3),
+        1px 1px rgba(0, 90, 100, .8),
+        2px 2px rgba(0, 60, 70, .7),
+        3px 3px rgba(0, 30, 40, .6),
+        4px 4px 8px rgba(0, 0, 0, .8);
+    }
+
+    .system-group .sub {
+      color: #c9d1d9;
+      font-size: 11px;
+      font-weight: bold;
+      line-height: 1.4;
+      letter-spacing: 1.5px;
+    }
+
+    .system-version {
+      color: #58a6ff;
+      font-size: 10px;
+      font-style: italic;
+      line-height: 1.4;
+      letter-spacing: 1px;
+    }
+
+    .system-desc {
+      margin-top: 30px;
+      color: #00e5ff;
+      font-size: 12px;
+      font-style: italic;
+      line-height: 1.4;
+      letter-spacing: .5px;
+    }
+
+    .menu {
+      display: flex;
+      margin-top: 20px;
+      margin-bottom: 4px;
+      flex: 1;
+      flex-direction: column;
+      justify-content: flex-end;
+      gap: 14px;
+    }
+
+    .btn {
+      position: relative;
+      display: flex;
+      padding: 8px 10px;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+      border: 1px solid #00e5ff;
+      border-radius: 4px;
+      background: linear-gradient(180deg, #1a2530, #0d1117);
+      box-shadow: 0 3px #005f6b, 0 4px 8px rgba(0, 0, 0, .6),
+        inset 0 1px rgba(255, 255, 255, .1),
+        inset 0 -2px 4px rgba(0, 0, 0, .5);
+      color: #c9d1d9;
+      cursor: pointer;
+      font-family: inherit;
+      text-align: left;
+      transition: box-shadow .1s ease, background-color .1s ease;
+    }
+
+    .btn:hover {
+      background: linear-gradient(180deg, #243040, #161b22);
+      box-shadow: 0 4px #005f6b, 0 6px 12px rgba(0, 229, 255, .3),
+        inset 0 1px rgba(255, 255, 255, .2),
+        inset 0 -2px 4px rgba(0, 0, 0, .5);
+      color: #fff;
+    }
+
+    .btn:active {
+      box-shadow: 0 0 #005f6b, 0 1px 2px rgba(0, 0, 0, .6),
+        inset 0 2px 4px rgba(0, 0, 0, .6);
+    }
+
+    .btn:disabled {
+      opacity: 1;
+      cursor: wait;
+    }
+
+    .btn-text {
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+      font-size: 13px;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+
+    .btn-number, .btn-code {
+      color: #58a6ff;
+      font-weight: bold;
+    }
+
+    .btn-number { margin-right: 2px; }
+
+    .btn-code {
+      margin-left: 8px;
+      flex-shrink: 0;
+      font-size: 12px;
+      font-weight: normal;
+      white-space: nowrap;
+      text-shadow: 0 0 4px rgba(88, 166, 255, .4);
+    }
+
+    .btn.exit {
+      box-shadow: 0 3px #6b1a1a, 0 4px 8px rgba(0, 0, 0, .6),
+        inset 0 1px rgba(255, 255, 255, .1),
+        inset 0 -2px 4px rgba(0, 0, 0, .5);
+    }
+
+    .btn.exit:hover {
+      background: linear-gradient(180deg, #30201f, #1a0d0d);
+      box-shadow: 0 4px #6b1a1a, 0 6px 12px rgba(248, 81, 73, .3),
+        inset 0 1px rgba(255, 255, 255, .2),
+        inset 0 -2px 4px rgba(0, 0, 0, .5);
+    }
+
+    .btn.exit:hover .btn-code,
+    .btn.exit:hover .btn-number,
+    .btn.exit:hover .btn-text { color: #f85149; }
+
+    .footer {
+      margin-top: 4px;
+      padding: 8px 0 2px;
+      border-top: 1px solid rgba(0, 229, 255, .3);
+      color: #c9d1d9;
+      font-size: 12px;
+      letter-spacing: .5px;
+    }
+  </style>
+</head>
+<body>
+  <main class="window">
+    <div class="inner-border">
+      <div class="grid"></div>
+      <div class="content">
+        <header class="top-block">
+          <div class="cfe-container">
+            <div class="cfe">CFE</div>
+          </div>
+          <div class="white-group">
+            <div class="line-1">COMISIÓN FEDERAL DE ELECTRICIDAD</div>
+            <div class="line-2">ZONA DE TRANSMISIÓN JALISCO ORIENTE</div>
+            <div class="line-3">SUBESTACIONES</div>
+          </div>
+          <div class="system-group">
+            <div class="system-name">[ S.A.P.E. ]</div>
+            <div class="sub">SISTEMA DE ANÁLISIS DE PRUEBAS ELÉCTRICAS</div>
+            <div class="system-version">VERSIÓN 3.2.0 - © 2026</div>
+          </div>
+          <div class="system-desc">
+            "Diagnóstico De Transformadores De Potencia<br>
+            E Instrumentales"
+          </div>
+        </header>
+
+        <nav class="menu" aria-label="Menú principal">
+          <button class="btn" type="button" data-action="1" disabled>
+            <span class="btn-text"><span class="btn-number">1.</span> Resistencia de Aislamiento</span>
+            <span class="btn-code">[ R.A.Ω ]</span>
+          </button>
+          <button class="btn" type="button" data-action="2" disabled>
+            <span class="btn-text"><span class="btn-number">2.</span> Factor de Potencia al Aislamiento</span>
+            <span class="btn-code">[ %F.P. ]</span>
+          </button>
+          <button class="btn" type="button" data-action="3" disabled>
+            <span class="btn-text"><span class="btn-number">3.</span> Relación de Transformación</span>
+            <span class="btn-code">[ T.T.R. ]</span>
+          </button>
+          <button class="btn" type="button" data-action="4" disabled>
+            <span class="btn-text"><span class="btn-number">4.</span> Corriente de Excitación</span>
+            <span class="btn-code">[ I.EXC ]</span>
+          </button>
+          <button class="btn" type="button" data-action="5" disabled>
+            <span class="btn-text"><span class="btn-number">5.</span> Resistencia Óhmica de Devanados</span>
+            <span class="btn-code">[ R.O.Ω ]</span>
+          </button>
+          <button class="btn" type="button" data-action="6" disabled>
+            <span class="btn-text"><span class="btn-number">6.</span> Normativa y Procedimientos</span>
+            <span class="btn-code">[ CFE-IEEE ]</span>
+          </button>
+          <button class="btn" type="button" data-action="7" disabled>
+            <span class="btn-text"><span class="btn-number">7.</span> Historial de Análisis</span>
+            <span class="btn-code">[ ]</span>
+          </button>
+          <button class="btn" type="button" data-action="8" disabled>
+            <span class="btn-text"><span class="btn-number">8.</span> Desarrollador</span>
+            <span class="btn-code">[ ]</span>
+          </button>
+          <button class="btn exit" type="button" data-action="9" disabled>
+            <span class="btn-text"><span class="btn-number">9.</span> Salir</span>
+            <span class="btn-code">[ ]</span>
+          </button>
+        </nav>
+
+        <footer class="footer">Seleccione Una Opción Para Continuar</footer>
+      </div>
+    </div>
+  </main>
+  <script>
+    const buttons = Array.from(document.querySelectorAll("[data-action]"));
+    const footer = document.querySelector(".footer");
+
+    window.addEventListener("pywebviewready", async () => {
+      buttons.forEach((button) => {
+        button.addEventListener("click", () => {
+          window.pywebview.api.ejecutar_accion(button.dataset.action);
+        });
+      });
+
+      try {
+        if (await window.pywebview.api.menu_is_ready()) {
+          buttons.forEach((button) => { button.disabled = false; });
+        } else {
+          footer.textContent = "El menú se cerró antes de iniciar.";
+        }
+      } catch (error) {
+        console.error("No se pudo iniciar SAPE:", error);
+        footer.textContent = "Error al iniciar SAPE. Consulte la consola.";
+      }
+    });
+  </script>
+</body>
+</html>

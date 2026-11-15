@@ -1,0 +1,17 @@
+{
+  "name": "S.A.P.E. — Sistema de Análisis de Pruebas Eléctricas",
+  "short_name": "SAPE",
+  "description": "Resistencia de aislamiento (ST-CT-001) y factor de potencia al aislamiento (ST-CT-002) en equipo eléctrico primario.",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#050B14",
+  "theme_color": "#050B14",
+  "icons": [
+    { "src": "icono-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icono-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icono-512-mascara.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
