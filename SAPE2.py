@@ -1,4 +1,4 @@
-from pathlib import Path
+﻿from pathlib import Path
 import ctypes
 import os
 
@@ -85,6 +85,9 @@ TTR_ROSA_PASTEL = "#F5A3D0"
 TTR_MORADO_PASTEL = "#C4B5FD"
 TTR_MORADO_TRAS = "#D8C4FB"
 TTR_AZUL_FASE = "#0369A1"
+# Pastilla "Modo Diagnóstico" del encabezado de cada paso, igual que en RA/FP.
+TTR_VISTA_PASTEL = "#EDE9FE"
+TTR_VISTA_PASTEL_BORDE = "#C4B5FD"
 RA_FONT = "Classic Robot"
 RA_FONT_PATH = Path(__file__).with_name("fonts") / "Classic Robot.otf"
 APP_ICON_PATH = (
@@ -6475,6 +6478,15 @@ def _boton_relieve_ra(
             "reposo": ((0.0, "#F0FDF4"), (0.5, "#D1FAE5"), (1.0, "#A7F3D0")),
             "labio": "#10B981", "texto": "#047857", "borde": "#6EE7B7", "radio": 12,
         },
+        # Relación de Transformación: los mismos botones en morado.
+        "morado": {
+            "reposo": ((0.0, "#A78BFA"), (0.4, "#7C3AED"), (1.0, "#6D28D9")),
+            "labio": "#4C1D95", "texto": "#FFFFFF", "borde": None, "radio": 8,
+        },
+        "diagnostico_morado": {
+            "reposo": ((0.0, "#F5F3FF"), (0.5, "#EDE9FE"), (1.0, "#DDD6FE")),
+            "labio": "#7C3AED", "texto": "#5B21B6", "borde": "#C4B5FD", "radio": 12,
+        },
     }
     estilo = caras[modo]
 
@@ -11427,30 +11439,212 @@ class AppSAPE(tk.Tk):
         self.prueba_ttr = None
         self._parpadeo_ttr = None
 
+        barra_superior = tk.Frame(ventana, bg="#12161A", height=50)
+        barra_superior.pack(side="top", fill="x")
+        barra_superior.pack_propagate(False)
+
+        def logo_neon(
+            texto="[ S.A.P.E. ]", fondo=(5, 5, 5), marco=True, tam=16,
+        ):
+            from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageTk
+            fuente = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", tam)
+            sonda = ImageDraw.Draw(Image.new("RGB", (1, 1)))
+            caja = sonda.textbbox((0, 0), texto, font=fuente)
+            ancho = caja[2] - caja[0] + 22
+            alto = caja[3] - caja[1] + 14
+            imagen = Image.new("RGB", (ancho, alto), fondo)
+            halo = Image.new("RGB", (ancho, alto), fondo)
+            xy = (11 - caja[0], 7 - caja[1])
+            ImageDraw.Draw(halo).text(xy, texto, font=fuente, fill=(124, 58, 237))
+            halo = halo.filter(ImageFilter.GaussianBlur(3 * tam / 16))
+            imagen = Image.blend(imagen, halo, 0.9)
+            dibujo = ImageDraw.Draw(imagen)
+            dibujo.text(xy, texto, font=fuente, fill=(124, 58, 237))
+            if marco:
+                dibujo.rounded_rectangle(
+                    (0, 0, ancho - 1, alto - 1), radius=4, outline=(42, 49, 58),
+                )
+            return ImageTk.PhotoImage(imagen)
+
+        foto_logo = logo_neon("ST-CT-007")
+        ventana._logo_sape = foto_logo
+        tk.Label(
+            barra_superior, image=foto_logo, bg="#12161A", bd=0,
+        ).pack(side="left", padx=(16, 8))
+        tk.Label(
+            barra_superior,
+            text=(
+                "PROCEDIMIENTO PARA LA MEDICIÓN DE RELACIÓN DE\n"
+                "TRANSFORMACIÓN (TTR)"
+            ),
+            bg="#12161A", fg="#A0AEC0",
+            font=("Segoe UI", 8, "bold"), justify="left",
+        ).pack(side="left", padx=(8, 0))
+        reloj = tk.Label(
+            barra_superior, text="", bg="#12161A",
+            fg="#A0AEC0", font=("Consolas", 11, "bold"),
+        )
+        reloj.pack(side="right", padx=(0, 16))
+        tk.Label(
+            barra_superior, text="RELACIÓN H-X · H-Y · X-Y",
+            bg="#12161A", fg="#A0AEC0",
+            font=("Segoe UI", 9, "bold"),
+        ).pack(side="right")
+        tk.Label(
+            barra_superior, text="●",
+            bg="#12161A", fg="#00FF00",
+            font=("Segoe UI", 8),
+        ).pack(side="right", padx=(0, 6))
+
+        def marcar_reloj_ttr():
+            try:
+                if not ventana.winfo_exists():
+                    return
+            except tk.TclError:
+                return
+            reloj.config(text=datetime.now().strftime("%H:%M:%S"))
+            ventana._reloj_ttr = ventana.after(1000, marcar_reloj_ttr)
+
+        marcar_reloj_ttr()
+
         panel_lateral = ctk.CTkFrame(
             ventana, width=320, corner_radius=0, fg_color="#1A102E",
         )
         panel_lateral.pack(side=tk.LEFT, fill=tk.Y)
         panel_lateral.pack_propagate(False)
+        logo_caja = tk.Frame(
+            panel_lateral, bg="#12161A",
+            highlightbackground="#3B4553", highlightthickness=1,
+        )
+        logo_caja.pack(fill="x", padx=16, pady=(16, 0))
+        foto_sape_lateral = logo_neon(
+            fondo=(18, 22, 26), marco=False, tam=32,
+        )
+        ventana._logo_sape_lateral = foto_sape_lateral
+        tk.Label(
+            logo_caja, image=foto_sape_lateral, bg="#12161A", bd=0,
+        ).pack(pady=8)
         ctk.CTkLabel(
-            panel_lateral, text="[ S.A.P.E. ]",
-            font=ctk.CTkFont(family="Consolas", size=22, weight="bold"),
-            text_color=TTR_ROSA_NEON,
-        ).pack(pady=(24, 2))
-        ctk.CTkLabel(
-            panel_lateral, text="RELACIÓN DE TRANSFORMACIÓN",
+            panel_lateral, text="RELACIÓN DE TRANSFORMACIÓN (TTR)",
             font=ctk.CTkFont(family="Segoe UI", size=11, weight="bold"),
-            text_color=TTR_PLATA,
-        ).pack(pady=(0, 20))
+            text_color=TTR_ROSA_NEON, wraplength=280, justify="center",
+        ).pack(pady=(8, 14))
 
-        area_principal = ctk.CTkFrame(
-            ventana, fg_color="#F8FAFC", corner_radius=0,
+        pie_lateral = tk.Frame(
+            panel_lateral, bg="#1A102E",
+            highlightbackground="#3B2E5C", highlightthickness=1,
         )
+        pie_lateral.pack(side="bottom", fill="x")
+        for rotulo, valor, color, relleno in (
+            ("ESTADO NORMA:", "ST-CT-007 Rev. 1", TTR_MORADO_CLARO, (10, 2)),
+            ("UNIDAD DE DIAG:", "ACTIVA", TTR_ROSA_NEON, (0, 10)),
+        ):
+            fila_pie = tk.Frame(pie_lateral, bg="#1A102E")
+            fila_pie.pack(fill="x", padx=14, pady=relleno)
+            tk.Label(
+                fila_pie, text=rotulo, bg="#1A102E",
+                fg="#9CA3AF", font=("Consolas", 9),
+            ).pack(side="left")
+            tk.Label(
+                fila_pie, text=valor, bg="#1A102E",
+                fg=color, font=("Consolas", 9, "bold"),
+            ).pack(side="right")
+
+        area_principal = tk.Frame(ventana, bg=RA_VISTA_FONDO)
         area_principal.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-        contenedor = tk.Frame(
-            area_principal, bg="#F8FAFC", bd=0, highlightthickness=0,
+        marco_scroll = tk.Frame(area_principal, bg=RA_VISTA_FONDO)
+        marco_scroll.pack(fill=tk.BOTH, expand=True)
+        barra_y_main = tk.Scrollbar(marco_scroll, orient="vertical")
+        barra_x_main = tk.Scrollbar(marco_scroll, orient="horizontal")
+        puerto_main = tk.Canvas(
+            marco_scroll, bg=RA_VISTA_FONDO, highlightthickness=0, bd=0,
+            yscrollcommand=barra_y_main.set,
+            xscrollcommand=barra_x_main.set,
         )
-        contenedor.pack(fill=tk.BOTH, expand=True)
+        barra_y_main.configure(command=puerto_main.yview)
+        barra_x_main.configure(command=puerto_main.xview)
+        barra_x_main.pack(side="bottom", fill="x")
+        barra_y_main.pack(side="right", fill="y")
+        puerto_main.pack(side="left", fill="both", expand=True)
+        contenedor = tk.Frame(
+            puerto_main, bg=RA_VISTA_FONDO, bd=0, highlightthickness=0,
+        )
+        ventana_contenido = puerto_main.create_window(
+            (0, 0), window=contenedor, anchor="nw",
+        )
+
+        def ajustar_contenido_ttr(_evento=None):
+            if getattr(ajustar_contenido_ttr, "_ocupado", False):
+                return
+            ajustar_contenido_ttr._ocupado = True
+            try:
+                if not puerto_main.winfo_exists():
+                    return
+                req_w = max(contenedor.winfo_reqwidth(), 1)
+                req_h = max(contenedor.winfo_reqheight(), 1)
+                ancho = max(puerto_main.winfo_width(), req_w)
+                alto = max(puerto_main.winfo_height(), req_h)
+                puerto_main.itemconfigure(
+                    ventana_contenido, width=ancho, height=alto,
+                )
+                puerto_main.configure(scrollregion=(0, 0, ancho, alto))
+            except tk.TclError:
+                return
+            finally:
+                ajustar_contenido_ttr._ocupado = False
+
+        contenedor.bind("<Configure>", ajustar_contenido_ttr)
+        puerto_main.bind("<Configure>", ajustar_contenido_ttr)
+        contenedor._puerto_ttr = puerto_main
+
+        def al_rueda_principal_ttr(evento):
+            if not getattr(evento, "delta", 0):
+                return
+            try:
+                x, y = ventana.winfo_pointerxy()
+                destino = ventana.winfo_containing(x, y)
+            except (tk.TclError, KeyError):
+                return
+            if destino is not None and destino.winfo_class() == "Text":
+                return
+            lienzo = None
+            dentro = False
+            while destino is not None:
+                propio = getattr(destino, "_scroll_propio", None)
+                if propio is not None:
+                    lienzo = propio
+                    break
+                if destino is marco_scroll:
+                    dentro = True
+                    break
+                destino = getattr(destino, "master", None)
+            if lienzo is None and not dentro:
+                return
+            objetivo = lienzo or puerto_main
+            pasos = int(-evento.delta / 120) or (
+                -1 if evento.delta < 0 else 1
+            )
+            try:
+                if evento.state & 0x1:
+                    objetivo.xview_scroll(pasos, "units")
+                else:
+                    objetivo.yview_scroll(pasos, "units")
+            except tk.TclError:
+                return
+            return "break"
+
+        ventana.bind_all("<MouseWheel>", al_rueda_principal_ttr)
+
+        def soltar_rueda_principal_ttr(_evento):
+            if _evento.widget is not ventana:
+                return
+            try:
+                ventana.unbind_all("<MouseWheel>")
+            except tk.TclError:
+                pass
+
+        ventana.bind("<Destroy>", soltar_rueda_principal_ttr)
+
         paso_actual = tk.IntVar(ventana, value=1)
         botones_paso = []
         fondo_lateral = "#1A102E"
@@ -11469,7 +11663,9 @@ class AppSAPE(tk.Tk):
         def crear_boton_paso(numero, texto):
             boton = _boton_paso_3d(
                 panel_lateral, fondo_lateral, numero, texto,
-                lambda n=numero: cargar_paso(n),
+                lambda n=numero: self._cargar_paso_ttr(
+                    n, paso_actual, contenedor, botones_paso,
+                ),
                 tema="morado",
             )
             botones_paso.append(boton)
@@ -11511,64 +11707,7 @@ class AppSAPE(tk.Tk):
             tema="morado", marca="C", ajustar=True, ancho=ancho_recursos,
         )
 
-        def cargar_paso(numero):
-            paso_actual.set(numero)
-            for indice, item in enumerate(botones_paso, start=1):
-                item["aplicar"](indice == numero)
-            for hijo in contenedor.winfo_children():
-                hijo.destroy()
-            frame = tk.Frame(contenedor, bg="#F8FAFC")
-            frame.pack(
-                fill=tk.BOTH, expand=True,
-                padx=28 if numero == 3 else 60, pady=36,
-            )
-            titulos = {
-                1: "01. DATOS DEL EQUIPO",
-                2: "02. SELECCIÓN DE PRUEBAS",
-                3: "03. DIAGRAMA VECTORIAL",
-                4: "04. CAPTURA DE LECTURAS",
-            }
-            ctk.CTkLabel(
-                frame, text="Relación de Transformación (TTR)",
-                font=ctk.CTkFont(family="Segoe UI", size=28, weight="bold"),
-                text_color="#0F172A", fg_color="transparent",
-            ).pack(anchor="w", pady=(0, 5))
-            fila_paso = tk.Frame(frame, bg="#F8FAFC")
-            fila_paso.pack(anchor="w", pady=(0, 24))
-            numero_paso, _, resto_paso = titulos[numero].partition(" ")
-            tk.Label(
-                fila_paso, text=numero_paso[:2], bg="#F8FAFC",
-                fg=TTR_ROSA, font=("Segoe UI Black", 20),
-            ).pack(side="left")
-            tk.Label(
-                fila_paso, text=numero_paso[2:] + " " + resto_paso,
-                bg="#F8FAFC", fg=TTR_MORADO_OSCURO,
-                font=("Segoe UI", 16, "bold"),
-            ).pack(side="left")
-            if numero == 1:
-                self._formulario_ttr(frame, cargar_paso)
-            elif numero == 2:
-                self._tabla_ttr(frame)
-                ctk.CTkButton(
-                    frame, text="SIGUIENTE", fg_color=TTR_MORADO,
-                    hover_color=TTR_MORADO_OSCURO, text_color="white",
-                    font=ctk.CTkFont(size=14, weight="bold"),
-                    width=150, height=38,
-                    command=lambda: cargar_paso(3),
-                ).pack(anchor="w", pady=(18, 0))
-            elif numero == 3:
-                self._vectores_ttr(frame)
-                ctk.CTkButton(
-                    frame, text="SIGUIENTE", fg_color=TTR_MORADO,
-                    hover_color=TTR_MORADO_OSCURO, text_color="white",
-                    font=ctk.CTkFont(size=14, weight="bold"),
-                    width=150, height=38,
-                    command=lambda: cargar_paso(4),
-                ).pack(anchor="w", pady=(18, 0))
-            else:
-                self._captura_ttr(frame)
-
-        cargar_paso(1)
+        self._cargar_paso_ttr(1, paso_actual, contenedor, botones_paso)
         ventana.focus_force()
         return ventana
 
@@ -11677,11 +11816,158 @@ class AppSAPE(tk.Tk):
             )),
         ))
 
+    # ── Pasos 01 a 04, mismo formato que RA y FP ────────────────────────
+
+    def _cargar_paso_ttr(self, numero, paso_actual, contenedor, botones_paso):
+        ventana = contenedor.winfo_toplevel()
+        job = getattr(self, "_parpadeo_ttr", None)
+        if job is not None:
+            try:
+                self.after_cancel(job)
+            except tk.TclError:
+                pass
+            self._parpadeo_ttr = None
+        if numero in (3, 4) and not self.prueba_ttr:
+            messagebox.showinfo(
+                "Prueba no disponible",
+                "Seleccione una prueba disponible en el paso 2 antes "
+                "de abrir el diagrama vectorial y la captura.",
+                parent=ventana,
+            )
+            return
+        paso_actual.set(numero)
+        for indice, boton in enumerate(botones_paso, start=1):
+            boton["aplicar"](indice == numero)
+        for hijo in contenedor.winfo_children():
+            hijo.destroy()
+        fondo = RA_VISTA_FONDO
+        frame = tk.Frame(contenedor, bg=fondo)
+        frame.pack(fill=tk.BOTH, expand=True)
+        cuerpo = tk.Frame(frame, bg=fondo)
+        cuerpo.pack(
+            expand=True, fill="both", padx=28,
+            pady=(12, 8) if numero == 3 else 18,
+        )
+        self._titulos_ttr(cuerpo, numero)
+
+        def ir(destino):
+            self._cargar_paso_ttr(
+                destino, paso_actual, contenedor, botones_paso,
+            )
+
+        if numero == 1:
+            self._formulario_ttr(cuerpo, ir)
+        elif numero == 2:
+            self._tabla_ttr(cuerpo)
+            self._pie_paso_ttr(cuerpo, 2, lambda: ir(3))
+        elif numero == 3:
+            self._vectores_ttr(cuerpo)
+            self._pie_paso_ttr(cuerpo, 3, lambda: ir(4))
+        else:
+            self._captura_ttr(cuerpo)
+        puerto = getattr(contenedor, "_puerto_ttr", None)
+        if puerto is not None:
+            puerto.yview_moveto(0)
+
+    def _titulos_ttr(self, padre, numero):
+        fondo = RA_VISTA_FONDO
+        titulos = {
+            1: "DATOS DEL EQUIPO",
+            2: "SELECCIÓN DE PRUEBAS",
+            3: "DIAGRAMA VECTORIAL",
+            4: "CAPTURA DE LECTURAS",
+        }
+        subtitulos = {
+            1: "Parámetros de placa y condiciones ambientales del transformador bajo prueba.",
+            2: "Elija la prueba y revise sus terminales de conexión.",
+            3: "Diagrama vectorial y conexiones del equipo de medición.",
+            4: "Captura de lecturas y dictamen de la prueba.",
+        }
+        bloque = tk.Frame(padre, bg=fondo)
+        bloque.pack(fill="x", pady=(0, 8 if numero >= 3 else 16))
+        fila = tk.Frame(bloque, bg=fondo)
+        fila.pack(fill="x")
+        izquierda = tk.Frame(fila, bg=fondo)
+        izquierda.pack(side="left", fill="x", expand=True)
+        fila_titulo = tk.Frame(izquierda, bg=fondo)
+        fila_titulo.pack(anchor="w")
+        tk.Label(
+            fila_titulo, text="Relación de Transformación",
+            bg=fondo, fg="#1A202C", font=("Segoe UI", 26, "bold"),
+        ).pack(side="left")
+        pastilla = ctk.CTkFrame(
+            fila_titulo, fg_color=TTR_VISTA_PASTEL, corner_radius=12,
+            border_width=1, border_color=TTR_VISTA_PASTEL_BORDE,
+        )
+        pastilla.pack(side="left", padx=(12, 0))
+        ctk.CTkLabel(
+            pastilla, text="Modo Diagnóstico",
+            text_color=TTR_MORADO_OSCURO, fg_color="transparent",
+            font=ctk.CTkFont(family="Consolas", size=11, weight="bold"),
+        ).pack(padx=10, pady=2)
+        tk.Label(
+            izquierda, text=subtitulos[numero], bg=fondo, fg="#596573",
+            font=("Segoe UI", 10), anchor="w",
+        ).pack(anchor="w", pady=(4, 0))
+        insignia = ctk.CTkFrame(
+            fila, fg_color=TTR_MORADO, corner_radius=10,
+        )
+        insignia.pack(side="right", anchor="n")
+        ctk.CTkLabel(
+            insignia, text=f"{numero:02d}",
+            text_color="#F5F3FF", fg_color=TTR_MORADO_OSCURO,
+            corner_radius=6,
+            font=ctk.CTkFont(family="Consolas", size=20, weight="bold"),
+        ).pack(side="left", padx=(10, 8), pady=8)
+        ctk.CTkLabel(
+            insignia, text=titulos[numero],
+            text_color="#FFFFFF", fg_color="transparent",
+            font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
+        ).pack(side="left", padx=(0, 14), pady=8)
+        if numero in (3, 4):
+            _barra_degradada_ttr(bloque, fondo, pady=(12, 0))
+        else:
+            tk.Frame(bloque, bg=RA_VISTA_BORDE, height=2).pack(
+                fill="x", pady=(12, 0),
+            )
+
+    def _pie_paso_ttr(self, padre, numero, comando):
+        """Botón SIGUIENTE y leyenda del módulo, como en RA y FP."""
+        fondo = RA_VISTA_FONDO
+        tk.Frame(padre, bg=RA_VISTA_BORDE, height=1).pack(
+            fill="x", pady=(16, 10),
+        )
+        fila_acciones = tk.Frame(padre, bg=fondo)
+        fila_acciones.pack(fill="x")
+        boton = _boton_relieve_ra(
+            fila_acciones, "SIGUIENTE  →", comando, modo="morado",
+        )
+        boton.pack(side="right")
+        tk.Label(
+            padre,
+            text="Ingeniería de pruebas de alta tensión  ·  Subestaciones eléctricas",
+            bg=fondo, fg="#596573", font=("Consolas", 9),
+        ).pack(side="bottom", anchor="w", pady=(12, 0))
+        tk.Label(
+            padre, text=f"Módulo {numero:02d} / 04",
+            bg=fondo, fg="#4A5568", font=("Consolas", 9, "bold"),
+        ).pack(side="bottom", anchor="e")
+
+        def activar(_evento=None):
+            boton.invoke()
+            return "break"
+
+        boton.bind("<Return>", activar, add="+")
+        boton.bind("<KP_Enter>", activar, add="+")
+        boton.bind("<FocusIn>", lambda _e=None: boton.marcar(True), add="+")
+        boton.bind("<FocusOut>", lambda _e=None: boton.marcar(False), add="+")
+        return boton
+
     def _captura_ttr(self, frame):
         datos = self.datos_ttr
         equipo = datos["tipo_equipo"].get().strip()
         tk.Label(
-            frame, text=equipo, bg="#F8FAFC", fg="#334155",
+            frame, text=equipo, bg=RA_VISTA_FONDO, fg="#334155",
             font=("Segoe UI", 18, "bold"),
         ).pack(anchor="w", pady=(0, 10))
         prueba = self.prueba_ttr
@@ -11714,11 +12000,11 @@ class AppSAPE(tk.Tk):
 
         fuente = ctk.CTkFont(family="Segoe UI", size=14, weight="bold")
         fuente_opcion = ctk.CTkFont(family="Segoe UI", size=14)
-        formulario = tk.Frame(frame, bg="#F8FAFC")
+        formulario = tk.Frame(frame, bg=RA_VISTA_FONDO)
         formulario.pack(anchor="w", fill="x")
 
         tk.Label(
-            formulario, text="Tap:", bg="#F8FAFC", fg="#334155", font=fuente,
+            formulario, text="Tap:", bg=RA_VISTA_FONDO, fg="#334155", font=fuente,
         ).grid(row=0, column=0, sticky="e", padx=(0, 20), pady=10)
         combo_tap = ctk.CTkComboBox(
             formulario, variable=datos["tap"],
@@ -11730,27 +12016,27 @@ class AppSAPE(tk.Tk):
         )
         combo_tap.grid(row=0, column=1, sticky="w", pady=10)
         tk.Label(
-            formulario, text=f"(central: {centro})", bg="#F8FAFC",
+            formulario, text=f"(central: {centro})", bg=RA_VISTA_FONDO,
             fg="#94A3B8", font=fuente_opcion,
         ).grid(row=0, column=2, sticky="w", padx=(10, 0))
 
         if usar_reg:
             tk.Label(
-                formulario, text="Relación teórica nominal:", bg="#F8FAFC",
+                formulario, text="Relación teórica nominal:", bg=RA_VISTA_FONDO,
                 fg="#334155", font=fuente,
             ).grid(row=1, column=0, sticky="e", padx=(0, 20), pady=10)
             tk.Label(
                 formulario,
                 text="—" if nominal is None else f"{nominal:.4f}",
-                bg="#F8FAFC", fg=TTR_MORADO_OSCURO, font=fuente,
+                bg=RA_VISTA_FONDO, fg=TTR_MORADO_OSCURO, font=fuente,
             ).grid(row=1, column=1, sticky="w", pady=10)
             tk.Label(
                 formulario,
                 text="Relación teórica en este tap (0.625 %/paso):",
-                bg="#F8FAFC", fg="#334155", font=fuente,
+                bg=RA_VISTA_FONDO, fg="#334155", font=fuente,
             ).grid(row=2, column=0, sticky="e", padx=(0, 20), pady=10)
             etiqueta_rt_valor = tk.Label(
-                formulario, text="—", bg="#F8FAFC", fg=TTR_MORADO_OSCURO,
+                formulario, text="—", bg=RA_VISTA_FONDO, fg=TTR_MORADO_OSCURO,
                 font=fuente,
             )
             etiqueta_rt_valor.grid(row=2, column=1, sticky="w", pady=10)
@@ -11774,7 +12060,7 @@ class AppSAPE(tk.Tk):
         else:
             tk.Label(
                 formulario, text="Relación teórica de este tap:",
-                bg="#F8FAFC", fg="#334155", font=fuente,
+                bg=RA_VISTA_FONDO, fg="#334155", font=fuente,
             ).grid(row=1, column=0, sticky="e", padx=(0, 20), pady=10)
             ctk.CTkEntry(
                 formulario, textvariable=datos["relacion_teorica_manual"],
@@ -11782,7 +12068,7 @@ class AppSAPE(tk.Tk):
             ).grid(row=1, column=1, sticky="w", pady=10)
 
         tk.Label(
-            formulario, text="Relación medida (TTR):", bg="#F8FAFC",
+            formulario, text="Relación medida (TTR):", bg=RA_VISTA_FONDO,
             fg="#334155", font=fuente,
         ).grid(row=4, column=0, sticky="e", padx=(0, 20), pady=10)
         ctk.CTkEntry(
@@ -11796,11 +12082,11 @@ class AppSAPE(tk.Tk):
                 "%DIF = 100 × (RT − RM) / RT. ST-CT-007 acepta hasta 0.5 % "
                 "en la primera medición."
             ),
-            bg="#F8FAFC", fg="#64748B", font=fuente_opcion, wraplength=600,
+            bg=RA_VISTA_FONDO, fg="#64748B", font=fuente_opcion, wraplength=600,
             justify="left",
         ).pack(anchor="w", pady=(4, 14))
 
-        panel_resultado = tk.Frame(frame, bg="#F8FAFC")
+        panel_resultado = tk.Frame(frame, bg=RA_VISTA_FONDO)
         panel_resultado.pack(anchor="w", fill="x")
 
         def calcular():
@@ -11869,7 +12155,7 @@ class AppSAPE(tk.Tk):
 
     def _formulario_ttr(self, frame, cargar_paso):
         datos = self.datos_ttr
-        formulario = tk.Frame(frame, bg="#F8FAFC")
+        formulario = tk.Frame(frame, bg=RA_VISTA_FONDO)
         formulario.pack(anchor="w", fill="x")
         fuente = ctk.CTkFont(family="Segoe UI", size=14, weight="bold")
         fuente_opcion = ctk.CTkFont(family="Segoe UI", size=14)
@@ -12087,13 +12373,7 @@ class AppSAPE(tk.Tk):
 
         combo_equipo.configure(command=lambda _v=None: actualizar())
         actualizar()
-        boton_siguiente = ctk.CTkButton(
-            formulario, text="SIGUIENTE", fg_color=TTR_MORADO,
-            hover_color=TTR_MORADO_OSCURO, text_color="white",
-            font=ctk.CTkFont(size=14, weight="bold"), width=150, height=38,
-            command=lambda: cargar_paso(2),
-        )
-        boton_siguiente.grid(row=12, column=1, sticky="w", pady=(18, 8))
+        boton_siguiente = self._pie_paso_ttr(frame, 1, lambda: cargar_paso(2))
 
         def campos_en_orden():
             terciario = (
@@ -12150,7 +12430,7 @@ class AppSAPE(tk.Tk):
             datos["conexion"].get(),
         )
         tk.Label(
-            frame, text=equipo, bg="#F8FAFC", fg="#334155",
+            frame, text=equipo, bg=RA_VISTA_FONDO, fg="#334155",
             font=("Segoe UI", 18, "bold"),
         ).pack(anchor="w", pady=(0, 10))
         if not filas:
@@ -12361,10 +12641,10 @@ class AppSAPE(tk.Tk):
             return
         equipo = datos["tipo_equipo"].get().strip()
         tk.Label(
-            frame, text=equipo, bg="#F8FAFC", fg="#334155",
+            frame, text=equipo, bg=RA_VISTA_FONDO, fg="#334155",
             font=("Segoe UI", 18, "bold"),
         ).pack(anchor="w", pady=(0, 10))
-        panel = ctk.CTkScrollableFrame(frame, fg_color="#F8FAFC")
+        panel = ctk.CTkScrollableFrame(frame, fg_color=RA_VISTA_FONDO)
         panel.pack(fill="both", expand=True)
         prueba = self.prueba_ttr
 
@@ -16566,6 +16846,39 @@ def _barra_degradada_fp(padre, fondo, **empaque):
         (0.33, (132, 204, 22)),
         (0.66, (59, 130, 246)),
         (1.0, (5, 150, 105)),
+    )
+
+    def pintar(_evento=None):
+        ancho = max(barra.winfo_width(), 4)
+        barra.delete("all")
+        for x in range(0, ancho, 2):
+            t = x / (ancho - 1)
+            for i in range(len(paradas) - 1):
+                t0, c0 = paradas[i]
+                t1, c1 = paradas[i + 1]
+                if t <= t1 or i == len(paradas) - 2:
+                    parte = max(0.0, min(1.0, (t - t0) / (t1 - t0)))
+                    color = tuple(
+                        int(c0[k] + (c1[k] - c0[k]) * parte) for k in range(3)
+                    )
+                    barra.create_line(
+                        x, 0, x, 3, fill="#%02x%02x%02x" % color, width=2,
+                    )
+                    break
+
+    barra.bind("<Configure>", pintar)
+    return barra
+
+
+def _barra_degradada_ttr(padre, fondo, **empaque):
+    """Filo de color de las tarjetas de TTR: morado-rosa-azul."""
+    barra = tk.Canvas(padre, height=3, bg=fondo, highlightthickness=0, bd=0)
+    barra.pack(fill="x", **empaque)
+    paradas = (
+        (0.0, (109, 40, 217)),
+        (0.33, (124, 58, 237)),
+        (0.66, (255, 77, 255)),
+        (1.0, (109, 40, 217)),
     )
 
     def pintar(_evento=None):
