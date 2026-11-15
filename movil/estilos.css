@@ -18,6 +18,14 @@
   --fp-verde-claro: #6EE7B7;
   --fp-verde-texto: #D1FAE5;
   --fp-verde-fondo: #006662;
+  /* Paleta del módulo Relación de Transformación (ST-CT-007): morado,
+     igual que en SAPE2.py (TTR_MORADO, TTR_MORADO_OSCURO...). */
+  --ttr-morado: #7C3AED;
+  --ttr-morado-oscuro: #6D28D9;
+  --ttr-morado-hover: #5B21B6;
+  --ttr-morado-claro: #DDD6FE;
+  --ttr-morado-texto: #F5F3FF;
+  --ttr-rosa: #FF69B4;
 }
 
 * { box-sizing: border-box; }
@@ -86,6 +94,11 @@ button:disabled { cursor: default; }
 .menu-item-fp { border-color: var(--fp-verde); }
 .menu-item-fp .marca { color: var(--fp-verde); }
 .menu-item-fp:not(:disabled):active { background: rgba(16, 185, 129, .16); }
+
+/* Relación de Transformación (TTR): morado, igual que en el escritorio. */
+.menu-item-ttr { border-color: var(--ttr-morado); }
+.menu-item-ttr .marca { color: var(--ttr-morado); }
+.menu-item-ttr:not(:disabled):active { background: rgba(124, 58, 237, .16); }
 .pie { font: 11px Consolas, monospace; color: var(--tenue); margin-top: 22px; }
 
 /* ---------- Estructura de pasos ---------- */
@@ -236,6 +249,16 @@ button:disabled { cursor: default; }
 #app.fp .indices div { background: var(--fp-verde-texto); }
 #app.fp .indices b { color: var(--fp-verde-hover); }
 #app.fp .chip { background: var(--fp-verde-texto); }
+
+/* ---------- TTR: reemplaza el acento naranja por morado ---------- */
+#app.ttr { --naranja: var(--ttr-morado-oscuro); --naranja-claro: var(--ttr-morado); --neon: var(--ttr-morado); }
+#app.ttr .barra, #app.ttr .pasos, #app.ttr .pie-pasos { background: #1A102E; border-color: var(--ttr-morado-oscuro); }
+#app.ttr .primario { box-shadow: 0 3px 0 var(--ttr-morado-hover); }
+#app.ttr .contenido h3 { color: var(--ttr-morado-hover); }
+#app.ttr .campo small { color: var(--ttr-morado-hover); }
+
+.segmentos.vertical { flex-direction: column; }
+.segmentos.vertical button { text-align: left; }
 
 .toast {
   position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%);

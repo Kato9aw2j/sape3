@@ -28,6 +28,15 @@ const estado = {
   pruebaFp: 0,
   lecturasFp: { kv: "10", ma: "", watts: "" },
   resultadoFp: null,
+  // Relación de Transformación / TTR (ST-CT-007)
+  pasoTtr: 1,
+  datosTtr: {
+    equipo: EQUIPOS_TTR[0], configuracion: "Trifásico", fase: "A",
+    conexion: "Estrella - Delta", voltajeH: "", voltajeX: "", voltajeY: "",
+    regulacionCfe: "Sí", tipoCambiador: CAMBIADORES_TTR[0].valor,
+    medicionRealizar: "Directa", polaridad: "Sustractiva",
+    tempAmbiente: "", humedad: "", tempDevanado: "",
+  },
 };
 
 function leer(clave, respaldo) {
@@ -51,6 +60,7 @@ function recordar() {
   guardar(CLAVE_ESTADO, {
     datos: estado.datos, prueba: estado.prueba, lecturas: estado.lecturas,
     datosFp: estado.datosFp, pruebaFp: estado.pruebaFp, lecturasFp: estado.lecturasFp,
+    datosTtr: estado.datosTtr, pasoTtr: estado.pasoTtr,
   });
 }
 
@@ -64,6 +74,9 @@ if (previo && previo.datosFp) {
   Object.assign(estado.datosFp, previo.datosFp);
   estado.pruebaFp = previo.pruebaFp || 0;
   Object.assign(estado.lecturasFp, previo.lecturasFp || {});
+}
+if (previo && previo.datosTtr) {
+  Object.assign(estado.datosTtr, previo.datosTtr);
 }
 
 const esc = (texto) =>
@@ -85,7 +98,7 @@ function pruebaActual() {
 const MENU = [
   ["1", "Resistencia de Aislamiento", "R.A.Ω", "ra"],
   ["2", "Factor de Potencia al Aislamiento", "%F.P.", "fp"],
-  ["3", "Relación de Transformación", "T.T.R.", null],
+  ["3", "Relación de Transformación", "T.T.R.", "ttr"],
   ["4", "Corriente de Excitación", "I.EXC", null],
   ["5", "Resistencia Óhmica de Devanados", "R.O.Ω", null],
   ["6", "Normativa y Procedimientos", "CFE-IEEE", null],
@@ -94,7 +107,7 @@ const MENU = [
 
 function vistaInicio() {
   const filas = MENU.map(([num, nombre, marca, destino]) => `
-    <button class="menu-item ${destino === "fp" ? "menu-item-fp" : ""}" ${destino ? `data-ir="${destino}"` : "disabled"}>
+    <button class="menu-item ${destino === "fp" ? "menu-item-fp" : ""} ${destino === "ttr" ? "menu-item-ttr" : ""}" ${destino ? `data-ir="${destino}"` : "disabled"}>
       <span>${num}. ${esc(nombre)}</span>
       <span class="marca">${destino ? (marca ? `[ ${esc(marca)} ]` : "›") : "Próximamente"}</span>
     </button>`).join("");
@@ -484,6 +497,105 @@ function vistaFp() {
     </footer>`;
 }
 
+// ---------- Relación de Transformación / TTR (ST-CT-007) ----------
+
+function campoTtr(etiqueta, clave, extra) {
+  return `<label class="campo"><span>${esc(etiqueta)}</span>
+    <input inputmode="decimal" data-datottr="${clave}" value="${esc(estado.datosTtr[clave])}" ${extra || ""}></label>`;
+}
+
+function opcionesTtr(clave, pares) {
+  return `<div class="segmentos">${pares.map(([valor, texto]) => `
+    <button data-datottr="${clave}" data-valor="${valor}"
+      class="${estado.datosTtr[clave] === valor ? "activo" : ""}">${esc(texto)}</button>`).join("")}</div>`;
+}
+
+function pasoTtr1() {
+  const d = estado.datosTtr;
+  const mono = d.configuracion === "Monofásico";
+  const opcionesConexion = opcionesConexionTtr(d.equipo, d.configuracion);
+  if (opcionesConexion.length && !opcionesConexion.includes(d.conexion)) {
+    d.conexion = opcionesConexion[0];
+  }
+  const terciario = llevaTerciarioTtr(d.equipo);
+  const esReactor = d.equipo.includes("Reactores");
+
+  let extra = "";
+  if (!esReactor) {
+    extra += `<div class="campo"><span>Configuración</span>${opcionesTtr("configuracion", [["Trifásico", "Trifásico"], ["Monofásico", "Monofásico"]])}</div>`;
+    if (mono) {
+      extra += `<div class="campo"><span>Fase</span>${opcionesTtr("fase", [["A", "A"], ["B", "B"], ["C", "C"]])}</div>`;
+    }
+    if (opcionesConexion.length) {
+      extra += `<label class="campo"><span>Conexión</span>
+        <select data-datottr="conexion">${opcionesConexion.map((c) =>
+          `<option value="${esc(c)}" ${c === d.conexion ? "selected" : ""}>${esc(c)}</option>`).join("")}
+        </select></label>`;
+    }
+    extra += `<div class="rejilla">
+      ${campoTtr("kV primario (H)", "voltajeH")}
+      ${campoTtr("kV secundario (X)", "voltajeX")}
+      ${terciario ? campoTtr("kV terciario (Y)", "voltajeY") : ""}
+    </div>`;
+    extra += `<div class="campo"><span>¿Usar el estándar CFE de regulación por paso? (0.625 %)</span>
+      ${opcionesTtr("regulacionCfe", [["Sí", "Sí"], ["No", "No"]])}</div>`;
+    extra += `<div class="campo"><span>Tipo de cambiador</span>
+      <div class="segmentos vertical">${CAMBIADORES_TTR.map(({ valor, nota }) => `
+        <button data-datottr="tipoCambiador" data-valor="${esc(valor)}"
+          class="${d.tipoCambiador === valor ? "activo" : ""}">${esc(valor)}${nota ? ` · ${esc(nota)}` : ""}</button>`).join("")}</div>
+    </div>`;
+    extra += `<div class="campo"><span>Medición a realizar</span>${opcionesTtr("medicionRealizar", [["Directa", "Directa"], ["Inversa", "Inversa"], ["Ambas", "Ambas"]])}</div>`;
+    extra += `<div class="campo"><span>Polaridad del transformador</span>
+      <div class="segmentos vertical">
+        <button data-datottr="polaridad" data-valor="Sustractiva" class="${d.polaridad === "Sustractiva" ? "activo" : ""}">Sustractiva (H1 con X1 — distribución)</button>
+        <button data-datottr="polaridad" data-valor="Aditiva" class="${d.polaridad === "Aditiva" ? "activo" : ""}">Aditiva (H1 con X2 — transmisión, usual 230/69 kV)</button>
+      </div>
+      <small>Nota: transmisión CFE → casi siempre "Aditiva".</small>
+    </div>`;
+  }
+  return `
+    <h2>01. Datos del equipo</h2>
+    <p class="nota">Parámetros del equipo y condiciones ambientales. Procedimiento ST-CT-007.</p>
+    <label class="campo"><span>Tipo de equipo</span>
+      <select data-datottr="equipo">${EQUIPOS_TTR.map((e) =>
+        `<option value="${esc(e)}" ${e === d.equipo ? "selected" : ""}>${esc(e)}</option>`).join("")}
+      </select></label>
+    ${esReactor ? `<p class="aviso">ST-CT-007 no publica conexiones TTR para reactores.</p>` : extra}
+    <div class="rejilla">
+      ${campoTtr("Temp. ambiente (°C)", "tempAmbiente")}
+      ${campoTtr("Humedad relativa (%)", "humedad")}
+      ${campoTtr("Temp. del devanado (°C)", "tempDevanado")}
+    </div>`;
+}
+
+function pasoTtrProximamente(titulo) {
+  return `
+    <h2>${esc(titulo)}</h2>
+    <p class="nota">Este paso de Relación de Transformación está en construcción. Por ahora, el paso 01 (Datos del equipo) ya está listo.</p>
+    <div class="aviso">Próximamente en una actualización de la app.</div>`;
+}
+
+const PASOS_TTR = ["Datos del equipo", "Selección de pruebas", "Diagrama vectorial", "Captura de lecturas"];
+
+function vistaTtr() {
+  const cuerpo = estado.pasoTtr === 1 ? pasoTtr1() : pasoTtrProximamente(
+    `0${estado.pasoTtr}. ${PASOS_TTR[estado.pasoTtr - 1]}`,
+  );
+  return `
+    <header class="barra">
+      <button class="atras" data-ir="inicio" aria-label="Volver al menú">‹</button>
+      <div><b>Relación de Transformación (TTR)</b><small>ST-CT-007</small></div>
+    </header>
+    <ol class="pasos">${PASOS_TTR.map((nombre, i) => `
+      <li><button data-pasottr="${i + 1}" class="${estado.pasoTtr === i + 1 ? "activo" : ""}" aria-label="${esc(nombre)}">
+        <b>0${i + 1}</b></button></li>`).join("")}</ol>
+    <main class="contenido">${cuerpo}</main>
+    <footer class="pie-pasos">
+      <button class="secundario" data-pasottr="${Math.max(1, estado.pasoTtr - 1)}" ${estado.pasoTtr === 1 ? "disabled" : ""}>‹ Anterior</button>
+      <button class="primario" data-pasottr="${Math.min(4, estado.pasoTtr + 1)}" ${estado.pasoTtr === 4 ? "disabled" : ""}>Siguiente ›</button>
+    </footer>`;
+}
+
 function vistaHistorial() {
   const lista = leer(CLAVE_HISTORIAL, []);
   const filas = lista.length
@@ -507,7 +619,7 @@ function vistaHistorial() {
 const raiz = document.getElementById("app");
 
 function pintar() {
-  raiz.innerHTML = { inicio: vistaInicio, ra: vistaRa, fp: vistaFp, historial: vistaHistorial }[estado.vista]();
+  raiz.innerHTML = { inicio: vistaInicio, ra: vistaRa, fp: vistaFp, ttr: vistaTtr, historial: vistaHistorial }[estado.vista]();
   raiz.className = estado.vista;
 }
 
@@ -535,11 +647,15 @@ raiz.addEventListener("click", (evento) => {
     estado.vista = d.ir;
     if (d.ir === "ra") estado.paso = 1;
     if (d.ir === "fp") estado.pasoFp = 1;
+    if (d.ir === "ttr") estado.pasoTtr = 1;
   } else if (d.paso) {
     estado.paso = Number(d.paso);
     window.scrollTo(0, 0);
   } else if (d.pasofp) {
     estado.pasoFp = Number(d.pasofp);
+    window.scrollTo(0, 0);
+  } else if (d.pasottr) {
+    estado.pasoTtr = Number(d.pasottr);
     window.scrollTo(0, 0);
   } else if (d.dato) {
     estado.datos[d.dato] = d.valor;
@@ -549,6 +665,8 @@ raiz.addEventListener("click", (evento) => {
     estado.datosFp[d.datofp] = d.valor;
     estado.resultadoFp = null;
     if (["configuracion", "estado"].includes(d.datofp)) estado.pruebaFp = 0;
+  } else if (d.datottr) {
+    estado.datosTtr[d.datottr] = d.valor;
   } else if (d.prueba) {
     estado.prueba = Number(d.prueba);
     estado.resultado = null;
@@ -637,6 +755,8 @@ raiz.addEventListener("input", (evento) => {
   } else if (el.dataset.datofp && el.tagName === "INPUT") {
     estado.datosFp[el.dataset.datofp] = el.value;
     estado.resultadoFp = null;
+  } else if (el.dataset.datottr && el.tagName === "INPUT") {
+    estado.datosTtr[el.dataset.datottr] = el.value;
   } else {
     return;
   }
@@ -655,6 +775,8 @@ raiz.addEventListener("change", (evento) => {
     estado.pruebaFp = 0;
     estado.resultadoFp = null;
     if (el.dataset.datofp === "equipo") estado.datosFp.arreglo = "";
+  } else if (el.dataset.datottr) {
+    estado.datosTtr[el.dataset.datottr] = el.value;
   } else {
     return;
   }
