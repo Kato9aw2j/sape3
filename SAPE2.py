@@ -1616,7 +1616,7 @@ _VECTORES_TTR = {
     )),
     "Y-Y": ("Estrella-Estrella Y-Y", "—", "0°", (
         ("estrella", "ALTA", "ESTRELLA", "H1", "H3", "H0", "H2"),
-        ("estrella", "BAJA", "ESTRELLA", "X2", "X1", "X0", "X3"),
+        ("estrella", "BAJA", "ESTRELLA", "X1", "X3", "X0", "X2"),
     )),
     "D-D": ("Delta-Delta D-D", "—", "0°", (
         ("delta", "ALTA", "DELTA", "H2", "H3", "H1"),
@@ -1624,7 +1624,7 @@ _VECTORES_TTR = {
     )),
     "Y-Y-D": ("Estrella-Estrella-Delta Y-Y-D", "Fig. 7", "0° / 30°", (
         ("estrella", "ALTA", "ESTRELLA", "H1", "H3", "H0", "H2"),
-        ("estrella", "BAJA", "ESTRELLA", "X2", "X1", "X0", "X3"),
+        ("estrella", "BAJA", "ESTRELLA", "X1", "X3", "X0", "X2"),
         ("delta", "TERCIARIO", "DELTA", "Y2", "Y3", "Y1"),
     )),
     "Y-Y-D_MONO": (
