@@ -37,6 +37,7 @@ const estado = {
     medicionRealizar: "Directa", polaridad: "Sustractiva",
     tempAmbiente: "", humedad: "", tempDevanado: "",
   },
+  pruebaTtr: 0,
 };
 
 function leer(clave, respaldo) {
@@ -60,7 +61,7 @@ function recordar() {
   guardar(CLAVE_ESTADO, {
     datos: estado.datos, prueba: estado.prueba, lecturas: estado.lecturas,
     datosFp: estado.datosFp, pruebaFp: estado.pruebaFp, lecturasFp: estado.lecturasFp,
-    datosTtr: estado.datosTtr, pasoTtr: estado.pasoTtr,
+    datosTtr: estado.datosTtr, pasoTtr: estado.pasoTtr, pruebaTtr: estado.pruebaTtr,
   });
 }
 
@@ -77,6 +78,7 @@ if (previo && previo.datosFp) {
 }
 if (previo && previo.datosTtr) {
   Object.assign(estado.datosTtr, previo.datosTtr);
+  estado.pruebaTtr = previo.pruebaTtr || 0;
 }
 
 const esc = (texto) =>
@@ -568,19 +570,46 @@ function pasoTtr1() {
     </div>`;
 }
 
+function chipTtr(rol, valor) {
+  return (!valor || valor === "-----") ? "" : `<span class="chip ${rol}"><b>${esc(rol)}</b> ${esc(valor)}</span>`;
+}
+
+function pasoTtr2() {
+  const d = estado.datosTtr;
+  const [lista, nota] = filasTtr(d.equipo, d.configuracion, d.conexion);
+  if (estado.pruebaTtr >= lista.length) estado.pruebaTtr = 0;
+  if (!lista.length) {
+    return `
+      <h2>02. Selección de pruebas</h2>
+      <p class="nota">${esc(d.equipo)}</p>
+      <div class="aviso">${esc(nota)}</div>`;
+  }
+  return `
+    <h2>02. Selección de pruebas</h2>
+    <p class="nota">${esc(d.equipo)}${d.configuracion === "Monofásico" ? " · Monofásico" : ""}. ${esc(nota)}</p>
+    <div class="pruebas">${lista.map((pr, i) => `
+      <button class="prueba ${i === estado.pruebaTtr ? "activo" : ""}" data-pruebattr="${i}">
+        <span class="num">${esc(pr.prueba)}</span>
+        <span class="cuerpo">
+          <b>${esc(pr.mide)}</b>
+          <span class="chips">${chipTtr("CN", pr.cn)}${chipTtr("CR", pr.cr)}${chipTtr("GN", pr.gn)}${chipTtr("GR", pr.gr)}</span>
+        </span>
+      </button>`).join("")}</div>`;
+}
+
 function pasoTtrProximamente(titulo) {
   return `
     <h2>${esc(titulo)}</h2>
-    <p class="nota">Este paso de Relación de Transformación está en construcción. Por ahora, el paso 01 (Datos del equipo) ya está listo.</p>
+    <p class="nota">Este paso de Relación de Transformación está en construcción. Por ahora, los pasos 01 y 02 ya están listos.</p>
     <div class="aviso">Próximamente en una actualización de la app.</div>`;
 }
 
 const PASOS_TTR = ["Datos del equipo", "Selección de pruebas", "Diagrama vectorial", "Captura de lecturas"];
 
 function vistaTtr() {
-  const cuerpo = estado.pasoTtr === 1 ? pasoTtr1() : pasoTtrProximamente(
-    `0${estado.pasoTtr}. ${PASOS_TTR[estado.pasoTtr - 1]}`,
-  );
+  const cuerpo = { 1: pasoTtr1, 2: pasoTtr2 }[estado.pasoTtr]
+    ? { 1: pasoTtr1, 2: pasoTtr2 }[estado.pasoTtr]()
+    : pasoTtrProximamente(`0${estado.pasoTtr}. ${PASOS_TTR[estado.pasoTtr - 1]}`);
   return `
     <header class="barra">
       <button class="atras" data-ir="inicio" aria-label="Volver al menú">‹</button>
@@ -667,6 +696,8 @@ raiz.addEventListener("click", (evento) => {
     if (["configuracion", "estado"].includes(d.datofp)) estado.pruebaFp = 0;
   } else if (d.datottr) {
     estado.datosTtr[d.datottr] = d.valor;
+  } else if (d.pruebattr) {
+    estado.pruebaTtr = Number(d.pruebattr);
   } else if (d.prueba) {
     estado.prueba = Number(d.prueba);
     estado.resultado = null;

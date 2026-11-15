@@ -183,6 +183,8 @@ button:disabled { cursor: default; }
 .chip.TIERRA b { color: #111; }
 .chip.GUARDA b { color: #2563EB; }
 .chip.UST b { color: #7C3AED; }
+.chip.CN b, .chip.GN b { color: #111; }
+.chip.CR b, .chip.GR b { color: #DC143C; }
 
 /* ---------- Diagrama ---------- */
 .diagrama { background: #FFF; border: 1px solid #E5E0D5; border-radius: 10px; padding: 10px; text-align: center; }
@@ -256,6 +258,10 @@ button:disabled { cursor: default; }
 #app.ttr .primario { box-shadow: 0 3px 0 var(--ttr-morado-hover); }
 #app.ttr .contenido h3 { color: var(--ttr-morado-hover); }
 #app.ttr .campo small { color: var(--ttr-morado-hover); }
+#app.ttr .prueba.activo { background: var(--ttr-morado-texto); }
+#app.ttr .prueba .num { background: #2E1065; }
+#app.ttr .prueba.activo .num { background: var(--ttr-morado-oscuro); }
+#app.ttr .chip { background: var(--ttr-morado-texto); }
 
 .segmentos.vertical { flex-direction: column; }
 .segmentos.vertical button { text-align: left; }
