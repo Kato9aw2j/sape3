@@ -1638,10 +1638,10 @@ _VECTORES_TTR = {
         ),
     ),
     "AUTO_YY": ("Autotransformador Y-Y", "Fig. 8", "0°", (
-        ("cruz", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H2·X2", "H1·X1", "H3·X3", "H0·X0"),
+        ("estrella", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H1·X1", "H3·X3", "H0·X0", "H2·X2"),
     )),
     "AUTO_YYD": ("Autotransformador Y-Y-D", "Fig. 8", "0° / 30°", (
-        ("cruz", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H2·X2", "H1·X1", "H3·X3", "H0/X0"),
+        ("estrella", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H1·X1", "H3·X3", "H0·X0", "H2·X2"),
         ("delta", "TERCIARIO", "DELTA", "Y2", "Y3", "Y1"),
     )),
     "AUTO_MONO": ("Autotransformador monofásico", "Fig. 9", "Ie por par H·X·Y", (
