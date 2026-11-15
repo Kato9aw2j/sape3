@@ -370,3 +370,65 @@ function llevaTerciarioTtr(equipo) {
 function llevaFaseTtr(configuracion) {
   return configuracion === "Monofásico";
 }
+
+// ---------- Captura y dictamen (paso 04) ----------
+// Nota: el escritorio (SAPE2.py) todavía no trae esta parte programada —
+// paso 04 solo mostraba la prueba elegida. Este cálculo se arma a partir
+// del procedimiento ST-CT-007 (relación teórica Tabla 1, %DIF ecuación 14).
+
+// Cuántos taps tiene el cambiador y cuál es el central (neutro).
+function tapsTtr(tipoCambiador) {
+  if ((tipoCambiador || "").includes("21")) return { n: 21, centro: 11 };
+  if ((tipoCambiador || "").includes("23")) return { n: 23, centro: 12 };
+  return { n: 5, centro: 3 };
+}
+
+// Qué par de devanados mide la prueba (para elegir los kV de placa).
+function parMideTtr(mide) {
+  const t = (mide || "").replace("–", "-").replace("—", "-");
+  if (t.includes("X") && t.includes("Y") && !t.includes("H")) return "X-Y";
+  if (t.includes("H") && t.includes("Y") && !t.includes("X")) return "H-Y";
+  return "H-X";
+}
+
+// Relación teórica nominal (tap central), Tabla 1 del ST-CT-007: el factor
+// √3 solo aplica entre devanados Delta-Estrella de un transformador de 2
+// devanados; en los demás casos se usa la relación directa de los kV de
+// placa del par que mide la prueba.
+function relacionNominalTtr(d, prueba) {
+  const par = parMideTtr(prueba.mide);
+  const campoP = par === "X-Y" ? "voltajeX" : "voltajeH";
+  const campoS = par === "H-X" ? "voltajeX" : "voltajeY";
+  const vp = numero(d[campoP]);
+  const vs = numero(d[campoS]);
+  if (vp == null || vs == null || vs === 0) return { rt: null, par };
+  let factor = 1;
+  if (par === "H-X" && d.equipo.includes("2 Devanados")) {
+    if (d.conexion === "Delta - Estrella") factor = 1.73;
+    else if (d.conexion === "Estrella - Delta") factor = 1 / 1.73;
+  }
+  return { rt: (vp / vs) * factor, par };
+}
+
+// Regulación CFE: 0.625 % por paso de tap, a partir del tap central.
+function relacionTeoricaTapTtr(nominal, tap, centro, usarRegulacion) {
+  if (nominal == null) return null;
+  if (!usarRegulacion) return nominal;
+  return nominal * (1 + 0.00625 * (tap - centro));
+}
+
+// %DIF = 100 × (RT − RM) / RT (ecuación 14, ST-CT-007).
+function evaluarTtr(rt, rm) {
+  if (rt == null || rt === 0 || rm == null) return null;
+  const dif = (100 * (rt - rm)) / rt;
+  const absDif = Math.abs(dif);
+  let estado, frase;
+  if (absDif <= 0.5) {
+    estado = "ACEPTADO";
+    frase = "La diferencia está dentro del 0.5 % que exige ST-CT-007 para la primera medición (puesta en servicio contra la relación teórica de placa).";
+  } else {
+    estado = "INVESTIGAR";
+    frase = "La diferencia rebasa el 0.5 %: revise el equipo de medición y las conexiones, la ejecución de la prueba, la calibración del TTR y, si nada de eso explica la diferencia, investigue espiras en corto en el transformador.";
+  }
+  return { dif, absDif, estado, frase, rt, rm };
+}

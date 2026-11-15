@@ -38,6 +38,9 @@ const estado = {
     tempAmbiente: "", humedad: "", tempDevanado: "",
   },
   pruebaTtr: 0,
+  tapTtr: null,
+  lecturasTtr: { relacionTeoricaManual: "", relacionMedida: "" },
+  resultadoTtr: null,
 };
 
 function leer(clave, respaldo) {
@@ -62,6 +65,7 @@ function recordar() {
     datos: estado.datos, prueba: estado.prueba, lecturas: estado.lecturas,
     datosFp: estado.datosFp, pruebaFp: estado.pruebaFp, lecturasFp: estado.lecturasFp,
     datosTtr: estado.datosTtr, pasoTtr: estado.pasoTtr, pruebaTtr: estado.pruebaTtr,
+    tapTtr: estado.tapTtr, lecturasTtr: estado.lecturasTtr,
   });
 }
 
@@ -79,6 +83,8 @@ if (previo && previo.datosFp) {
 if (previo && previo.datosTtr) {
   Object.assign(estado.datosTtr, previo.datosTtr);
   estado.pruebaTtr = previo.pruebaTtr || 0;
+  estado.tapTtr = previo.tapTtr || null;
+  Object.assign(estado.lecturasTtr, previo.lecturasTtr || {});
 }
 
 const esc = (texto) =>
@@ -623,6 +629,97 @@ function pasoTtr3() {
     </ul>`;
 }
 
+function tarjetaDictamenTtr(res) {
+  if (!res) return "";
+  return `
+    <section class="dictamen ${res.estado}">
+      <header>DICTAMEN: ${res.estado}</header>
+      <div class="indices">
+        <div><small>Relación teórica</small><b>${res.rt.toFixed(4)}</b></div>
+        <div><small>%DIF</small><b>${res.dif.toFixed(3)}</b></div>
+      </div>
+      <ul>
+        <li>Relación medida: ${res.rm.toFixed(4)}.</li>
+        <li>%DIF = 100 × (RT − RM) / RT.</li>
+        <li>${esc(res.frase)}</li>
+      </ul>
+    </section>
+    <div class="acciones">
+      <button class="secundario" data-accionttr="guardar">Guardar en historial</button>
+      ${navigator.share ? `<button class="secundario" data-accionttr="compartir">Compartir</button>` : ""}
+    </div>`;
+}
+
+function calcularTtr() {
+  const d = estado.datosTtr;
+  const [lista] = filasTtr(d.equipo, d.configuracion, d.conexion);
+  const prueba = lista[estado.pruebaTtr];
+  if (!prueba) return { error: "Elija una prueba en el paso 02." };
+  const { rt: nominal } = relacionNominalTtr(d, prueba);
+  const { n, centro } = tapsTtr(d.tipoCambiador);
+  const tap = estado.tapTtr || centro;
+  const usarReg = d.regulacionCfe === "Sí";
+  const l = estado.lecturasTtr;
+  let rt;
+  if (usarReg) {
+    rt = relacionTeoricaTapTtr(nominal, tap, centro, true);
+  } else {
+    rt = numero(l.relacionTeoricaManual);
+  }
+  if (rt == null) {
+    return { error: usarReg
+      ? "Falta el kV de placa de ese devanado en el paso 01 para calcular la relación teórica."
+      : "Escriba la relación teórica de este tap." };
+  }
+  const rm = numero(l.relacionMedida);
+  if (rm == null) return { error: "Escriba la relación medida con el TTR." };
+  const res = evaluarTtr(rt, rm);
+  if (!res) return { error: "No se pudo calcular: revise los valores." };
+  return res;
+}
+
+function pasoTtr4() {
+  const d = estado.datosTtr;
+  const [lista, nota] = filasTtr(d.equipo, d.configuracion, d.conexion);
+  if (estado.pruebaTtr >= lista.length) estado.pruebaTtr = 0;
+  const prueba = lista[estado.pruebaTtr];
+  if (!prueba) {
+    return `
+      <h2>04. Captura de lecturas</h2>
+      <p class="nota">${esc(d.equipo)}</p>
+      <div class="aviso">${esc(nota)}</div>`;
+  }
+  const { n, centro } = tapsTtr(d.tipoCambiador);
+  if (!estado.tapTtr) estado.tapTtr = centro;
+  const { rt: nominal, par } = relacionNominalTtr(d, prueba);
+  const usarReg = d.regulacionCfe === "Sí";
+  const rtTap = usarReg ? relacionTeoricaTapTtr(nominal, estado.tapTtr, centro, true) : null;
+  const l = estado.lecturasTtr;
+  const taps = Array.from({ length: n }, (_, i) => i + 1);
+  return `
+    <h2>04. Captura de lecturas</h2>
+    <p class="nota">Prueba ${esc(prueba.prueba)} · ${esc(prueba.mide)} · mide ${esc(par)}</p>
+    <label class="campo"><span>Tap</span>
+      <select data-datottr="__tap">${taps.map((t) =>
+        `<option value="${t}" ${t === estado.tapTtr ? "selected" : ""}>${t}${t === centro ? " (central)" : ""}</option>`).join("")}
+      </select></label>
+    ${usarReg
+      ? `<div class="kt">
+          <div><small>Relación teórica nominal</small><b>${nominal == null ? "—" : nominal.toFixed(4)}</b></div>
+          <div><small>Relación teórica en este tap (0.625 %/paso)</small><b>${rtTap == null ? "—" : rtTap.toFixed(4)}</b></div>
+        </div>
+        ${nominal == null ? `<div class="aviso">Falta el kV de placa de este devanado en el paso 01.</div>` : ""}`
+      : `<label class="campo"><span>Relación teórica de este tap</span>
+          <input inputmode="decimal" data-lecturattr="relacionTeoricaManual" value="${esc(l.relacionTeoricaManual)}"></label>`}
+    <label class="campo"><span>Relación medida (TTR)</span>
+      <input inputmode="decimal" data-lecturattr="relacionMedida" value="${esc(l.relacionMedida)}"></label>
+    <p class="nota">%DIF = 100 × (RT − RM) / RT. ST-CT-007 acepta hasta 0.5 % en la primera medición.</p>
+    <button class="primario" data-accionttr="calcular">Calcular dictamen</button>
+    <div id="dictamenttr">${estado.resultadoTtr && estado.resultadoTtr.error
+      ? `<div class="aviso">${esc(estado.resultadoTtr.error)}</div>`
+      : tarjetaDictamenTtr(estado.resultadoTtr)}</div>`;
+}
+
 function pasoTtrProximamente(titulo) {
   return `
     <h2>${esc(titulo)}</h2>
@@ -633,7 +730,7 @@ function pasoTtrProximamente(titulo) {
 const PASOS_TTR = ["Datos del equipo", "Selección de pruebas", "Diagrama vectorial", "Captura de lecturas"];
 
 function vistaTtr() {
-  const pasos = { 1: pasoTtr1, 2: pasoTtr2, 3: pasoTtr3 };
+  const pasos = { 1: pasoTtr1, 2: pasoTtr2, 3: pasoTtr3, 4: pasoTtr4 };
   const cuerpo = pasos[estado.pasoTtr]
     ? pasos[estado.pasoTtr]()
     : pasoTtrProximamente(`0${estado.pasoTtr}. ${PASOS_TTR[estado.pasoTtr - 1]}`);
@@ -723,8 +820,10 @@ raiz.addEventListener("click", (evento) => {
     if (["configuracion", "estado"].includes(d.datofp)) estado.pruebaFp = 0;
   } else if (d.datottr) {
     estado.datosTtr[d.datottr] = d.valor;
+    estado.resultadoTtr = null;
   } else if (d.pruebattr) {
     estado.pruebaTtr = Number(d.pruebattr);
+    estado.resultadoTtr = null;
   } else if (d.prueba) {
     estado.prueba = Number(d.prueba);
     estado.resultado = null;
@@ -737,6 +836,8 @@ raiz.addEventListener("click", (evento) => {
     estado.resultado = dictamen(estado.datos, pruebaActual(), estado.lecturas);
   } else if (d.accionfp === "calcular") {
     estado.resultadoFp = calcularFp();
+  } else if (d.accionttr === "calcular") {
+    estado.resultadoTtr = calcularTtr();
   } else if (d.accion === "guardar" && estado.resultado && !estado.resultado.error) {
     const prueba = pruebaActual();
     const lista = leer(CLAVE_HISTORIAL, []);
@@ -771,6 +872,37 @@ raiz.addEventListener("click", (evento) => {
         `${equipoDe(estado.datos.equipo).nombre} · Prueba ${prueba.prueba} (${prueba.medicion})`,
         `DICTAMEN: ${estado.resultado.estado}`,
         ...estado.resultado.lineas,
+      ].join("\n"),
+    }).catch(() => {});
+    return;
+  } else if (d.accionttr === "guardar" && estado.resultadoTtr && !estado.resultadoTtr.error) {
+    const dd = estado.datosTtr;
+    const [lista] = filasTtr(dd.equipo, dd.configuracion, dd.conexion);
+    const pr = lista[estado.pruebaTtr] || {};
+    const lista2 = leer(CLAVE_HISTORIAL, []);
+    lista2.unshift({
+      fecha: new Date().toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" }),
+      equipo: `T.T.R. · ${dd.equipo}`,
+      prueba: pr.prueba || "—", medicion: pr.mide || "—",
+      estado: estado.resultadoTtr.estado,
+      resumen: `%DIF ${estado.resultadoTtr.dif.toFixed(3)} % · Tap ${estado.tapTtr}`,
+    });
+    guardar(CLAVE_HISTORIAL, lista2.slice(0, 200));
+    avisar("Guardado en el historial");
+    return;
+  } else if (d.accionttr === "compartir" && estado.resultadoTtr && !estado.resultadoTtr.error) {
+    const dd = estado.datosTtr;
+    const [lista] = filasTtr(dd.equipo, dd.configuracion, dd.conexion);
+    const pr = lista[estado.pruebaTtr] || {};
+    navigator.share({
+      title: "SAPE — Relación de Transformación (TTR)",
+      text: [
+        `${dd.equipo} · Prueba ${pr.prueba || "—"} (${pr.mide || "—"}) · Tap ${estado.tapTtr}`,
+        `DICTAMEN: ${estado.resultadoTtr.estado}`,
+        `Relación teórica: ${estado.resultadoTtr.rt.toFixed(4)}`,
+        `Relación medida: ${estado.resultadoTtr.rm.toFixed(4)}`,
+        `%DIF: ${estado.resultadoTtr.dif.toFixed(3)} %`,
+        estado.resultadoTtr.frase,
       ].join("\n"),
     }).catch(() => {});
     return;
@@ -815,6 +947,9 @@ raiz.addEventListener("input", (evento) => {
     estado.resultadoFp = null;
   } else if (el.dataset.datottr && el.tagName === "INPUT") {
     estado.datosTtr[el.dataset.datottr] = el.value;
+  } else if (el.dataset.lecturattr) {
+    estado.lecturasTtr[el.dataset.lecturattr] = el.value;
+    estado.resultadoTtr = null;
   } else {
     return;
   }
@@ -833,8 +968,12 @@ raiz.addEventListener("change", (evento) => {
     estado.pruebaFp = 0;
     estado.resultadoFp = null;
     if (el.dataset.datofp === "equipo") estado.datosFp.arreglo = "";
+  } else if (el.dataset.datottr === "__tap") {
+    estado.tapTtr = Number(el.value);
+    estado.resultadoTtr = null;
   } else if (el.dataset.datottr) {
     estado.datosTtr[el.dataset.datottr] = el.value;
+    estado.resultadoTtr = null;
   } else {
     return;
   }
