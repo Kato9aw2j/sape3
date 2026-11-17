@@ -28,6 +28,7 @@ const estado = {
   pruebaFp: 0,
   lecturasFp: { kv: "10", ma: "", watts: "" },
   resultadoFp: null,
+  modoFp: "mide",
   // Relación de Transformación / TTR (ST-CT-007)
   pasoTtr: 1,
   datosTtr: {
@@ -398,18 +399,22 @@ function pasoFp3() {
   const lista = filasFp(d.equipo, d.arreglo);
   const pr = lista[estado.pruebaFp] || lista[0] || {};
   return `
-    <h2>03. Conexión de prueba</h2>
+    <h2>03. Diagramas de bloques</h2>
     <p class="nota">Prueba ${esc(pr.prueba || "—")} · ${esc(pr.medicion || "—")} · ${esc(pr.kv || "—")} kV · ${esc(pr.modo || "—")}</p>
-    <div class="diagrama">
-      <div class="chips" style="justify-content:center;margin-bottom:10px;">
-        ${chipFp("HV", "LINEA", pr.hv)}
-        ${chipFp("TIERRA", "TIERRA", pr.ground)}
-        ${chipFp("GUARDA", "GUARDA", pr.guard)}
-        ${chipFp("UST", "UST", pr.ust)}
-        ${pr.flotando ? `<span class="chip UST"><b>FLOTA</b> ${esc(pr.flotando)}</span>` : ""}
-      </div>
-      <p class="nota" style="margin:0;">Modo del equipo de prueba: <b>${esc(pr.modo || "—")}</b>. Se energiza ${esc(pr.hv || "—")}; TIERRA se conecta al retorno del instrumento; GUARDA excluye esa parte de la medición; UST la deja flotando y fuera del cálculo.</p>
+    <div class="segmentos vista">
+      <button data-modofp="mide" class="${estado.modoFp === "conexiones" ? "" : "activo"}">Medición</button>
+      <button data-modofp="conexiones" class="${estado.modoFp === "conexiones" ? "activo" : ""}">Conexiones</button>
     </div>
+    <div class="diagrama">${dibujarDiagramaFp(d.equipo, pr, estado.modoFp)}</div>
+    <h3>Conexiones de esta prueba</h3>
+    <div class="chips" style="justify-content:center;margin-bottom:6px;">
+      ${chipFp("HV", "LINEA", pr.hv)}
+      ${chipFp("TIERRA", "TIERRA", pr.ground)}
+      ${chipFp("GUARDA", "GUARDA", pr.guard)}
+      ${chipFp("UST", "UST", pr.ust)}
+      ${pr.flotando ? `<span class="chip UST"><b>FLOTA</b> ${esc(pr.flotando)}</span>` : ""}
+    </div>
+    <p class="nota">Modo del equipo de prueba: <b>${esc(pr.modo || "—")}</b>. Se energiza ${esc(pr.hv || "—")}; TIERRA se conecta al retorno del instrumento; GUARDA excluye esa parte de la medición; UST la deja flotando y fuera del cálculo.</p>
     <h3>Qué mide esta prueba</h3>
     <ul class="leyenda"><li><span class="badge medido">${esc(pr.prueba || "—")}</span>${esc(pr.medicion || "Sin definir")}</li></ul>`;
 }
@@ -486,7 +491,7 @@ function calcularFp() {
   return res;
 }
 
-const PASOS_FP = ["Datos del equipo", "Selección de prueba", "Conexión de prueba", "Captura de lecturas"];
+const PASOS_FP = ["Datos del equipo", "Selección de prueba", "Diagramas de bloques", "Captura de lecturas"];
 
 function vistaFp() {
   const cuerpo = [pasoFp1, pasoFp2, pasoFp3, pasoFp4][estado.pasoFp - 1]();
@@ -830,6 +835,8 @@ raiz.addEventListener("click", (evento) => {
   } else if (d.pruebafp) {
     estado.pruebaFp = Number(d.pruebafp);
     estado.resultadoFp = null;
+  } else if (d.modofp) {
+    estado.modoFp = d.modofp;
   } else if (d.modo) {
     estado.modo = d.modo;
   } else if (d.accion === "calcular") {
