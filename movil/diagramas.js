@@ -96,8 +96,8 @@ function dibujarDiagrama(datos, prueba, modo) {
     return null;
   };
   const partes = [];
-  const linea = (d, color, ancho) =>
-    partes.push(`<path d="${d}" fill="none" stroke="${color || COLOR.cable}" stroke-width="${ancho || 3}" stroke-linecap="round" stroke-linejoin="round"/>`);
+  const linea = (d, color, ancho, cap) =>
+    partes.push(`<path d="${d}" fill="none" stroke="${color || COLOR.cable}" stroke-width="${ancho || 3}" stroke-linecap="${cap || "round"}" stroke-linejoin="round"/>`);
   const texto = (x, y, t, o) => {
     o = o || {};
     partes.push(
@@ -159,7 +159,7 @@ function dibujarDiagrama(datos, prueba, modo) {
     const n = m.cajas.length;
     const fondo = Y0 + (n - 1) * PASO + CH + 34;
     rotuloTanque(m.tanque, BUS);
-    linea(`M${BUS} 26 V${fondo}`, COLOR.cable, 3.5);
+    linea(`M${BUS} 26 V${fondo}`, COLOR.cable, 3.5, "butt");
     tierra(BUS, fondo);
     m.cajas.forEach((c, i) => {
       const y = Y0 + i * PASO;
@@ -187,7 +187,7 @@ function dibujarDiagrama(datos, prueba, modo) {
     const fondo = yS + CH + 34;
     const cxm = CX + CW / 2;
     rotuloTanque("TANQUE", BUS);
-    linea(`M${BUS} 26 V${fondo}`, COLOR.cable, 3.5);
+    linea(`M${BUS} 26 V${fondo}`, COLOR.cable, 3.5, "butt");
     tierra(BUS, fondo);
     resistencia("RP", BUS, yP + CH / 2, CX, yP + CH / 2, { x: (BUS + CX) / 2, y: yP + CH / 2 + 22 });
     resistencia("RPC", cxm, yP + CH, cxm, union, { x: cxm + 14, y: yP + CH + 38, ancla: "start" });
@@ -221,7 +221,7 @@ function dibujarDiagrama(datos, prueba, modo) {
         resistencia(codigo, x, y, x, y + paso, { x: x + 18, y: y + paso / 2 + 4, ancla: "start" });
       }
     });
-    linea(`M${x} ${y0 + (n - 1) * paso} V${fondo}`, COLOR.cable, 3.5);
+    linea(`M${x} ${y0 + (n - 1) * paso} V${fondo}`, COLOR.cable, 3.5, "butt");
     tierra(x, fondo);
     ancho = 260;
     alto = fondo + 40;

@@ -423,9 +423,9 @@ def _dibujar_diagrama_tpc(padre):
     linea(330, 540, 370, 540, fill="green", width=4)
     linea(338, 548, 362, 548, fill="green", width=4)
     linea(346, 556, 354, 556, fill="green", width=4)
-    texto(110, 385, "CD", 20, rojo)
-    texto(110, 405, "(Cap. Total)", 12, rojo, negrita=False)
-    linea(150, 390, 330, 390, fill=rojo, width=2, dash=(4, 4))
+    texto(40, 385, "CD", 20, rojo)
+    texto(40, 405, "(Cap. Total)", 12, rojo, negrita=False)
+    linea(92, 390, 330, 390, fill=rojo, width=2, dash=(4, 4))
     rect(500, 365, 180, 50, fill="#FFF0F0", outline=rojo, width=2)
     texto(590, 385, "CD = (C1 × C2)", 14, "#333333", ancla="center")
     texto(590, 405, "/ (C1 + C2)", 14, "#333333", ancla="center")
@@ -440,8 +440,8 @@ def _dibujar_diagrama_tpc(padre):
         linea(260, y_r, 320, y_r, fill="#333333", width=2)
     texto(290, 800, "Reactor", 13, "#333333", ancla="center")
     # Caja de bornes con palancas a tierra
-    texto(430, 710, "Caja de Bornes", 13, "#333333", ancla="center")
     rect(360, 720, 140, 120, fill="#DCDCDC", outline="#333333", width=2)
+    texto(430, 730, "Caja de Bornes", 11, "#333333", ancla="center")
     for bx, nombre in ((385, "X1"), (430, "X2"), (475, "X3")):
         ovalo(bx, 745, 5, fill=azul, outline=azul)
         texto(bx, 765, nombre, 14, azul, ancla="center")
@@ -465,7 +465,7 @@ def _dibujar_diagrama_tpc(padre):
     # Puesta a tierra general H2 y tierra del secundario
     linea(260, 870, 260, 920, fill=rojo, width=3)
     ovalo(260, 920, 6, fill=rojo, outline=rojo)
-    texto(235, 945, "H2", 20, rojo)
+    texto(272, 905, "H2", 20, rojo)
     linea(240, 955, 280, 955, fill="green", width=4)
     linea(248, 963, 272, 963, fill="green", width=4)
     linea(256, 971, 264, 971, fill="green", width=4)
@@ -835,12 +835,8 @@ def _dibujar_diagrama_autotransformador(padre, monofasico=False, naranja="#FF8C0
     ovalo(nx, ny, radio_n, fill="#FFFFFF", outline=gris, width=2)
     ovalo(nx, ny, radio_n2, outline=gris, width=1)
     ovalo(nx, ny, 5, fill=gris, outline=gris)
-    lienzo.create_rectangle(
-        X(nx - 58), Y(ny + 28), X(nx + 58), Y(ny + 66),
-        fill="#FFFFFF", outline="",
-    )
-    texto(nx, ny + 40, "H0 / X0", 14, gris, ancla="center")
-    texto(nx, ny + 55, "(Neutro)", 11, gris, ancla="center")
+    texto(nx - 32, ny + 2, "H0 / X0", 14, gris, ancla="e")
+    texto(nx - 32, ny + 18, "(Neutro)", 11, gris, ancla="e")
     # Accesorios
     ovalo(730, 400, 10, outline="#222222", width=1)
     linea(720, 400, 740, 400, fill="#222222", width=1)
@@ -1142,22 +1138,22 @@ def _dibujar_diagrama_tp(padre):
     rojo = "#CC0000"
     azul = "#0055AA"
     # Textos aclaratorios
-    texto(80, 80, "PRIMARIO", 22, rojo)
-    texto(80, 105, "(Alta Tensión)", 15, rojo, negrita=False)
-    linea(200, 90, 250, 90, fill=rojo, width=2, dash=(4, 4))
+    texto(20, 80, "PRIMARIO", 22, rojo)
+    texto(20, 105, "(Alta Tensión)", 15, rojo, negrita=False)
+    linea(154, 90, 196, 90, fill=rojo, width=2, dash=(4, 4))
     texto(420, 680, "SECUNDARIO", 22, azul)
     texto(420, 705, "(Baja Tensión)", 15, azul, negrita=False)
-    linea(380, 690, 410, 690, fill=azul, width=2, dash=(4, 4))
+    linea(400, 690, 416, 690, fill=azul, width=2, dash=(4, 4))
     # Borne H1 y cabeza superior
     linea(300, 10, 300, 40, fill=rojo, width=4)
     ovalo(300, 10, 7, fill=rojo, outline=rojo)
-    texto(315, 20, "H1", 20, rojo)
+    texto(315, 8, "H1", 20, rojo)
     rect(200, 40, 200, 80, fill="#E0E0E0", outline="#333333", width=2)
     rect(220, 50, 160, 60, fill="#D0D0D0", outline="#333333", width=1)
     rect(230, 25, 140, 15, fill="#B0B0B0", outline="#333333", width=2)
     ovalo(300, 70, 12, fill="#FFFFFF", outline="#333333", width=2)
     ovalo(300, 70, 6, fill="#ADD8E6", outline="#ADD8E6")
-    texto(320, 75, "Indicador nivel", 12, negrita=False)
+    texto(412, 75, "Indicador nivel", 12, negrita=False)
     rect(230, 120, 140, 15, fill="#A0A0A0", outline="#333333", width=2)
     # Aislador con anillos
     rect(275, 135, 50, 510, fill="#F9F9F9", outline="#888888", width=1)
@@ -1175,17 +1171,17 @@ def _dibujar_diagrama_tp(padre):
     rect(200, 660, 200, 10, fill="#909090", outline="#333333", width=2)
     rect(365, 700, 20, 30, fill="#909090", outline="#333333", width=1)
     ovalo(375, 715, 5, fill="#333333", outline="#333333")
-    texto(390, 715, "Toma de", 11, negrita=False)
-    texto(390, 730, "muestras", 11, negrita=False)
+    texto(412, 728, "Toma de", 11, negrita=False)
+    texto(412, 743, "muestras", 11, negrita=False)
     # H2 con tierra
     linea(140, 760, 140, 790, fill=rojo, width=4)
     ovalo(140, 790, 7, fill=rojo, outline=rojo)
-    texto(155, 795, "H2", 20, rojo)
+    texto(155, 772, "H2", 20, rojo)
     linea(120, 805, 160, 805, fill="green", width=4)
     linea(128, 813, 152, 813, fill="green", width=4)
     linea(136, 821, 144, 821, fill="green", width=4)
     # Caja de bornes X / Y
-    texto(280, 670, "Caja de Bornes", 13, "#333333", ancla="center")
+    texto(180, 720, "Caja de Bornes", 13, "#333333", ancla="e")
     rect(220, 680, 120, 80, fill="#DCDCDC", outline="#333333", width=2)
     for bx, nombre in ((245, "X1"), (280, "X2"), (315, "X3")):
         ovalo(bx, 705, 5, fill=azul, outline=azul)
@@ -1610,25 +1606,25 @@ def _evaluar_ttr(rt, rm):
 # Cada grupo: tipo, pie de medición, pie de conexión y bornes.
 _VECTORES_TTR = {
     "Y-D": ("Estrella-Delta Y-D", "Fig. 5", "30°", (
-        ("estrella", "ALTA", "ESTRELLA", "H1", "H3", "H0", "H2"),
+        ("estrella", "ALTA", "ESTRELLA", "H2", "H1", "H0", "H3"),
         ("delta", "BAJA", "DELTA", "X2", "X1", "X3"),
     )),
     "D-Y": ("Delta-Estrella D-Y", "Fig. 6", "30°", (
-        ("delta", "ALTA", "DELTA", "H2", "H3", "H1"),
+        ("delta", "ALTA", "DELTA", "H2", "H1", "H3"),
         ("estrella", "BAJA", "ESTRELLA", "X2", "X1", "X0", "X3"),
     )),
     "Y-Y": ("Estrella-Estrella Y-Y", "—", "0°", (
-        ("estrella", "ALTA", "ESTRELLA", "H1", "H3", "H0", "H2"),
-        ("estrella", "BAJA", "ESTRELLA", "X1", "X3", "X0", "X2"),
+        ("estrella", "ALTA", "ESTRELLA", "H2", "H1", "H0", "H3"),
+        ("estrella", "BAJA", "ESTRELLA", "X2", "X1", "X0", "X3"),
     )),
     "D-D": ("Delta-Delta D-D", "—", "0°", (
-        ("delta", "ALTA", "DELTA", "H2", "H3", "H1"),
-        ("delta", "BAJA", "DELTA", "X2", "X3", "X1"),
+        ("delta", "ALTA", "DELTA", "H2", "H1", "H3"),
+        ("delta", "BAJA", "DELTA", "X2", "X1", "X3"),
     )),
     "Y-Y-D": ("Estrella-Estrella-Delta Y-Y-D", "Fig. 7", "0° / 30°", (
-        ("estrella", "ALTA", "ESTRELLA", "H1", "H3", "H0", "H2"),
-        ("estrella", "BAJA", "ESTRELLA", "X1", "X3", "X0", "X2"),
-        ("delta", "TERCIARIO", "DELTA", "Y2", "Y3", "Y1"),
+        ("estrella", "ALTA", "ESTRELLA", "H2", "H1", "H0", "H3"),
+        ("estrella", "BAJA", "ESTRELLA", "X2", "X1", "X0", "X3"),
+        ("delta", "TERCIARIO", "DELTA", "Y2", "Y1", "Y3"),
     )),
     "Y-Y-D_MONO": (
         "Estrella-Estrella-Delta Y-Y-D monofásico",
@@ -1641,11 +1637,11 @@ _VECTORES_TTR = {
         ),
     ),
     "AUTO_YY": ("Autotransformador Y-Y", "Fig. 8", "0°", (
-        ("estrella", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H1·X1", "H3·X3", "H0·X0", "H2·X2"),
+        ("estrella", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H2·X2", "H1·X1", "H0·X0", "H3·X3"),
     )),
     "AUTO_YYD": ("Autotransformador Y-Y-D", "Fig. 8", "0° / 30°", (
-        ("estrella", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H1·X1", "H3·X3", "H0·X0", "H2·X2"),
-        ("delta", "TERCIARIO", "DELTA", "Y2", "Y3", "Y1"),
+        ("estrella", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H2·X2", "H1·X1", "H0·X0", "H3·X3"),
+        ("delta", "TERCIARIO", "DELTA", "Y2", "Y1", "Y3"),
     )),
     "AUTO_MONO": ("Autotransformador monofásico", "Fig. 9", "Ie por par H·X·Y", (
         ("vertical3", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H1", "H0/X0", "X1"),
@@ -1852,10 +1848,9 @@ def _linea_ttr(
     cb = color_b or base
 
     def trazo(ax, ay, bx, by, color, parpadeo=False):
-        grosor = 4 if color in ("#000000", "#111111", "#FF0000") else 3
         linea = lienzo.create_line(
-            ax, ay, bx, by, fill=color, width=grosor,
-            capstyle="round", joinstyle="round",
+            ax, ay, bx, by, fill=color, width=6,
+            capstyle="projecting", joinstyle="miter",
         )
         if parpadeo:
             lienzo.addtag_withtag("parpadeo", linea)
@@ -2089,16 +2084,6 @@ def _lado_devanado_ttr(letra):
     }.get(letra, "lado —")
 
 
-def _headers_devanado_ttr(clave):
-    return {
-        "Y-Y-D": ("Alta (H)", "Baja (X)", "Terciario (Y)"),
-        "Y-Y-D_MONO": ("Alta (H)", "Baja (X)", "Terciario (Y)"),
-        "AUTO_YYD": ("Alta (H)", "Baja (X)", "Terciario (Y)"),
-        "AUTO_MONO": ("Alta/Baja (H·X)", "Terciario (Y)"),
-        "MONO_2D": ("Alta (H)", "Baja (X)"),
-    }.get(clave, ("Alta (H)", "Baja (X)"))
-
-
 def _texto_guia(padre, texto, color="#334155", negrita=False, arriba=0):
     tk.Label(
         padre, text=texto, bg="#FFFFFF", fg=color, anchor="w", justify="left",
@@ -2107,119 +2092,78 @@ def _texto_guia(padre, texto, color="#334155", negrita=False, arriba=0):
     ).pack(anchor="w", pady=(arriba, 0))
 
 
-def _columna_guia(padre, titulo, lineas):
-    columna = tk.Frame(padre, bg="#FFFFFF")
-    columna.pack(side="left", anchor="n", padx=(0, 18))
-    _texto_guia(columna, titulo, _AZUL_GUIA_TTR, True)
-    for texto, color in lineas:
-        _texto_guia(columna, texto, color, True)
-
-
 def _pintar_guia_fasorial_ttr(marco, prueba, medicion, polaridad):
-    """Modo y polaridad, a la derecha del diagrama fasorial."""
+    """Solo lo que cambia la lectura: modo, quién excita y polaridad."""
     for hijo in marco.winfo_children():
         hijo.destroy()
-    if medicion == "Inversa":
-        titulo = "MEDICIÓN INVERSA"
-        excita_cn = False
-    elif medicion == "Ambas":
-        titulo = "MEDICIÓN DIRECTA E INVERSA"
-        excita_cn = True
-    else:
-        titulo = "MEDICIÓN DIRECTA"
-        excita_cn = True
+    titulo = {
+        "Inversa": "MEDICIÓN INVERSA",
+        "Ambas": "MEDICIÓN DIRECTA E INVERSA",
+    }.get(medicion, "MEDICIÓN DIRECTA")
     _texto_guia(marco, titulo, TTR_ROSA_NEON, True)
     if prueba:
-        if excita_cn:
-            letra_exc = _letra_devanado_ttr(prueba.get("cn"), prueba.get("cr"))
-            letra_lec = _letra_devanado_ttr(prueba.get("gn"), prueba.get("gr"))
-        else:
-            letra_exc = _letra_devanado_ttr(prueba.get("gn"), prueba.get("gr"))
-            letra_lec = _letra_devanado_ttr(prueba.get("cn"), prueba.get("cr"))
-        if letra_exc and letra_lec:
-            _texto_guia(
-                marco, f"excita {letra_exc}, lectura en {letra_lec}",
-                _AZUL_GUIA_TTR,
-            )
-        if medicion == "Ambas":
-            _texto_guia(
-                marco, "En inversa, GN y GR excitan y CN y CR leen.",
-                _AZUL_GUIA_TTR,
-            )
-    _texto_guia(
-        marco, f"Polaridad del transformador: {polaridad or 'Sustractiva'}",
-        _AZUL_GUIA_TTR, True, 8,
-    )
+        pares = []
+        if medicion != "Inversa":
+            pares.append(((prueba.get("cn"), prueba.get("cr")),
+                          (prueba.get("gn"), prueba.get("gr"))))
+        if medicion != "Directa":
+            pares.append(((prueba.get("gn"), prueba.get("gr")),
+                          (prueba.get("cn"), prueba.get("cr"))))
+        for exc, lec in pares:
+            letra_exc = _letra_devanado_ttr(*exc)
+            letra_lec = _letra_devanado_ttr(*lec)
+            if letra_exc and letra_lec:
+                _texto_guia(
+                    marco, f"Excita {letra_exc}  →  lee {letra_lec}",
+                    _AZUL_GUIA_TTR,
+                )
     if polaridad == "Aditiva":
-        nota = "Aditiva: marcas H1 con X2 (transmisión CFE)."
+        pol = "Polaridad aditiva (H1–X2)"
     else:
-        nota = "Sustractiva: marcas H1 con X1 (distribución)."
-    _texto_guia(marco, nota, _AZUL_GUIA_TTR, True, 8)
+        pol = "Polaridad sustractiva (H1–X1)"
+    _texto_guia(marco, pol, _AZUL_GUIA_TTR, True, 8)
 
 
 def _pintar_guia_conexiones_ttr(marco, prueba, clave, medicion):
-    """Terminales y pinzas de la prueba, a la derecha del esquema."""
+    """Qué pinza va a qué borne: una línea por pinza, excitación y lectura."""
     for hijo in marco.winfo_children():
         hijo.destroy()
-    fila = tk.Frame(marco, bg="#FFFFFF")
-    fila.pack(anchor="w", fill="x")
-    _columna_guia(fila, "Terminales de excitación:", (
-        ("X1 negra = CN", "#000000"),
-        ("X2 roja = CR", "#FF0000"),
-    ))
-    _columna_guia(fila, "Terminales secundarias:", (
-        ("H1 negra = GN", "#000000"),
-        ("H2 roja = GR", "#FF0000"),
-    ))
-    headers = _headers_devanado_ttr(clave)
-    colores_col = ("#000000", "#FF0000", "#64748B")
-    textos_col = ("CN/GN (negro)", "CR/GR (rojo)", "—")
-    fila_h = tk.Frame(marco, bg="#FFFFFF")
-    fila_h.pack(anchor="w", fill="x", pady=(10, 0))
-    for i, header in enumerate(headers):
-        _columna_guia(fila_h, header, ((textos_col[i], colores_col[i]),))
     if not prueba:
         return
-    inversa = medicion == "Inversa"
-    if inversa:
-        pares_exc = (("GN", "negro", prueba.get("gn"), "#000000"),
-                     ("GR", "rojo", prueba.get("gr"), "#FF0000"))
-        pares_lec = (("CN", "negro", prueba.get("cn"), "#000000"),
-                     ("CR", "rojo", prueba.get("cr"), "#FF0000"))
+    if medicion == "Inversa":
+        exc = (("GN", "negro", prueba.get("gn"), "#000000"),
+               ("GR", "rojo", prueba.get("gr"), "#FF0000"))
+        lec = (("CN", "negro", prueba.get("cn"), "#000000"),
+               ("CR", "rojo", prueba.get("cr"), "#FF0000"))
         letra_exc = _letra_devanado_ttr(prueba.get("gn"), prueba.get("gr"))
         letra_lec = _letra_devanado_ttr(prueba.get("cn"), prueba.get("cr"))
     else:
-        pares_exc = (("CN", "negro", prueba.get("cn"), "#000000"),
-                     ("CR", "rojo", prueba.get("cr"), "#FF0000"))
-        pares_lec = (("GN", "negro", prueba.get("gn"), "#000000"),
-                     ("GR", "rojo", prueba.get("gr"), "#FF0000"))
+        exc = (("CN", "negro", prueba.get("cn"), "#000000"),
+               ("CR", "rojo", prueba.get("cr"), "#FF0000"))
+        lec = (("GN", "negro", prueba.get("gn"), "#000000"),
+               ("GR", "rojo", prueba.get("gr"), "#FF0000"))
         letra_exc = _letra_devanado_ttr(prueba.get("cn"), prueba.get("cr"))
         letra_lec = _letra_devanado_ttr(prueba.get("gn"), prueba.get("gr"))
-    fila_p = tk.Frame(marco, bg="#FFFFFF")
-    fila_p.pack(anchor="w", fill="x", pady=(10, 0))
-    _columna_guia(
-        fila_p, f"Excitación — {_lado_devanado_ttr(letra_exc)}:",
-        tuple(
-            (f"{pinza} ({color}) → {borne}", tinta)
-            for pinza, color, borne, tinta in pares_exc
-        ),
-    )
-    _columna_guia(
-        fila_p, f"Lectura — {_lado_devanado_ttr(letra_lec)}:",
-        tuple(
-            (f"{pinza} ({color}) → {borne}", tinta)
-            for pinza, color, borne, tinta in pares_lec
-        ),
-    )
+    for titulo, pares, letra in (
+        ("Excitación", exc, letra_exc),
+        ("Lectura", lec, letra_lec),
+    ):
+        _texto_guia(
+            marco, f"{titulo} — {_lado_devanado_ttr(letra)}",
+            _AZUL_GUIA_TTR, True, 6,
+        )
+        for pinza, color, borne, tinta in pares:
+            _texto_guia(marco, f"{pinza} ({color}) → {borne or '—'}", tinta)
 
 
-def _dibujar_vector_ttr(lienzo, clave, prueba, modo):
-    """Dibuja el vector de medición o el de conexiones."""
+def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
+    """Dibuja el vector de medición o el de conexiones. Con `solo`, solo el
+    devanado con ese índice (para un diagrama por devanado)."""
     lienzo.delete("all")
     ficha = _VECTORES_TTR.get(clave)
     if not ficha:
         return
-    grupos = ficha[3]
+    grupos = ficha[3] if solo is None else (ficha[3][solo],)
     colores, roles = _estilos_vector_ttr(prueba, modo)
     if modo != "cables":
         roles = {}
@@ -6162,16 +6106,21 @@ def _boton_paso_3d(
 
 def _boton_menu_ra(
     panel, texto, comando, marca="", texto_naranja=False, tema="naranja",
+    fondo="#1C2128", ancho=None,
 ):
-    """Tecla en relieve del menú lateral. Naranja en RA, verde en FP."""
+    """Tecla en relieve: naranja en RA, verde en FP y neón en TTR."""
     from PIL import Image, ImageDraw, ImageTk
 
-    fondo = _rgb("#1C2128")
+    fondo_rgb = _rgb(fondo)
     lienzo = tk.Canvas(
-        panel, height=58, bg="#1C2128",
+        panel, height=58, bg=fondo,
         highlightthickness=0, bd=0, cursor="hand2",
     )
-    lienzo.pack(fill="x", padx=10, pady=(0, 2))
+    if ancho is None:
+        lienzo.pack(fill="x", padx=10, pady=(0, 2))
+    else:
+        lienzo.configure(width=ancho)
+        lienzo.pack(anchor="w", padx=(16, 8), pady=(0, 2))
     fuente_num = tkfont.Font(family="Segoe UI", size=16, weight="bold")
     fuente_chip = tkfont.Font(family="Consolas", size=15, weight="bold")
     fuente_txt = tkfont.Font(family="Segoe UI", size=9, weight="bold")
@@ -6224,6 +6173,50 @@ def _boton_menu_ra(
             (74, 240, 170), (236, 253, 245),
         )
         color_resaltado = "#34D399"
+    elif tema == "neon":
+        caras["activo"].update(
+            paradas=((0.0, "#10232A"), (0.35, "#0B1B22"), (1.0, "#081319")),
+            labio="#004D5A", filo="#00E5FF",
+        )
+        caras["activo_hundido"].update(
+            paradas=((0.0, "#07141A"), (1.0, "#051015")),
+            labio="#004D5A", filo="#00B8CC",
+        )
+        neon_letra = (
+            (0, 130, 160), (0, 190, 220), (0, 229, 255),
+            (140, 245, 255), (240, 254, 255),
+        )
+        color_resaltado = "#00E5FF"
+    elif tema == "morado":
+        caras["activo"].update(
+            paradas=((0.0, "#A78BFA"), (0.35, "#7C3AED"), (1.0, "#6D28D9")),
+            labio="#4C1D95", filo="#DDD6FE",
+        )
+        caras["activo_hundido"].update(
+            paradas=((0.0, "#7C3AED"), (1.0, "#5B21B6")),
+            labio="#4C1D95", filo="#7C3AED",
+        )
+        neon_letra = (
+            (91, 33, 182), (109, 40, 217), (124, 58, 237),
+            (167, 139, 250), (245, 243, 255),
+        )
+        color_resaltado = TTR_MORADO_CLARO
+    elif tema == "morado_recurso":
+        caras["inactivo"].update(
+            paradas=((0.0, "#3B2468"), (0.15, "#2A1848"), (1.0, "#1A102E")),
+            labio="#0E081C", filo="#7C3AED", texto="#DDD6FE",
+        )
+        caras["hover"].update(
+            paradas=((0.0, "#4C2D86"), (0.15, "#3B2468"), (1.0, "#2A1848")),
+            filo="#A78BFA", texto="#FFFFFF",
+        )
+        color_resaltado = TTR_MORADO_CLARO
+    elif tema == "neon_morado":
+        neon_letra = (
+            (76, 29, 149), (91, 33, 182), (124, 58, 237),
+            (167, 139, 250), (221, 214, 254),
+        )
+        color_resaltado = TTR_MORADO_CLARO
 
     def cara_actual():
         if estado["presionado"] and estado["activo"]:
@@ -6240,7 +6233,7 @@ def _boton_menu_ra(
         estilo = caras[cara]
         alto_lienzo = 58
         alto_caja = 52
-        imagen = Image.new("RGBA", (ancho, alto_lienzo), fondo + (255,))
+        imagen = Image.new("RGBA", (ancho, alto_lienzo), fondo_rgb + (255,))
         radio = 8
         margen = 2
         ancho_caja = ancho - margen * 2
@@ -6308,11 +6301,15 @@ def _boton_menu_ra(
             if estado["activo"]:
                 color_marco = (26, 26, 26)
                 color_centro = (5, 5, 5)
-                color_digito = "#00FFFF"
+                color_digito = (
+                    "#00E5FF" if tema in ("neon", "morado") else "#00FFFF"
+                )
             else:
                 color_marco = (11, 13, 16)
                 color_centro = (26, 30, 36)
-                color_digito = "#FFFFFF"
+                color_digito = (
+                    "#00E5FF" if tema in ("neon", "morado") else "#FFFFFF"
+                )
             chip = Image.new("RGBA", (chip_w, chip_h), (0, 0, 0, 0))
             trazo = ImageDraw.Draw(chip)
             trazo.rounded_rectangle(
@@ -6323,7 +6320,7 @@ def _boton_menu_ra(
                 (margen_x, margen_y, margen_x + ancho_num - 1, margen_y + alto_num - 1),
                 radius=5, fill=color_centro + (255,),
             )
-            if estado["activo"]:
+            if estado["activo"] or tema in ("neon", "morado"):
                 from PIL import ImageFont, ImageFilter
                 fuente_brillo = ImageFont.truetype(
                     r"C:\Windows\Fonts\consolab.ttf", 15,
@@ -6331,7 +6328,8 @@ def _boton_menu_ra(
                 brillo = Image.new("RGBA", (chip_w, chip_h), (0, 0, 0, 0))
                 ImageDraw.Draw(brillo).text(
                     (chip_w / 2, chip_h / 2), marca,
-                    font=fuente_brillo, fill=(0, 255, 255, 230), anchor="mm",
+                    font=fuente_brillo, fill=(0, 229, 255, 230),
+                    anchor="mm",
                 )
                 brillo = brillo.filter(ImageFilter.GaussianBlur(2))
                 chip = Image.alpha_composite(chip, brillo)
@@ -6358,10 +6356,18 @@ def _boton_menu_ra(
             ancho_tinta = derecha - izquierda
             alto_tinta = abajo - arriba
             ancho_m = max(int(fuente_num.measure(marca)), ancho_tinta)
-            margen = 24
-            lw = ancho_tinta + margen * 2
-            lh = alto_tinta + margen * 2
-            origen = (margen - izquierda, margen - arriba)
+            if tema == "neon_morado":
+                lw, lh = 44, 38
+                margen = 0
+                origen = (
+                    (lw - ancho_tinta) / 2 - izquierda,
+                    (lh - alto_tinta) / 2 - arriba,
+                )
+            else:
+                margen = 24
+                lw = ancho_tinta + margen * 2
+                lh = alto_tinta + margen * 2
+                origen = (margen - izquierda, margen - arriba)
 
             def capa_letra(color):
                 capa = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
@@ -6370,9 +6376,7 @@ def _boton_menu_ra(
                 )
                 return capa
 
-            # Neón naranja solo en la letra (A, B, C); el texto no cambia.
-            # Como un tubo de neón: resplandor ancho y saturado alrededor, y
-            # el centro del trazo casi blanco, que es lo que da la luz.
+            # Neón en la letra (A, B, C), con un halo ancho y saturado.
             resplandor = capa_letra(neon_letra[0] + (255,)).filter(
                 ImageFilter.GaussianBlur(9),
             )
@@ -6392,14 +6396,29 @@ def _boton_menu_ra(
             letra = resplandor
             for capa in (resplandor, halo, halo, medio, nucleo, caliente):
                 letra = Image.alpha_composite(letra, capa)
+            if tema == "neon_morado":
+                placa = Image.new("RGBA", (lw, lh), (0, 0, 0, 255))
+                ImageDraw.Draw(placa).rounded_rectangle(
+                    (0, 0, lw - 1, lh - 1), radius=6,
+                    fill=(5, 5, 5, 255), outline=(26, 30, 36, 255), width=2,
+                )
+                letra = Image.alpha_composite(placa, letra)
             foto_letra = ImageTk.PhotoImage(letra)
             estado["foto_letra"] = foto_letra
-            x_tinta = 20 + (ancho_m - ancho_tinta) / 2
-            lienzo.create_image(
-                x_tinta - margen, centro - lh / 2,
-                image=foto_letra, anchor="nw",
-            )
-            x_texto = 20 + ancho_m + 14
+            if tema == "neon_morado":
+                x_placa = 14
+                lienzo.create_image(
+                    x_placa, centro - lh / 2,
+                    image=foto_letra, anchor="nw",
+                )
+                x_texto = x_placa + lw + 12
+            else:
+                x_tinta = 20 + (ancho_m - ancho_tinta) / 2
+                lienzo.create_image(
+                    x_tinta - margen, centro - lh / 2,
+                    image=foto_letra, anchor="nw",
+                )
+                x_texto = 20 + ancho_m + 14
         lienzo.create_text(
             x_texto, centro, text=texto.upper(), anchor="w",
             fill=color_txt, font=fuente_txt,
@@ -11455,11 +11474,11 @@ class AppSAPE(tk.Tk):
             imagen = Image.new("RGB", (ancho, alto), fondo)
             halo = Image.new("RGB", (ancho, alto), fondo)
             xy = (11 - caja[0], 7 - caja[1])
-            ImageDraw.Draw(halo).text(xy, texto, font=fuente, fill=(124, 58, 237))
+            ImageDraw.Draw(halo).text(xy, texto, font=fuente, fill=(0, 255, 255))
             halo = halo.filter(ImageFilter.GaussianBlur(3 * tam / 16))
             imagen = Image.blend(imagen, halo, 0.9)
             dibujo = ImageDraw.Draw(imagen)
-            dibujo.text(xy, texto, font=fuente, fill=(124, 58, 237))
+            dibujo.text(xy, texto, font=fuente, fill=(0, 255, 255))
             if marco:
                 dibujo.rounded_rectangle(
                     (0, 0, ancho - 1, alto - 1), radius=4, outline=(42, 49, 58),
@@ -11508,7 +11527,7 @@ class AppSAPE(tk.Tk):
         marcar_reloj_ttr()
 
         panel_lateral = ctk.CTkFrame(
-            ventana, width=320, corner_radius=0, fg_color="#1A102E",
+            ventana, width=320, corner_radius=0, fg_color="#1C2128",
         )
         panel_lateral.pack(side=tk.LEFT, fill=tk.Y)
         panel_lateral.pack_propagate(False)
@@ -11527,26 +11546,26 @@ class AppSAPE(tk.Tk):
         ctk.CTkLabel(
             panel_lateral, text="RELACIÓN DE TRANSFORMACIÓN (TTR)",
             font=ctk.CTkFont(family="Segoe UI", size=11, weight="bold"),
-            text_color=TTR_ROSA_NEON, wraplength=280, justify="center",
+            text_color=TTR_MORADO_CLARO, wraplength=280, justify="center",
         ).pack(pady=(8, 14))
 
         pie_lateral = tk.Frame(
-            panel_lateral, bg="#1A102E",
-            highlightbackground="#3B2E5C", highlightthickness=1,
+            panel_lateral, bg="#1C2128",
+            highlightbackground="#1F2937", highlightthickness=1,
         )
         pie_lateral.pack(side="bottom", fill="x")
         for rotulo, valor, color, relleno in (
             ("ESTADO NORMA:", "ST-CT-007 Rev. 1", TTR_MORADO_CLARO, (10, 2)),
-            ("UNIDAD DE DIAG:", "ACTIVA", TTR_ROSA_NEON, (0, 10)),
+            ("UNIDAD DE DIAG:", "ACTIVA", TTR_MORADO_CLARO, (0, 10)),
         ):
-            fila_pie = tk.Frame(pie_lateral, bg="#1A102E")
+            fila_pie = tk.Frame(pie_lateral, bg="#1C2128")
             fila_pie.pack(fill="x", padx=14, pady=relleno)
             tk.Label(
-                fila_pie, text=rotulo, bg="#1A102E",
+                fila_pie, text=rotulo, bg="#1C2128",
                 fg="#9CA3AF", font=("Consolas", 9),
             ).pack(side="left")
             tk.Label(
-                fila_pie, text=valor, bg="#1A102E",
+                fila_pie, text=valor, bg="#1C2128",
                 fg=color, font=("Consolas", 9, "bold"),
             ).pack(side="right")
 
@@ -11647,7 +11666,7 @@ class AppSAPE(tk.Tk):
 
         paso_actual = tk.IntVar(ventana, value=1)
         botones_paso = []
-        fondo_lateral = "#1A102E"
+        fondo_lateral = "#1C2128"
 
         def titulo_seccion(texto):
             fila = tk.Frame(panel_lateral, bg=fondo_lateral)
@@ -11661,12 +11680,12 @@ class AppSAPE(tk.Tk):
             )
 
         def crear_boton_paso(numero, texto):
-            boton = _boton_paso_3d(
-                panel_lateral, fondo_lateral, numero, texto,
+            boton = _boton_menu_ra(
+                panel_lateral, texto,
                 lambda n=numero: self._cargar_paso_ttr(
                     n, paso_actual, contenedor, botones_paso,
                 ),
-                tema="morado",
+                marca=f"{numero:02d}", tema="morado", fondo=fondo_lateral,
             )
             botones_paso.append(boton)
             return boton
@@ -11680,31 +11699,25 @@ class AppSAPE(tk.Tk):
             fill="x", padx=25, pady=(14, 2),
         )
         titulo_seccion("RECURSOS")
-        ancho_recursos = _ancho_boton_ajustado((
-            ("", "MODOS DE PRUEBA"),
-            ("A", "FORMATOS"),
-            ("B", "OPERACIÓN"),
-            ("C", "RESUMEN"),
-        ))
-        _boton_paso_3d(
-            panel_lateral, fondo_lateral, 0, "MODOS DE PRUEBA",
+        _boton_menu_ra(
+            panel_lateral, "MODOS DE PRUEBA",
             lambda: self.mostrar_modos_ttr(ventana),
-            tema="morado", marca="", ajustar=True, ancho=ancho_recursos,
+            tema="morado_recurso", fondo=fondo_lateral,
         )
-        _boton_paso_3d(
-            panel_lateral, fondo_lateral, 0, "FORMATOS",
+        _boton_menu_ra(
+            panel_lateral, "FORMATOS",
             lambda: self.mostrar_anexo_a_ttr(ventana),
-            tema="morado", marca="A", ajustar=True, ancho=ancho_recursos,
+            tema="neon_morado", marca="A", fondo=fondo_lateral,
         )
-        _boton_paso_3d(
-            panel_lateral, fondo_lateral, 0, "OPERACIÓN",
+        _boton_menu_ra(
+            panel_lateral, "OPERACIÓN",
             lambda: self.mostrar_anexo_b_ttr(ventana),
-            tema="morado", marca="B", ajustar=True, ancho=ancho_recursos,
+            tema="neon_morado", marca="B", fondo=fondo_lateral,
         )
-        _boton_paso_3d(
-            panel_lateral, fondo_lateral, 0, "RESUMEN",
+        _boton_menu_ra(
+            panel_lateral, "RESUMEN",
             lambda: self.mostrar_anexo_c_ttr(ventana),
-            tema="morado", marca="C", ajustar=True, ancho=ancho_recursos,
+            tema="neon_morado", marca="C", fondo=fondo_lateral,
         )
 
         self._cargar_paso_ttr(1, paso_actual, contenedor, botones_paso)
@@ -11893,7 +11906,8 @@ class AppSAPE(tk.Tk):
         fila_titulo.pack(anchor="w")
         tk.Label(
             fila_titulo, text="Relación de Transformación",
-            bg=fondo, fg="#1A202C", font=("Segoe UI", 26, "bold"),
+            bg=fondo, fg="#1A202C",
+            font=("Segoe UI", 26, "bold"),
         ).pack(side="left")
         pastilla = ctk.CTkFrame(
             fila_titulo, fg_color=TTR_VISTA_PASTEL, corner_radius=12,
@@ -11905,8 +11919,15 @@ class AppSAPE(tk.Tk):
             text_color=TTR_MORADO_OSCURO, fg_color="transparent",
             font=ctk.CTkFont(family="Consolas", size=11, weight="bold"),
         ).pack(padx=10, pady=2)
+        if numero == 3:
+            tk.Label(
+                izquierda, text=self.datos_ttr["tipo_equipo"].get().strip(),
+                bg=fondo, fg="#334155", font=("Segoe UI", 16, "bold"),
+                anchor="w",
+            ).pack(anchor="w", pady=(2, 0))
         tk.Label(
-            izquierda, text=subtitulos[numero], bg=fondo, fg="#596573",
+            izquierda, text=subtitulos[numero],
+            bg=fondo, fg="#596573",
             font=("Segoe UI", 10), anchor="w",
         ).pack(anchor="w", pady=(4, 0))
         insignia = ctk.CTkFrame(
@@ -11924,16 +11945,12 @@ class AppSAPE(tk.Tk):
             text_color="#FFFFFF", fg_color="transparent",
             font=ctk.CTkFont(family="Segoe UI", size=12, weight="bold"),
         ).pack(side="left", padx=(0, 14), pady=8)
-        if numero in (3, 4):
-            _barra_degradada_ttr(bloque, fondo, pady=(12, 0))
-        else:
-            tk.Frame(bloque, bg=RA_VISTA_BORDE, height=2).pack(
-                fill="x", pady=(12, 0),
-            )
+        _barra_degradada_ttr(bloque, fondo, pady=(12, 0))
 
     def _pie_paso_ttr(self, padre, numero, comando):
         """Botón SIGUIENTE y leyenda del módulo, como en RA y FP."""
         fondo = RA_VISTA_FONDO
+        gris = "#596573"
         tk.Frame(padre, bg=RA_VISTA_BORDE, height=1).pack(
             fill="x", pady=(16, 10),
         )
@@ -11946,7 +11963,7 @@ class AppSAPE(tk.Tk):
         tk.Label(
             padre,
             text="Ingeniería de pruebas de alta tensión  ·  Subestaciones eléctricas",
-            bg=fondo, fg="#596573", font=("Consolas", 9),
+            bg=fondo, fg=gris, font=("Consolas", 9),
         ).pack(side="bottom", anchor="w", pady=(12, 0))
         tk.Label(
             padre, text=f"Módulo {numero:02d} / 04",
@@ -12020,52 +12037,61 @@ class AppSAPE(tk.Tk):
             fg="#94A3B8", font=fuente_opcion,
         ).grid(row=0, column=2, sticky="w", padx=(10, 0))
 
-        if usar_reg:
-            tk.Label(
-                formulario, text="Relación teórica nominal:", bg=RA_VISTA_FONDO,
-                fg="#334155", font=fuente,
-            ).grid(row=1, column=0, sticky="e", padx=(0, 20), pady=10)
-            tk.Label(
-                formulario,
-                text="—" if nominal is None else f"{nominal:.4f}",
-                bg=RA_VISTA_FONDO, fg=TTR_MORADO_OSCURO, font=fuente,
-            ).grid(row=1, column=1, sticky="w", pady=10)
-            tk.Label(
-                formulario,
-                text="Relación teórica en este tap (0.625 %/paso):",
-                bg=RA_VISTA_FONDO, fg="#334155", font=fuente,
-            ).grid(row=2, column=0, sticky="e", padx=(0, 20), pady=10)
-            etiqueta_rt_valor = tk.Label(
-                formulario, text="—", bg=RA_VISTA_FONDO, fg=TTR_MORADO_OSCURO,
-                font=fuente,
-            )
-            etiqueta_rt_valor.grid(row=2, column=1, sticky="w", pady=10)
-
-            def actualizar_rt_tap(*_a):
-                tap = int(datos["tap"].get())
-                rt_tap = _relacion_teorica_tap_ttr(nominal, tap, centro, True)
-                etiqueta_rt_valor.configure(
-                    text="—" if rt_tap is None else f"{rt_tap:.4f}",
-                )
-
-            combo_tap.configure(command=lambda _v=None: actualizar_rt_tap())
-            actualizar_rt_tap()
+        def rt_del_tap():
+            """RT del tap elegido, calculada con los kV de placa del paso 01."""
             if nominal is None:
-                tk.Label(
-                    formulario,
-                    text="Falta el kV de placa de este devanado en el paso 01.",
-                    bg="#FEF3C7", fg="#92400E", font=fuente_opcion,
-                    wraplength=420, justify="left", padx=10, pady=6,
-                ).grid(row=3, column=0, columnspan=2, sticky="w", pady=(0, 10))
-        else:
+                return None
+            tap = int(datos["tap"].get())
+            return _relacion_teorica_tap_ttr(nominal, tap, centro, usar_reg)
+
+        tk.Label(
+            formulario, text="Relación teórica nominal (kV de placa):",
+            bg=RA_VISTA_FONDO, fg="#334155", font=fuente,
+        ).grid(row=1, column=0, sticky="e", padx=(0, 20), pady=10)
+        tk.Label(
+            formulario,
+            text="—" if nominal is None else f"{nominal:.4f}",
+            bg=RA_VISTA_FONDO, fg=TTR_MORADO_OSCURO, font=fuente,
+        ).grid(row=1, column=1, sticky="w", pady=10)
+
+        tk.Label(
+            formulario,
+            text=(
+                "Relación teórica en este tap (0.625 %/paso):" if usar_reg
+                else "Relación teórica (sin regulación):"
+            ),
+            bg=RA_VISTA_FONDO, fg="#334155", font=fuente,
+        ).grid(row=2, column=0, sticky="e", padx=(0, 20), pady=10)
+        etiqueta_rt_valor = tk.Label(
+            formulario, text="—", bg=RA_VISTA_FONDO, fg=TTR_MORADO_OSCURO,
+            font=fuente,
+        )
+        etiqueta_rt_valor.grid(row=2, column=1, sticky="w", pady=10)
+
+        def obtener_rt(*_a):
+            rt = rt_del_tap()
+            etiqueta_rt_valor.configure(
+                text="—" if rt is None else f"{rt:.4f}",
+            )
+
+        combo_tap.configure(command=lambda _v=None: obtener_rt())
+        ctk.CTkButton(
+            formulario, text="OBTENER RELACIÓN TEÓRICA",
+            fg_color=TTR_MORADO, hover_color=TTR_MORADO_OSCURO,
+            text_color="white", font=ctk.CTkFont(size=13, weight="bold"),
+            height=34, command=obtener_rt,
+        ).grid(row=2, column=2, sticky="w", padx=(14, 0), pady=10)
+        obtener_rt()
+
+        if nominal is None:
             tk.Label(
-                formulario, text="Relación teórica de este tap:",
+                formulario, text="Relación teórica manual:",
                 bg=RA_VISTA_FONDO, fg="#334155", font=fuente,
-            ).grid(row=1, column=0, sticky="e", padx=(0, 20), pady=10)
+            ).grid(row=3, column=0, sticky="e", padx=(0, 20), pady=10)
             ctk.CTkEntry(
                 formulario, textvariable=datos["relacion_teorica_manual"],
                 width=140, font=fuente_opcion,
-            ).grid(row=1, column=1, sticky="w", pady=10)
+            ).grid(row=3, column=1, sticky="w", pady=10)
 
         tk.Label(
             formulario, text="Relación medida (TTR):", bg=RA_VISTA_FONDO,
@@ -12075,6 +12101,14 @@ class AppSAPE(tk.Tk):
             formulario, textvariable=datos["relacion_medida"],
             width=140, font=fuente_opcion,
         ).grid(row=4, column=1, sticky="w", pady=10)
+        if nominal is None:
+            tk.Label(
+                formulario,
+                text="Falta el kV de placa de este devanado en el paso 01; "
+                     "escriba la relación teórica a mano.",
+                bg="#FEF3C7", fg="#92400E", font=fuente_opcion,
+                wraplength=420, justify="left", padx=10, pady=6,
+            ).grid(row=5, column=0, columnspan=3, sticky="w", pady=(0, 10))
 
         tk.Label(
             frame,
@@ -12092,9 +12126,8 @@ class AppSAPE(tk.Tk):
         def calcular():
             for hijo in panel_resultado.winfo_children():
                 hijo.destroy()
-            tap = int(datos["tap"].get())
-            if usar_reg:
-                rt = _relacion_teorica_tap_ttr(nominal, tap, centro, True)
+            if nominal is not None:
+                rt = rt_del_tap()
             else:
                 rt = _leer_ttr(datos["relacion_teorica_manual"].get())
             rm = _leer_ttr(datos["relacion_medida"].get())
@@ -12102,8 +12135,8 @@ class AppSAPE(tk.Tk):
             if rt is None:
                 error = (
                     "Falta el kV de placa para calcular la relación "
-                    "teórica." if usar_reg else
-                    "Escriba la relación teórica de este tap."
+                    "teórica." if nominal is None else
+                    "No se pudo calcular la relación teórica."
                 )
             elif rm is None:
                 error = "Escriba la relación medida con el TTR."
@@ -12625,6 +12658,7 @@ class AppSAPE(tk.Tk):
         ).pack(side="left", fill="x", padx=12, pady=10)
 
     def _vectores_ttr(self, frame):
+        """Paso 03: diagrama fasorial y esquema de conexiones, cada uno con su guía."""
         datos = self.datos_ttr
         clave = _clave_vector_ttr(
             datos["tipo_equipo"].get(),
@@ -12639,11 +12673,7 @@ class AppSAPE(tk.Tk):
                 text_color="#475569", fg_color="transparent",
             ).pack(anchor="w")
             return
-        equipo = datos["tipo_equipo"].get().strip()
-        tk.Label(
-            frame, text=equipo, bg=RA_VISTA_FONDO, fg="#334155",
-            font=("Segoe UI", 18, "bold"),
-        ).pack(anchor="w", pady=(0, 10))
+        n = len(_VECTORES_TTR[clave][3])
         panel = ctk.CTkScrollableFrame(frame, fg_color=RA_VISTA_FONDO)
         panel.pack(fill="both", expand=True)
         prueba = self.prueba_ttr
@@ -12672,9 +12702,7 @@ class AppSAPE(tk.Tk):
             )
             return lienzo, leyenda
 
-        medicion, leyenda_mide = tarjeta(
-            "DIAGRAMA FASORIAL", _TTR_ROSA_PIE,
-        )
+        medicion, leyenda_mide = tarjeta("DIAGRAMA FASORIAL", _TTR_ROSA_PIE)
         conexiones, leyenda_cables = tarjeta(
             "ESQUEMA DE CONEXIONES", _TTR_ROSA_PIE,
         )
@@ -12723,8 +12751,8 @@ class AppSAPE(tk.Tk):
 
         def pintar():
             ficha = _VECTORES_TTR.get(clave)
-            n = len(ficha[3]) if ficha else 1
-            _margen, _paso, ancho = _medida_vector_ttr(n)
+            n_grupos = len(ficha[3]) if ficha else 1
+            _margen, _paso, ancho = _medida_vector_ttr(n_grupos)
             for lienzo, modo in ((medicion, "mide"), (conexiones, "cables")):
                 lienzo.configure(width=ancho)
                 _dibujar_vector_ttr(lienzo, clave, prueba, modo)
@@ -16871,14 +16899,19 @@ def _barra_degradada_fp(padre, fondo, **empaque):
 
 
 def _barra_degradada_ttr(padre, fondo, **empaque):
-    """Filo de color de las tarjetas de TTR: morado-rosa-azul."""
+    """Espectro de TTR: morado al inicio y rosa al final."""
     barra = tk.Canvas(padre, height=3, bg=fondo, highlightthickness=0, bd=0)
     barra.pack(fill="x", **empaque)
     paradas = (
-        (0.0, (109, 40, 217)),
-        (0.33, (124, 58, 237)),
-        (0.66, (255, 77, 255)),
-        (1.0, (109, 40, 217)),
+        (0.0, (124, 58, 237)),
+        (0.14, (75, 0, 130)),
+        (0.28, (0, 0, 255)),
+        (0.42, (0, 191, 255)),
+        (0.56, (0, 200, 83)),
+        (0.70, (255, 255, 0)),
+        (0.82, (255, 127, 0)),
+        (0.92, (255, 0, 0)),
+        (1.0, (255, 77, 255)),
     )
 
     def pintar(_evento=None):
