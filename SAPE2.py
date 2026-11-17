@@ -84,7 +84,8 @@ TTR_ROSA_NEON = "#FF4DFF"
 TTR_ROSA_PASTEL = "#F5A3D0"
 TTR_MORADO_PASTEL = "#C4B5FD"
 TTR_MORADO_TRAS = "#D8C4FB"
-TTR_AZUL_FASE = "#0369A1"
+TTR_MORADO_NEON = "#C724FF"
+TTR_AZUL_FASE = "#00FFFF"  # mismo neón que usa el resto de SAPE (_AZUL_NEON_SAPE).
 # Pastilla "Modo Diagnóstico" del encabezado de cada paso, igual que en RA/FP.
 TTR_VISTA_PASTEL = "#EDE9FE"
 TTR_VISTA_PASTEL_BORDE = "#C4B5FD"
@@ -1652,7 +1653,7 @@ _VECTORES_TTR = {
         ("vertical", "BAJA", "DELTA", "X1", "X2"),
     )),
 }
-_TTR_MAGENTA_BORNE = "#C026D3"
+_TTR_MAGENTA_BORNE = TTR_MORADO_NEON
 _TTR_ROSA_PIE = "#DB2777"
 
 
@@ -2170,9 +2171,7 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
         for tok, tinta in list(colores.items()):
             if tinta == "#F76707":
                 colores[tok] = TTR_ROSA_NEON
-    lienzo._tono_libre_ttr = (
-        TTR_MORADO if modo != "cables" else TTR_MORADO_PASTEL
-    )
+    lienzo._tono_libre_ttr = TTR_MORADO_NEON
     lienzo._colores_borne_ttr = None
     n = len(grupos)
     margen, paso, _ancho = _medida_vector_ttr(n)
@@ -7669,24 +7668,6 @@ class AppSAPE(tk.Tk):
                             break
 
             barra_tarjeta.bind("<Configure>", pintar_barra_datos)
-            cabecera_tarjeta = tk.Frame(tarjeta, bg="#FAFBFC")
-            cabecera_tarjeta.pack(fill="x", pady=(8, 0))
-            marca_datos = tk.Frame(
-                cabecera_tarjeta, bg="#F97316", width=14, height=14,
-            )
-            marca_datos.pack_propagate(False)
-            marca_datos.pack(side="left", padx=(22, 0), pady=14)
-            tk.Label(
-                cabecera_tarjeta, text="PARÁMETROS DE PLACA Y ENTORNO",
-                bg="#FAFBFC", fg="#1E293B",
-                font=("Segoe UI", 10, "bold"),
-            ).pack(side="left", padx=(10, 0))
-            tk.Label(
-                cabecera_tarjeta, text="*  Campos obligatorios",
-                bg="#FAFBFC", fg="#B45309",
-                font=("Segoe UI", 9),
-            ).pack(side="right", padx=22)
-            tk.Frame(tarjeta, bg="#E2E8F0", height=1).pack(fill="x")
             rejilla = ctk.CTkFrame(tarjeta, fg_color="transparent")
             rejilla.pack(fill="x", padx=18, pady=(6, 16))
 
@@ -8036,17 +8017,7 @@ class AppSAPE(tk.Tk):
             )
             poner_titulos(contenido, espacio=8)
             equipo = self.datos_prueba["tipo_equipo"].get().strip()
-            if equipo and numero == 3:
-                caja_equipo = tk.Frame(
-                    contenido, bg="#FFFFFF",
-                    highlightbackground="#E5E0D5", highlightthickness=1,
-                )
-                caja_equipo.pack(anchor="w", pady=(4, 16))
-                tk.Label(
-                    caja_equipo, text=equipo, bg="#FFFFFF", fg="#1E293B",
-                    font=("Segoe UI", 14, "bold"),
-                ).pack(padx=18, pady=8)
-            elif equipo:
+            if equipo and numero != 3:
                 tk.Label(
                     contenido, text=equipo,
                     bg="#F8FAFC", fg="#334155", font=("Segoe UI", 18, "bold"),
@@ -8849,26 +8820,6 @@ class AppSAPE(tk.Tk):
                         break
 
         barra.bind("<Configure>", pintar_degradado)
-
-        equipo = self.datos_prueba["tipo_equipo"].get().strip()
-        cabecera = tk.Frame(panel, bg="#FAFBFC")
-        cabecera.pack(fill="x", pady=(8, 0))
-        izquierda = tk.Frame(cabecera, bg="#FAFBFC")
-        izquierda.pack(side="left", padx=24, pady=16)
-        cuadro = tk.Frame(izquierda, bg="#F97316", width=14, height=14)
-        cuadro.pack_propagate(False)
-        cuadro.pack(side="left")
-        tk.Label(
-            izquierda,
-            text=(equipo or "SELECCIÓN DE PRUEBAS").upper(),
-            bg="#FAFBFC", fg="#1E293B",
-            font=("Segoe UI", 10, "bold"),
-        ).pack(side="left", padx=(10, 0))
-        tk.Label(
-            cabecera, text="Elija una fila para ver su esquema",
-            bg="#FAFBFC", fg="#64748B", font=("Segoe UI", 9),
-        ).pack(side="right", padx=24)
-        tk.Frame(panel, bg="#E2E8F0", height=1).pack(fill="x")
 
         tabla = tk.Frame(panel, bg="#FFFFFF")
         tabla.pack(fill="x")
@@ -13367,20 +13318,6 @@ class AppSAPE(tk.Tk):
         )
         tarjeta.pack(fill="both", expand=True)
         _barra_degradada_fp(tarjeta, RA_VISTA_TARJETA, padx=12, pady=(10, 0))
-        cabecera = tk.Frame(tarjeta, bg="#FAFBFC")
-        cabecera.pack(fill="x", pady=(8, 0))
-        marca = tk.Frame(cabecera, bg="#10B981", width=14, height=14)
-        marca.pack_propagate(False)
-        marca.pack(side="left", padx=(22, 0), pady=14)
-        tk.Label(
-            cabecera, text="PARÁMETROS DE PLACA Y ENTORNO",
-            bg="#FAFBFC", fg="#1E293B", font=("Segoe UI", 10, "bold"),
-        ).pack(side="left", padx=(10, 0))
-        tk.Label(
-            cabecera, text="*  Campos obligatorios",
-            bg="#FAFBFC", fg=FP_VISTA_VERDE_OSCURO, font=("Segoe UI", 9),
-        ).pack(side="right", padx=22)
-        tk.Frame(tarjeta, bg="#E2E8F0", height=1).pack(fill="x")
         rejilla = ctk.CTkFrame(tarjeta, fg_color="transparent")
         rejilla.pack(fill="x", padx=18, pady=(6, 16))
         rejilla.grid_columnconfigure(1, weight=1)
@@ -13544,8 +13481,6 @@ class AppSAPE(tk.Tk):
         fondo = RA_VISTA_FONDO
         pruebas = self._pruebas_fp()
         previa = self.prueba_fp
-        equipo = self.datos_fp["tipo_equipo"].get().strip()
-        clave_formato, _nombre, figura = self._formato_fp()
         columnas = (
             ("selector", ""), ("prueba", "PRUEBA"), ("kv", "kV"),
             ("modo", "MODO"), ("hv", "ENERGIZAR (HV)"),
@@ -13576,29 +13511,6 @@ class AppSAPE(tk.Tk):
         )
         panel.pack(fill="x", pady=(4, 4))
         _barra_degradada_fp(panel, "#FFFFFF", padx=10, pady=(8, 0))
-        cabecera = tk.Frame(panel, bg="#FAFBFC")
-        cabecera.pack(fill="x", pady=(8, 0))
-        izquierda = tk.Frame(cabecera, bg="#FAFBFC")
-        izquierda.pack(side="left", padx=24, pady=16)
-        cuadro = tk.Frame(izquierda, bg="#10B981", width=14, height=14)
-        cuadro.pack_propagate(False)
-        cuadro.pack(side="left")
-        tk.Label(
-            izquierda, text=equipo.upper(), bg="#FAFBFC", fg="#1E293B",
-            font=("Segoe UI", 10, "bold"),
-        ).pack(side="left", padx=(10, 0))
-        referencia = "  ·  ".join(
-            parte for parte in (clave_formato, figura) if parte
-        )
-        tk.Label(
-            izquierda, text=referencia, bg="#FAFBFC",
-            fg=FP_VISTA_VERDE_OSCURO, font=("Consolas", 10, "bold"),
-        ).pack(side="left", padx=(14, 0))
-        tk.Label(
-            cabecera, text="Elija una fila para ver su esquema",
-            bg="#FAFBFC", fg="#64748B", font=("Segoe UI", 9),
-        ).pack(side="right", padx=24)
-        tk.Frame(panel, bg="#E2E8F0", height=1).pack(fill="x")
 
         tabla = tk.Frame(panel, bg="#FFFFFF")
         tabla.pack(fill="x")
@@ -13938,24 +13850,6 @@ class AppSAPE(tk.Tk):
         topo = _topologia_fp(equipo, arreglo)
         fila_pie = tk.Frame(cuerpo, bg="#F6F3EB")
         fila_pie.pack(side="bottom", fill="x", pady=(8, 0))
-        caja_equipo = tk.Frame(
-            cuerpo, bg="#FFFFFF",
-            highlightbackground="#E5E0D5", highlightthickness=1,
-        )
-        caja_equipo.pack(anchor="w", pady=(4, 16))
-        tk.Label(
-            caja_equipo, text=equipo, bg="#FFFFFF", fg="#1E293B",
-            font=("Segoe UI", 14, "bold"),
-        ).pack(side="left", padx=(18, 10), pady=8)
-        tk.Label(
-            caja_equipo,
-            text=(
-                f"Prueba {prueba.get('prueba', '—')}  ·  "
-                f"{prueba.get('modo', '')}  ·  {prueba.get('kv', '')} kV"
-            ),
-            bg="#FFFFFF", fg=FP_VISTA_VERDE_OSCURO,
-            font=("Consolas", 11, "bold"),
-        ).pack(side="left", padx=(0, 18), pady=8)
         visor = tk.Frame(
             cuerpo, bg="#FFFFFF",
             highlightbackground="#E5E0D5", highlightthickness=1,

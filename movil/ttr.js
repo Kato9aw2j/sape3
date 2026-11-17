@@ -215,7 +215,7 @@ function colorBorneTtr(texto, colores) {
   if (colores[texto]) return colores[texto];
   const tokens = (texto.match(/[HXY]\d/gi) || []).map((t) => t.toUpperCase());
   for (const tok of tokens) if (colores[tok]) return colores[tok];
-  return "#7C3AED"; // morado libre (sin rol en esta prueba)
+  return "#C724FF"; // morado neón libre (sin rol en esta prueba), igual que SAPE2
 }
 
 // Ancho del lienzo según cuántos devanados (grupos) se dibujan. Igual que
