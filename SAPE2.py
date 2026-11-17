@@ -5916,8 +5916,9 @@ def _boton_paso_3d(
             "inactivo_hover": ("#384875", "#222E4F", "#171F33"),
             "inactivo_hundido": ("#111726", "#111726", "#111726"),
             "inactivo_labio": "#070A12",
-            "texto": "#FFFFFF",
+            "texto": "#55648A",
             "numero": "#FFFFFF",
+            "numero_apagado": "#3E4A68",
         },
         "verde": {
             "activo": ("#3DDC9A", "#0E9F6E", "#047857"),
@@ -5927,8 +5928,9 @@ def _boton_paso_3d(
             "inactivo_hover": ("#2A6B5E", "#1A4A42", "#12352F"),
             "inactivo_hundido": ("#0B2420", "#0B2420", "#0B2420"),
             "inactivo_labio": "#041614",
-            "texto": "#8FB8B0",
+            "texto": "#5C7D76",
             "numero": FP_ROJO_PASTEL,
+            "numero_apagado": "#3E5850",
         },
         "morado": {
             "activo": ("#A78BFA", "#7C3AED", "#6D28D9"),
@@ -5938,8 +5940,9 @@ def _boton_paso_3d(
             "inactivo_hover": ("#4C2D86", "#3B2468", "#2A1848"),
             "inactivo_hundido": ("#1A102E", "#1A102E", "#1A102E"),
             "inactivo_labio": "#0E081C",
-            "texto": "#C4B5FD",
+            "texto": "#6B5B8F",
             "numero": TTR_ROSA,
+            "numero_apagado": "#5B4B74",
         },
     }
     paleta = temas[tema]
@@ -6024,18 +6027,19 @@ def _boton_paso_3d(
         lienzo.delete("all")
         lienzo.create_image(0, 0, image=foto, anchor="nw")
         elegido = modo in ("activo", "hundido_activo")
+        encendido = elegido or modo == "inactivo_hover"
         if "numero" in paleta:
-            color_num = paleta["numero"]
-            color_txt = "#FFFFFF" if elegido or modo == "inactivo_hover" else paleta["texto"]
+            color_num = paleta["numero"] if encendido else paleta.get(
+                "numero_apagado", paleta["numero"],
+            )
+            color_txt = "#FFFFFF" if encendido else paleta["texto"]
         elif elegido:
             color_num, color_txt = "#FFD4A8", "#FFFFFF"
         elif modo == "inactivo_hover":
             color_num, color_txt = "#FFAA6E", "#FFFFFF"
         else:
             color_num, color_txt = "#D49A6A", paleta["texto"]
-        if tema == "morado":
-            color_txt = TTR_PLATA
-        elif tema == "azul" and elegido:
+        if tema == "azul" and elegido:
             color_num = RA_TEXTO_MOSTAZA
             color_txt = RA_TEXTO_MOSTAZA
         elif ajustar:
@@ -6307,9 +6311,7 @@ def _boton_menu_ra(
             else:
                 color_marco = (11, 13, 16)
                 color_centro = (26, 30, 36)
-                color_digito = (
-                    "#00E5FF" if tema in ("neon", "morado") else "#FFFFFF"
-                )
+                color_digito = "#3A4048"
             chip = Image.new("RGBA", (chip_w, chip_h), (0, 0, 0, 0))
             trazo = ImageDraw.Draw(chip)
             trazo.rounded_rectangle(
@@ -6320,7 +6322,7 @@ def _boton_menu_ra(
                 (margen_x, margen_y, margen_x + ancho_num - 1, margen_y + alto_num - 1),
                 radius=5, fill=color_centro + (255,),
             )
-            if estado["activo"] or tema in ("neon", "morado"):
+            if estado["activo"]:
                 from PIL import ImageFont, ImageFilter
                 fuente_brillo = ImageFont.truetype(
                     r"C:\Windows\Fonts\consolab.ttf", 15,
