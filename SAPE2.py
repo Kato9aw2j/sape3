@@ -1655,6 +1655,11 @@ _VECTORES_TTR = {
 }
 _TTR_MAGENTA_BORNE = TTR_MORADO_NEON
 _TTR_ROSA_PIE = "#DB2777"
+# Fondo negro del diagrama fasorial / esquema de conexiones (paso 03 TTR) y
+# el gris casi blanco que sustituye al "negro" de las pinzas sobre ese fondo
+# (el negro real quedaría invisible sobre negro).
+_TTR_FONDO_VECTOR = "#000000"
+_TTR_NEGRO_VISIBLE = "#E5E7EB"
 
 
 def _clave_vector_ttr(equipo, configuracion, conexion):
@@ -1721,8 +1726,8 @@ def _estilos_vector_ttr(prueba, modo):
                 colores.setdefault(alias, "#F76707")
         return colores, roles
     for campo, rol, color in (
-        ("cn", "CN", "#000000"),
-        ("gn", "GN", "#000000"),
+        ("cn", "CN", _TTR_NEGRO_VISIBLE),
+        ("gn", "GN", _TTR_NEGRO_VISIBLE),
         ("cr", "CR", "#FF0000"),
         ("gr", "GR", "#FF0000"),
     ):
@@ -1754,7 +1759,7 @@ def _color_etiqueta_ttr(texto, colores, libre=None):
     for tok in _tokens_borne_ttr(texto):
         if tok in colores:
             hallados.append(colores[tok])
-    for tinta in ("#FF0000", "#DC143C", "#000000", "#111111", TTR_ROSA_NEON, "#F76707"):
+    for tinta in ("#FF0000", "#DC143C", _TTR_NEGRO_VISIBLE, TTR_ROSA_NEON, "#F76707"):
         if tinta in hallados:
             return tinta
     return libre
@@ -1801,10 +1806,11 @@ def _roles_etiqueta_ttr(texto, roles):
 
 
 def _color_rol_ttr(rol):
-    """CN y GN en negro; CR y GR en rojo intenso."""
+    """CN y GN en gris claro (negro sería invisible sobre el fondo negro);
+    CR y GR en rojo intenso."""
     if "CR" in rol or "GR" in rol:
         return "#FF0000"
-    return "#000000"
+    return _TTR_NEGRO_VISIBLE
 
 
 def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_arriba=False):
@@ -1818,7 +1824,7 @@ def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_a
         font=("Consolas", 11, "bold"),
     )
     x1, y1, x2, y2 = lienzo.bbox(marca)
-    fondo = lienzo.create_rectangle(x1 - 3, y1 - 1, x2 + 3, y2 + 1, fill="#FFFFFF", outline="")
+    fondo = lienzo.create_rectangle(x1 - 3, y1 - 1, x2 + 3, y2 + 1, fill=_TTR_FONDO_VECTOR, outline="")
     lienzo.tag_raise(marca)
     rol = _roles_etiqueta_ttr(texto, roles)
     if not rol:
@@ -1829,13 +1835,13 @@ def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_a
         font=("Segoe UI", 9, "bold"),
     )
     rx1, ry1, rx2, ry2 = lienzo.bbox(etiqueta)
-    lienzo.create_rectangle(rx1 - 2, ry1 - 1, rx2 + 2, ry2 + 1, fill="#FFFFFF", outline="")
+    lienzo.create_rectangle(rx1 - 2, ry1 - 1, rx2 + 2, ry2 + 1, fill=_TTR_FONDO_VECTOR, outline="")
     lienzo.tag_raise(etiqueta)
     lienzo.tag_raise(marca)
     lienzo.tag_lower(fondo)
 
 
-_COLOR_LINEA_TTR = TTR_MORADO
+_COLOR_LINEA_TTR = TTR_MORADO_NEON
 
 
 def _linea_ttr(
@@ -1859,7 +1865,7 @@ def _linea_ttr(
     if mide_a and mide_b:
         trazo(x1, y1, x2, y2, base, True)
         ca = cb = TTR_ROSA_NEON
-    elif {ca, cb} <= {"#000000", "#111111", "#FF0000"} and ca != cb:
+    elif {ca, cb} <= {_TTR_NEGRO_VISIBLE, "#FF0000"} and ca != cb:
         mx = (x1 + x2) / 2
         my = (y1 + y2) / 2
         trazo(x1, y1, mx, my, ca)
@@ -1872,7 +1878,7 @@ def _linea_ttr(
 
 def _puntos_ttr(lienzo, nodos):
     radio = 4.5
-    rango = {TTR_ROSA_NEON: 4, "#FF0000": 3, "#000000": 2, "#111111": 2}
+    rango = {TTR_ROSA_NEON: 4, "#FF0000": 3, _TTR_NEGRO_VISIBLE: 2}
     grupos = {}
     for x, y, mide, color in nodos:
         clave = (round(x, 1), round(y, 1))
@@ -1889,7 +1895,7 @@ def _puntos_ttr(lienzo, nodos):
             x - radio, y - radio, x + radio, y + radio,
             fill=color, outline=color,
         )
-        if color == "#000000":
+        if color == _TTR_NEGRO_VISIBLE:
             lienzo.addtag_withtag("parpadeo_negro", punto)
         elif color == "#FF0000":
             lienzo.addtag_withtag("parpadeo_rojo", punto)
@@ -2055,7 +2061,7 @@ def _leyenda_conexiones_ttr(prueba):
     return filas
 
 
-_AZUL_GUIA_TTR = "#0369A1"
+_AZUL_GUIA_TTR = "#38BDF8"
 
 
 def _letra_devanado_ttr(*bornes):
@@ -2085,9 +2091,10 @@ def _lado_devanado_ttr(letra):
     }.get(letra, "lado —")
 
 
-def _texto_guia(padre, texto, color="#334155", negrita=False, arriba=0):
+def _texto_guia(padre, texto, color=_TTR_NEGRO_VISIBLE, negrita=False, arriba=0):
     tk.Label(
-        padre, text=texto, bg="#FFFFFF", fg=color, anchor="w", justify="left",
+        padre, text=texto, bg=_TTR_FONDO_VECTOR, fg=color, anchor="w",
+        justify="left",
         font=("Segoe UI", 11, "bold" if negrita else "normal"),
         wraplength=300,
     ).pack(anchor="w", pady=(arriba, 0))
@@ -2132,16 +2139,16 @@ def _pintar_guia_conexiones_ttr(marco, prueba, clave, medicion):
     if not prueba:
         return
     if medicion == "Inversa":
-        exc = (("GN", "negro", prueba.get("gn"), "#000000"),
+        exc = (("GN", "negro", prueba.get("gn"), _TTR_NEGRO_VISIBLE),
                ("GR", "rojo", prueba.get("gr"), "#FF0000"))
-        lec = (("CN", "negro", prueba.get("cn"), "#000000"),
+        lec = (("CN", "negro", prueba.get("cn"), _TTR_NEGRO_VISIBLE),
                ("CR", "rojo", prueba.get("cr"), "#FF0000"))
         letra_exc = _letra_devanado_ttr(prueba.get("gn"), prueba.get("gr"))
         letra_lec = _letra_devanado_ttr(prueba.get("cn"), prueba.get("cr"))
     else:
-        exc = (("CN", "negro", prueba.get("cn"), "#000000"),
+        exc = (("CN", "negro", prueba.get("cn"), _TTR_NEGRO_VISIBLE),
                ("CR", "rojo", prueba.get("cr"), "#FF0000"))
-        lec = (("GN", "negro", prueba.get("gn"), "#000000"),
+        lec = (("GN", "negro", prueba.get("gn"), _TTR_NEGRO_VISIBLE),
                ("GR", "rojo", prueba.get("gr"), "#FF0000"))
         letra_exc = _letra_devanado_ttr(prueba.get("cn"), prueba.get("cr"))
         letra_lec = _letra_devanado_ttr(prueba.get("gn"), prueba.get("gr"))
@@ -2189,7 +2196,7 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
         if modo != "cables":
             return None
         tinta = _color_etiqueta_ttr(texto, colores, "")
-        if tinta in ("#000000", "#FF0000"):
+        if tinta in (_TTR_NEGRO_VISIBLE, "#FF0000"):
             return tinta
         return None
 
@@ -12637,22 +12644,22 @@ class AppSAPE(tk.Tk):
 
         def tarjeta(titulo, color):
             caja = tk.Frame(
-                panel, bg="#FFFFFF",
-                highlightbackground="#E2E8F0", highlightthickness=1,
+                panel, bg=_TTR_FONDO_VECTOR,
+                highlightbackground="#27272A", highlightthickness=1,
             )
             caja.pack(fill="x", pady=(0, 12))
             tk.Label(
-                caja, text=titulo, bg="#FFFFFF", fg=color,
+                caja, text=titulo, bg=_TTR_FONDO_VECTOR, fg=color,
                 font=("Segoe UI", 12, "bold"),
             ).pack(anchor="w", padx=14, pady=(8, 0))
-            cuerpo = tk.Frame(caja, bg="#FFFFFF")
+            cuerpo = tk.Frame(caja, bg=_TTR_FONDO_VECTOR)
             cuerpo.pack(fill="x", padx=6, pady=(0, 8))
             lienzo = tk.Canvas(
-                cuerpo, width=520, height=280, bg="#FFFFFF",
+                cuerpo, width=520, height=280, bg=_TTR_FONDO_VECTOR,
                 highlightthickness=0,
             )
             lienzo.pack(side="left", anchor="n")
-            leyenda = tk.Frame(cuerpo, bg="#FFFFFF")
+            leyenda = tk.Frame(cuerpo, bg=_TTR_FONDO_VECTOR)
             leyenda.pack(
                 side="left", anchor="n", fill="both", expand=True,
                 padx=(8, 16), pady=(18, 8),
@@ -12679,7 +12686,7 @@ class AppSAPE(tk.Tk):
 
         def aplicar_parpadeo():
             linea_visible = self._vector_mide_visible
-            tinta = TTR_MORADO if linea_visible else "#FFFFFF"
+            tinta = TTR_MORADO if linea_visible else _TTR_FONDO_VECTOR
             fase = "hidden" if linea_visible else "normal"
             try:
                 if not medicion.winfo_exists():
@@ -12698,8 +12705,8 @@ class AppSAPE(tk.Tk):
                     return False
             except tk.TclError:
                 return False
-            negro = "#000000" if linea_visible else "#FFFFFF"
-            rojo = "#FF0000" if linea_visible else "#FFFFFF"
+            negro = _TTR_NEGRO_VISIBLE if linea_visible else _TTR_FONDO_VECTOR
+            rojo = "#FF0000" if linea_visible else _TTR_FONDO_VECTOR
             for item in conexiones.find_withtag("parpadeo_negro"):
                 conexiones.itemconfigure(item, fill=negro, outline=negro)
             for item in conexiones.find_withtag("parpadeo_rojo"):
