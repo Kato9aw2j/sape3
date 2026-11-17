@@ -405,7 +405,7 @@ function pasoFp3() {
       <button data-modofp="mide" class="${estado.modoFp === "conexiones" ? "" : "activo"}">Medición</button>
       <button data-modofp="conexiones" class="${estado.modoFp === "conexiones" ? "activo" : ""}">Conexiones</button>
     </div>
-    <div class="diagrama">${dibujarDiagramaFp(d.equipo, pr, estado.modoFp)}</div>
+    <div class="diagrama">${dibujarDiagramaFp(d, pr, estado.modoFp)}</div>
     <h3>Conexiones de esta prueba</h3>
     <div class="chips" style="justify-content:center;margin-bottom:6px;">
       ${chipFp("HV", "LINEA", pr.hv)}
