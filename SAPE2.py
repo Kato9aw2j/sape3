@@ -6401,13 +6401,12 @@ def _boton_menu_ra(
             letra = resplandor
             for capa in (resplandor, halo, halo, medio, nucleo, caliente):
                 letra = Image.alpha_composite(letra, capa)
-            if tema == "neon_morado":
-                placa = Image.new("RGBA", (lw, lh), (0, 0, 0, 255))
-                ImageDraw.Draw(placa).rounded_rectangle(
-                    (0, 0, lw - 1, lh - 1), radius=6,
-                    fill=(5, 5, 5, 255), outline=(26, 30, 36, 255), width=2,
-                )
-                letra = Image.alpha_composite(placa, letra)
+            placa = Image.new("RGBA", (lw, lh), (0, 0, 0, 255))
+            ImageDraw.Draw(placa).rounded_rectangle(
+                (0, 0, lw - 1, lh - 1), radius=6,
+                fill=(5, 5, 5, 255), outline=(26, 30, 36, 255), width=2,
+            )
+            letra = Image.alpha_composite(placa, letra)
             foto_letra = ImageTk.PhotoImage(letra)
             estado["foto_letra"] = foto_letra
             if tema == "neon_morado":
