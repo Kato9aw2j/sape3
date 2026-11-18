@@ -962,6 +962,7 @@ function vistaAnexoA() {
       )}
       ${seccionAnexo("Orden de trabajo", CAMPOS_ANEXO_RA.orden, v)}
       ${seccionAnexo("Equipo de medición utilizado", CAMPOS_ANEXO_RA.medicion, v)}
+      ${diagramaAnexoRa(d.equipo, d) ? `<h3>Diagrama del equipo</h3><div class="diagrama">${diagramaAnexoRa(d.equipo, d)}</div>` : ""}
       <h3>Lecturas (MΩ) — todas las pruebas de este equipo</h3>
       <p class="nota">Sin letra son MΩ. Agregue G para gigaohms o T para teraohms.</p>
       <div class="tabla-anexo"><table>
@@ -1018,6 +1019,7 @@ function vistaAnexoAFp() {
         ${CAMPOS_ANEXO_FP.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v)).join("")}
       </div>
       ${seccionAnexo("Equipo de medición utilizado", CAMPOS_ANEXO_FP.medicion, v)}
+      ${diagramaAnexoFp(d.equipo, d) ? `<h3>Diagrama del equipo</h3><div class="diagrama">${diagramaAnexoFp(d.equipo, d)}</div>` : ""}
       <h3>Lecturas — todas las pruebas de este equipo</h3>
       <div class="tabla-anexo"><table>
         <thead><tr><th>Prueba</th><th>kV</th><th>mA</th><th>W</th><th>Dictamen</th></tr></thead>
