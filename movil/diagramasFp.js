@@ -106,18 +106,26 @@ function _dibujarPilaFp(equipoNombre, arreglo, pr, modo) {
       texto(x + 36, 16, ROTULO_FP.TIERRA, { ancla: "start", color: COLOR_FP.TIERRA, clase: "pulso" });
     }
   };
-  // Capacitor con sus dos tramos de cable; parpadea si es el que se mide.
+  // Capacitor con sus dos tramos de cable (con hueco real entre placas,
+  // igual que el símbolo "cap" de _dibujarEsquemaFp); parpadea si se mide.
   const capacitor = (codigo, x0, y0, x1, y1, etiqueta) => {
     const medido = medidos.has(codigo);
     const color = medido ? COLOR_FP.medido : COLOR_FP.cable;
     const horizontal = y0 === y1;
+    const largo = Math.hypot(x1 - x0, y1 - y0) || 1;
+    const ux = (x1 - x0) / largo, uy = (y1 - y0) / largo;
     const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
+    const hueco = 5, placa = 9;
+    const cables = (
+      `M${x0} ${y0} L${mx - ux * hueco} ${my - uy * hueco} ` +
+      `M${mx + ux * hueco} ${my + uy * hueco} L${x1} ${y1}`
+    );
     const placas = horizontal
-      ? `M${mx - 4} ${my - 9} V${my + 9} M${mx + 4} ${my - 9} V${my + 9}`
-      : `M${mx - 9} ${my - 4} H${mx + 9} M${mx - 9} ${my + 4} H${mx + 9}`;
+      ? `M${mx - hueco} ${my - placa} V${my + placa} M${mx + hueco} ${my - placa} V${my + placa}`
+      : `M${mx - placa} ${my - hueco} H${mx + placa} M${mx - placa} ${my + hueco} H${mx + placa}`;
     partes.push(
       `<g class="${medido ? "pulso" : ""}">` +
-      `<path d="M${x0} ${y0} L${x1} ${y1}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round"/>` +
+      `<path d="${cables}" fill="none" stroke="${color}" stroke-width="3" stroke-linecap="round"/>` +
       `<path d="${placas}" stroke="${color}" stroke-width="3" fill="none"/>` +
       `<text x="${etiqueta.x}" y="${etiqueta.y}" text-anchor="${etiqueta.ancla || "middle"}" fill="${color}" font-size="11" font-weight="700">${_escFp(codigo)}</text>` +
       `</g>`
