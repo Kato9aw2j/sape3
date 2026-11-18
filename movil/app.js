@@ -43,11 +43,13 @@ const estado = {
   tapTtr: null,
   lecturasTtr: { relacionTeoricaManual: "", relacionMedida: "" },
   resultadoTtr: null,
-  // Anexo A — Formatos de Prueba (captura de todas las pruebas del equipo)
+  // Anexo A — Formatos de Prueba (captura de todas las pruebas del equipo,
+  // igual que el Anexo A de PC: identificación, condiciones, datos propios
+  // del equipo, orden de trabajo, equipo de medición y firmas).
   lecturasAnexoRa: {},
-  firmasRa: { tecnico: "", puesto: "", fecha: "", supervisor: "" },
+  datosAnexoRa: {},
   lecturasAnexoFp: {},
-  firmasFp: { tecnico: "", puesto: "", fecha: "", supervisor: "" },
+  datosAnexoFp: {},
   anexoEstado: "",
 };
 
@@ -74,8 +76,8 @@ function recordar() {
     datosFp: estado.datosFp, pruebaFp: estado.pruebaFp, lecturasFp: estado.lecturasFp,
     datosTtr: estado.datosTtr, pasoTtr: estado.pasoTtr, pruebaTtr: estado.pruebaTtr,
     tapTtr: estado.tapTtr, lecturasTtr: estado.lecturasTtr,
-    lecturasAnexoRa: estado.lecturasAnexoRa, firmasRa: estado.firmasRa,
-    lecturasAnexoFp: estado.lecturasAnexoFp, firmasFp: estado.firmasFp,
+    lecturasAnexoRa: estado.lecturasAnexoRa, datosAnexoRa: estado.datosAnexoRa,
+    lecturasAnexoFp: estado.lecturasAnexoFp, datosAnexoFp: estado.datosAnexoFp,
   });
 }
 
@@ -98,9 +100,9 @@ if (previo && previo.datosTtr) {
 }
 if (previo) {
   Object.assign(estado.lecturasAnexoRa, previo.lecturasAnexoRa || {});
-  Object.assign(estado.firmasRa, previo.firmasRa || {});
+  Object.assign(estado.datosAnexoRa, previo.datosAnexoRa || {});
   Object.assign(estado.lecturasAnexoFp, previo.lecturasAnexoFp || {});
-  Object.assign(estado.firmasFp, previo.firmasFp || {});
+  Object.assign(estado.datosAnexoFp, previo.datosAnexoFp || {});
 }
 
 const esc = (texto) =>
@@ -772,15 +774,143 @@ function vistaTtr() {
 }
 
 // ---------- Anexo A — Formatos de Prueba (captura en una sola pantalla) ----------
+// Mismos campos que mostrar_anexo_a_formatos / mostrar_anexo_a_fp en SAPE2.py:
+// identificación, condiciones, datos propios del equipo, orden de trabajo,
+// equipo de medición y firmas — no solo las lecturas.
+
+const CAMPOS_ANEXO_RA = {
+  identificacion: [
+    ["nomenclatura", "Nomenclatura"], ["subestacion", "Subestación (S.E.)"],
+    ["marca", "Marca"], ["modelo", "Modelo"], ["serie", "No. de Serie"],
+    ["mva", "MVA"], ["fabricacion", "Año de Fabricación"],
+    ["nivel", "Nivel de Tensión (kV)"],
+  ],
+  condiciones: [
+    ["voltajeCd", "Voltaje de prueba CD (kV)"],
+    ["aceiteTemp", "Temp. Aceite (°C)"], ["clima", "Clima"],
+  ],
+  tc: [
+    ["relacion", "Relación de transformación"],
+    ["iPrimaria", "Corriente primaria (A)"],
+    ["iSecundaria", "Corriente secundaria (A)"],
+    ["exactitud", "Clase de exactitud"], ["burden", "Carga / Burden (VA)"],
+    ["nbai", "NBAI (kV)"], ["frecuencia", "Frecuencia (Hz)"],
+  ],
+  tp: [
+    ["relacion", "Relación de transformación"],
+    ["vPrimaria", "Tensión primaria (kV)"],
+    ["vSecundaria", "Tensión secundaria (V)"],
+    ["exactitud", "Clase de exactitud"], ["burden", "Carga / Burden (VA)"],
+    ["nbai", "NBAI (kV)"], ["frecuencia", "Frecuencia (Hz)"],
+  ],
+  rotativa: [
+    ["vNominal", "Tensión nominal (kV)"], ["iNominal", "Corriente nominal (A)"],
+    ["rpm", "Velocidad (RPM)"], ["fpNominal", "Factor de potencia"],
+    ["frecuencia", "Frecuencia (Hz)"],
+    ["claseAislamiento", "Clase de aislamiento"],
+    ["tipoMaquina", "Tipo de máquina (Generador/Motor)"],
+  ],
+  reactor: [
+    ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "SubÁrea"],
+    ["mvar", "Potencia reactiva (MVAr)"],
+    ["vNominal", "Tensión nominal (kV)"], ["iNominal", "Corriente nominal (A)"],
+    ["reactancia", "Reactancia (%)"], ["claseEnf", "Clase de enfriamiento"],
+  ],
+  transformador: [
+    ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "SubÁrea"],
+    ["claseEnf", "Clase de enfriamiento"],
+    ["anioServicio", "Año puesta en servicio"], ["taps", "# Taps ± %"],
+    ["kvAt", "kV nom A.T."], ["kvBt", "kV nom B.T."],
+    ["kvTerc", "kV nom Terciario"],
+    ["z1", "%Z 1"], ["z1Mva", "a (MVA) 1"], ["z1Kv", "kV 1"],
+    ["z2", "%Z 2"], ["z2Mva", "a (MVA) 2"], ["z2Kv", "kV 2"],
+    ["z3", "%Z 3"], ["z3Mva", "a (MVA) 3"], ["z3Kv", "kV 3"],
+  ],
+  orden: [
+    ["ot", "O.T."], ["fecha", "Fecha"], ["programado", "Programado"],
+    ["ps", "P.S."], ["falla", "Falla"],
+  ],
+  medicion: [
+    ["instModelo", "Modelo"], ["instMarca", "Marca"],
+    ["instSerie", "No. Serie"], ["instCal", "Fecha Calibración"],
+    ["instVenc", "Fecha Vencimiento"], ["instEimp", "No. Inv. EIMP"],
+  ],
+  cierre: [["ultimaMedicion", "Fecha de la última medición"]],
+  firmas: [
+    ["realizo", "Realizó — Nombre y firma"],
+    ["reviso", "Revisó — Nombre y firma"],
+    ["aprobo", "Aprobó — Nombre y firma"],
+  ],
+};
+
+const CAMPOS_ANEXO_FP = {
+  identificacion: [
+    ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "SubÁrea"],
+    ["subestacion", "Subestación"], ["nomenclatura", "Nomenclatura"],
+    ["marca", "Marca"], ["modelo", "Modelo / Tipo"],
+    ["serie", "No. de Serie"], ["fabricacion", "Año de Fabricación"],
+    ["servicio", "Año Puesta en Servicio"],
+  ],
+  potencia: [
+    ["mva", "MVA"], ["claseEnf", "Clase de enfriamiento"], ["taps", "# Taps"],
+    ["kvAt", "kV nom. A.T."], ["kvBt", "kV nom. B.T."],
+    ["kvTerc", "kV nom. Terciario"], ["z", "% Z"],
+    ["conAt", "Tipo de conexión A.T. (Y/Δ)"],
+    ["conBt", "Tipo de conexión B.T. (Y/Δ)"],
+    ["conTe", "Tipo de conexión Terciario (Y/Δ)"],
+  ],
+  apartarrayos: [
+    ["nivel", "Tensión nominal (kV)"], ["mcov", "MCOV (kV)"],
+    ["secciones", "Número de secciones"],
+  ],
+  cables: [
+    ["nivel", "Clase (kV)"], ["calibre", "Calibre"], ["longitud", "Longitud (m)"],
+  ],
+  instrumento: [
+    ["nivel", "Tensión nominal (kV)"], ["relacion", "Relación"],
+    ["exactitud", "Clase de exactitud"],
+    ["capPlaca", "Capacitancia de placa (pF) — solo TPCs"],
+  ],
+  condiciones: [
+    ["tempDevanado", "Temp. Devanado (°C)"], ["clima", "Clima"],
+    ["motivo", "Motivo de la prueba"], ["ot", "Orden de Trabajo (O.T.)"],
+    ["fecha", "Fecha"],
+  ],
+  medicion: [
+    ["instMarca", "Marca"], ["instModelo", "Modelo"],
+    ["instSerie", "Núm. Serie"], ["instEimp", "No. Inv. EIMP"],
+    ["instCal", "Fecha de Calibración"], ["instVenc", "Fecha Vencimiento"],
+    ["ultimaPrueba", "Fecha última prueba"],
+  ],
+  firmas: [
+    ["observaciones", "Observaciones"],
+    ["realizo", "Realizó — Nombre y firma"],
+    ["reviso", "Revisó — Nombre y firma"],
+    ["aprobo", "Aprobó — Nombre y firma"],
+  ],
+};
 
 function badgeEstadoAnexo(res) {
   if (!res || res.error) return `<span class="badge-anexo">—</span>`;
   return `<span class="badge-anexo ${res.estado}">${esc(res.estado)}</span>`;
 }
 
-function campoFirma(etiqueta, clave, grupo, extra) {
+function campoAnexo(clave, etiqueta, valores) {
   return `<label class="campo"><span>${esc(etiqueta)}</span>
-    <input data-firma="${grupo}:${clave}" value="${esc(estado[grupo][clave])}" ${extra || ""}></label>`;
+    <input data-anexodato="${clave}" value="${esc(valores[clave] || "")}"></label>`;
+}
+
+function seccionAnexo(titulo, lista, valores) {
+  if (!lista || !lista.length) return "";
+  return `<h3>${esc(titulo)}</h3>
+    <div class="rejilla">${lista.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, valores)).join("")}</div>`;
+}
+
+function bloqueIdentificacionRa(familia) {
+  if (familia === "tc") return CAMPOS_ANEXO_RA.tc;
+  if (familia === "tp") return CAMPOS_ANEXO_RA.tp;
+  if (familia === "rotativa") return CAMPOS_ANEXO_RA.rotativa;
+  return null;
 }
 
 function vistaAnexoA() {
@@ -788,6 +918,7 @@ function vistaAnexoA() {
   const eq = equipoDe(d.equipo);
   const lista = pruebasDe(d);
   const lec = estado.lecturasAnexoRa;
+  const v = estado.datosAnexoRa;
   const filas = lista.map((pr, i) => {
     const l = lec[i] || (lec[i] = { r30: "", r1: "", r10: "" });
     const res = dictamen(d, pr, l);
@@ -804,40 +935,59 @@ function vistaAnexoA() {
         <td>${badgeEstadoAnexo(res)}</td>
       </tr>`;
   }).join("");
+  const esReactor = d.equipo === "reactor";
+  const datosEquipo = esReactor
+    ? CAMPOS_ANEXO_RA.reactor
+    : (eq.familia === "potencia" ? CAMPOS_ANEXO_RA.transformador : bloqueIdentificacionRa(eq.familia));
   return `
     <header class="barra">
       <button class="atras" data-ir="ra" aria-label="Volver">‹</button>
       <div><b>Anexo A · Formatos de Prueba</b><small>${esc(eq.nombre)}</small></div>
     </header>
     <main class="contenido anexo-a">
-      <h3>Datos del equipo</h3>
+      ${seccionAnexo("Datos de identificación", CAMPOS_ANEXO_RA.identificacion, v)}
+      <h3>Condiciones de la prueba</h3>
       <div class="rejilla">
         <div class="dato"><small>Temp. ambiente</small><b>${esc(d.tempAmbiente) || "—"} °C</b></div>
         <div class="dato"><small>Humedad relativa</small><b>${esc(d.humedad) || "—"} %</b></div>
         <div class="dato"><small>Temp. del devanado</small><b>${esc(d.tempDevanado) || "—"} °C</b></div>
+        ${CAMPOS_ANEXO_RA.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v)).join("")}
       </div>
+      ${seccionAnexo(
+        eq.familia === "rotativa" ? "Datos de la máquina rotatoria"
+          : esReactor ? "Datos del reactor"
+          : eq.familia === "potencia" ? "Datos del transformador"
+          : eq.familia === "tc" ? "Datos del TC" : "Datos del TP / TPC",
+        datosEquipo, v,
+      )}
+      ${seccionAnexo("Orden de trabajo", CAMPOS_ANEXO_RA.orden, v)}
+      ${seccionAnexo("Equipo de medición utilizado", CAMPOS_ANEXO_RA.medicion, v)}
       <h3>Lecturas (MΩ) — todas las pruebas de este equipo</h3>
       <p class="nota">Sin letra son MΩ. Agregue G para gigaohms o T para teraohms.</p>
       <div class="tabla-anexo"><table>
         <thead><tr><th>Prueba</th><th>30 s</th><th>1 min</th><th>10 min</th><th>Dictamen</th></tr></thead>
         <tbody>${filas}</tbody>
       </table></div>
-      <h3>Firmas</h3>
-      <div class="rejilla">
-        ${campoFirma("Técnico", "tecnico", "firmasRa")}
-        ${campoFirma("Puesto", "puesto", "firmasRa")}
-        ${campoFirma("Fecha", "fecha", "firmasRa", 'type="date"')}
-        ${campoFirma("Supervisor", "supervisor", "firmasRa")}
-      </div>
+      ${seccionAnexo("Cierre", CAMPOS_ANEXO_RA.cierre, v)}
+      ${seccionAnexo("Firmas", CAMPOS_ANEXO_RA.firmas, v)}
       <button class="primario" data-accion="guardar-anexo-a">Guardar Anexo A</button>
       <p class="nota">${esc(estado.anexoEstado)}</p>
     </main>`;
+}
+
+function bloqueIdentificacionFp(equipo) {
+  if (esPotenciaFp(equipo)) return CAMPOS_ANEXO_FP.potencia;
+  if (equipo.includes("Apartarrayos")) return CAMPOS_ANEXO_FP.apartarrayos;
+  if (equipo.includes("Cables")) return CAMPOS_ANEXO_FP.cables;
+  if (!equipo.includes("Aceite")) return CAMPOS_ANEXO_FP.instrumento;
+  return null;
 }
 
 function vistaAnexoAFp() {
   const d = estado.datosFp;
   const lista = filasFp(d.equipo, d.arreglo);
   const lec = estado.lecturasAnexoFp;
+  const v = estado.datosAnexoFp;
   const filas = lista.map((pr, i) => {
     const l = lec[i] || (lec[i] = { kv: "10", ma: "", watts: "" });
     const res = numero(l.kv) && numero(l.ma) != null && numero(l.watts) != null
@@ -858,24 +1008,22 @@ function vistaAnexoAFp() {
       <div><b>Anexo A · Formatos de Prueba</b><small>${esc(d.equipo)}</small></div>
     </header>
     <main class="contenido anexo-a">
-      <h3>Datos del equipo</h3>
+      ${seccionAnexo("Datos de identificación", CAMPOS_ANEXO_FP.identificacion, v)}
+      ${seccionAnexo("Datos propios del equipo", bloqueIdentificacionFp(d.equipo), v)}
+      <h3>Condiciones: prueba &amp; climatológica</h3>
       <div class="rejilla">
         <div class="dato"><small>Temp. ambiente</small><b>${esc(d.tempAmbiente) || "—"} °C</b></div>
         <div class="dato"><small>Humedad relativa</small><b>${esc(d.humedad) || "—"} %</b></div>
         <div class="dato"><small>Temp. del aceite</small><b>${esc(d.tempAceite) || "—"} °C</b></div>
+        ${CAMPOS_ANEXO_FP.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v)).join("")}
       </div>
+      ${seccionAnexo("Equipo de medición utilizado", CAMPOS_ANEXO_FP.medicion, v)}
       <h3>Lecturas — todas las pruebas de este equipo</h3>
       <div class="tabla-anexo"><table>
         <thead><tr><th>Prueba</th><th>kV</th><th>mA</th><th>W</th><th>Dictamen</th></tr></thead>
         <tbody>${filas}</tbody>
       </table></div>
-      <h3>Firmas</h3>
-      <div class="rejilla">
-        ${campoFirma("Técnico", "tecnico", "firmasFp")}
-        ${campoFirma("Puesto", "puesto", "firmasFp")}
-        ${campoFirma("Fecha", "fecha", "firmasFp", 'type="date"')}
-        ${campoFirma("Supervisor", "supervisor", "firmasFp")}
-      </div>
+      ${seccionAnexo("Observaciones y firmas", CAMPOS_ANEXO_FP.firmas, v)}
       <button class="primario" data-accion="guardar-anexo-a-fp">Guardar Anexo A</button>
       <p class="nota">${esc(estado.anexoEstado)}</p>
     </main>`;
@@ -1099,11 +1247,13 @@ raiz.addEventListener("click", (evento) => {
     guardar(CLAVE_HISTORIAL, []);
   } else if (d.accion === "guardar-anexo-a") {
     guardarAnexoA("RA", equipoDe(estado.datos.equipo).nombre, {
-      datos: estado.datos, lecturas: estado.lecturasAnexoRa, firmas: estado.firmasRa,
+      datos: estado.datos, lecturas: estado.lecturasAnexoRa,
+      datosAnexo: estado.datosAnexoRa,
     });
   } else if (d.accion === "guardar-anexo-a-fp") {
     guardarAnexoA("FP", estado.datosFp.equipo, {
-      datos: estado.datosFp, lecturas: estado.lecturasAnexoFp, firmas: estado.firmasFp,
+      datos: estado.datosFp, lecturas: estado.lecturasAnexoFp,
+      datosAnexo: estado.datosAnexoFp,
     });
   } else {
     return;
@@ -1138,9 +1288,9 @@ raiz.addEventListener("input", (evento) => {
   } else if (el.dataset.anexofp) {
     const [indice, campo] = el.dataset.anexofp.split(":");
     (estado.lecturasAnexoFp[indice] ||= { kv: "10", ma: "", watts: "" })[campo] = el.value;
-  } else if (el.dataset.firma) {
-    const [grupo, campo] = el.dataset.firma.split(":");
-    estado[grupo][campo] = el.value;
+  } else if (el.dataset.anexodato) {
+    const destino = estado.vista === "anexoAFp" ? estado.datosAnexoFp : estado.datosAnexoRa;
+    destino[el.dataset.anexodato] = el.value;
   } else {
     return;
   }
