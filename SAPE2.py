@@ -1821,8 +1821,8 @@ def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_a
         x, y, text=texto, fill=color, anchor=anchor,
         font=("Consolas", 11, "bold"),
     )
-    if color == TTR_MORADO_MEDICION:
-        lienzo.addtag_withtag("parpadeo", marca)
+    # El borne se queda fijo en el color de medición; no parpadea (solo la
+    # bolita y la fase).
     x1, y1, x2, y2 = lienzo.bbox(marca)
     fondo = lienzo.create_rectangle(x1 - 3, y1 - 1, x2 + 3, y2 + 1, fill="#FFFFFF", outline="")
     lienzo.tag_raise(marca)
