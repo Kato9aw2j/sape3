@@ -80,12 +80,12 @@ TTR_MORADO_TEXTO = "#F5F3FF"
 TTR_ROSA = "#FF69B4"
 TTR_PLATA = "#C0C0C0"
 TTR_NUMERO = TTR_ROSA
-TTR_VERDE_MEDICION = "#AEEA00"  # bornes/bolitas que se están midiendo.
+TTR_MORADO_MEDICION = "#4B1C71"  # bornes/bolitas que se están midiendo.
 TTR_ROSA_PASTEL = "#F5A3D0"
 TTR_MORADO_PASTEL = "#C4B5FD"
 TTR_MORADO_TRAS = "#D8C4FB"
-TTR_MORADO_NEON = "#C724FF"
-TTR_AZUL_FASE = "#00FFFF"  # mismo neón que usa el resto de SAPE (_AZUL_NEON_SAPE).
+TTR_MORADO_NEON = "#A57EDC"  # bornes libres (sin rol en la prueba).
+TTR_LILA_FASE = "#CBB6EE"  # etiquetas ∅A/∅B/∅C.
 # Pastilla "Modo Diagnóstico" del encabezado de cada paso, igual que en RA/FP.
 TTR_VISTA_PASTEL = "#EDE9FE"
 TTR_VISTA_PASTEL_BORDE = "#C4B5FD"
@@ -1756,7 +1756,7 @@ def _color_etiqueta_ttr(texto, colores, libre=None):
             hallados.append(colores[tok])
     for tinta in (
         "#FF0000", "#DC143C", "#000000", "#111111",
-        TTR_VERDE_MEDICION, "#F76707",
+        TTR_MORADO_MEDICION, "#F76707",
     ):
         if tinta in hallados:
             return tinta
@@ -1785,7 +1785,7 @@ def _fase_a_mitad_ttr(
     marca = lienzo.create_text(
         (x1 + x2) / 2 + (-dy / largo) * 16 * lado,
         (y1 + y2) / 2 + (dx / largo) * 16 * lado,
-        text=f"∅{letra}", fill=TTR_AZUL_FASE,
+        text=f"∅{letra}", fill=TTR_LILA_FASE,
         font=("Segoe UI", 9, "bold"),
     )
     if parpadeo:
@@ -1820,7 +1820,7 @@ def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_a
         x, y, text=texto, fill=color, anchor=anchor,
         font=("Consolas", 11, "bold"),
     )
-    if color == TTR_VERDE_MEDICION:
+    if color == TTR_MORADO_MEDICION:
         lienzo.addtag_withtag("parpadeo", marca)
     x1, y1, x2, y2 = lienzo.bbox(marca)
     fondo = lienzo.create_rectangle(x1 - 3, y1 - 1, x2 + 3, y2 + 1, fill="#FFFFFF", outline="")
@@ -1840,7 +1840,7 @@ def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_a
     lienzo.tag_lower(fondo)
 
 
-_COLOR_LINEA_TTR = TTR_MORADO
+_COLOR_LINEA_TTR = "#9F4CA5"  # líneas del diagrama vectorial.
 
 
 def _linea_ttr(
@@ -1862,7 +1862,7 @@ def _linea_ttr(
 
     if mide_a and mide_b:
         trazo(x1, y1, x2, y2, base)
-        ca = cb = TTR_VERDE_MEDICION
+        ca = cb = TTR_MORADO_MEDICION
     elif {ca, cb} <= {"#000000", "#111111", "#FF0000"} and ca != cb:
         mx = (x1 + x2) / 2
         my = (y1 + y2) / 2
@@ -1876,7 +1876,7 @@ def _linea_ttr(
 
 def _puntos_ttr(lienzo, nodos):
     radio = 4.5
-    rango = {TTR_VERDE_MEDICION: 4, "#FF0000": 3, "#000000": 2, "#111111": 2}
+    rango = {TTR_MORADO_MEDICION: 4, "#FF0000": 3, "#000000": 2, "#111111": 2}
     grupos = {}
     for x, y, mide, color in nodos:
         clave = (round(x, 1), round(y, 1))
@@ -1893,7 +1893,7 @@ def _puntos_ttr(lienzo, nodos):
             x - radio, y - radio, x + radio, y + radio,
             fill=color, outline=color,
         )
-        if color == TTR_VERDE_MEDICION:
+        if color == TTR_MORADO_MEDICION:
             lienzo.addtag_withtag("parpadeo", punto)
         elif color == "#000000":
             lienzo.addtag_withtag("parpadeo_negro", punto)
@@ -1970,7 +1970,7 @@ def _fases_leyenda_ttr(clave):
         filas.append((
             f"∅{letra}",
             ", ".join(por_fase[letra]),
-            TTR_AZUL_FASE,
+            TTR_LILA_FASE,
         ))
     return filas
 
@@ -1998,7 +1998,7 @@ def _leyenda_fasorial_ttr(prueba, clave=None, medicion="Directa", polaridad="Sus
         filas.append((
             "MIDE",
             f"{mide}: relación de {_lados_mide_ttr(mide)}{fase}.",
-            TTR_VERDE_MEDICION,
+            TTR_MORADO_MEDICION,
         ))
     filas.extend(_fases_leyenda_ttr(clave))
     if nombre or desplaz:
@@ -2107,7 +2107,7 @@ def _pintar_guia_fasorial_ttr(marco, prueba, medicion, polaridad):
         "Inversa": "MEDICIÓN INVERSA",
         "Ambas": "MEDICIÓN DIRECTA E INVERSA",
     }.get(medicion, "MEDICIÓN DIRECTA")
-    _texto_guia(marco, titulo, TTR_VERDE_MEDICION, True)
+    _texto_guia(marco, titulo, TTR_MORADO_MEDICION, True)
     if prueba:
         pares = []
         if medicion != "Inversa":
@@ -2176,7 +2176,7 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
         roles = {}
         for tok, tinta in list(colores.items()):
             if tinta == "#F76707":
-                colores[tok] = TTR_VERDE_MEDICION
+                colores[tok] = TTR_MORADO_MEDICION
     lienzo._tono_libre_ttr = TTR_MORADO_NEON
     lienzo._colores_borne_ttr = None
     n = len(grupos)
@@ -2186,7 +2186,7 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
     def mide(texto):
         return (
             modo == "mide"
-            and _color_etiqueta_ttr(texto, colores) == TTR_VERDE_MEDICION
+            and _color_etiqueta_ttr(texto, colores) == TTR_MORADO_MEDICION
         )
 
     def color_borne(texto):
@@ -12844,7 +12844,7 @@ class AppSAPE(tk.Tk):
 
         def aplicar_parpadeo():
             linea_visible = self._vector_mide_visible
-            tinta = TTR_VERDE_MEDICION if linea_visible else "#FFFFFF"
+            tinta = TTR_MORADO_MEDICION if linea_visible else "#FFFFFF"
             fase = "hidden" if linea_visible else "normal"
             try:
                 if not medicion.winfo_exists():
