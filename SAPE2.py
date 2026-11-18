@@ -11863,14 +11863,12 @@ class AppSAPE(tk.Tk):
             text_color=TTR_MORADO_OSCURO, fg_color="transparent",
             font=ctk.CTkFont(family="Consolas", size=11, weight="bold"),
         ).pack(padx=10, pady=2)
-        if numero == 3:
-            tk.Label(
-                izquierda, text=self.datos_ttr["tipo_equipo"].get().strip(),
-                bg=fondo, fg="#334155", font=("Segoe UI", 16, "bold"),
-                anchor="w",
-            ).pack(anchor="w", pady=(2, 0))
+        equipo_actual = self.datos_ttr["tipo_equipo"].get().strip()
+        texto_sub = subtitulos[numero]
+        if numero != 1 and equipo_actual:
+            texto_sub = f"{equipo_actual}  ·  {texto_sub}"
         tk.Label(
-            izquierda, text=subtitulos[numero],
+            izquierda, text=texto_sub,
             bg=fondo, fg="#596573",
             font=("Segoe UI", 10), anchor="w",
         ).pack(anchor="w", pady=(4, 0))
