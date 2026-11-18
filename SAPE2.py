@@ -12645,9 +12645,14 @@ class AppSAPE(tk.Tk):
                 highlightbackground="#E2E8F0", highlightthickness=1,
             )
             caja.pack(fill="x", pady=(0, 12))
-            tk.Label(
-                caja, text=titulo, bg="#FFFFFF", fg=color,
-                font=("Segoe UI", 12, "bold"),
+            ancho_titulo = tkfont.Font(
+                family="Consolas", size=11, weight="bold",
+            ).measure(titulo) + 28
+            _boton_relieve_ra(
+                caja, titulo, lambda: None,
+                ancho=ancho_titulo, modo="diagnostico_verde",
+                fondo="#FFFFFF", alto_caja=28, alto_lienzo=40,
+                fuente_nombre="Consolas",
             ).pack(anchor="w", padx=14, pady=(8, 0))
             cuerpo = tk.Frame(caja, bg="#FFFFFF")
             cuerpo.pack(fill="x", padx=6, pady=(0, 8))
