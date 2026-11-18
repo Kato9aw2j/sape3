@@ -11924,10 +11924,6 @@ class AppSAPE(tk.Tk):
     def _captura_ttr(self, frame):
         datos = self.datos_ttr
         equipo = datos["tipo_equipo"].get().strip()
-        tk.Label(
-            frame, text=equipo, bg=RA_VISTA_FONDO, fg="#334155",
-            font=("Segoe UI", 18, "bold"),
-        ).pack(anchor="w", pady=(0, 10))
         prueba = self.prueba_ttr
         if not prueba:
             ctk.CTkLabel(
@@ -11937,17 +11933,6 @@ class AppSAPE(tk.Tk):
                 text_color="#475569", fg_color="transparent",
             ).pack(anchor="w")
             return
-
-        ctk.CTkLabel(
-            frame,
-            text=(
-                f"Prueba {prueba['prueba']}  ·  {prueba['mide']}  ·  "
-                f"CN {prueba['cn']}   CR {prueba['cr']}   "
-                f"GN {prueba['gn']}   GR {prueba['gr']}"
-            ),
-            font=ctk.CTkFont(family="Segoe UI", size=14),
-            text_color="#334155", fg_color="transparent",
-        ).pack(anchor="w", pady=(0, 16))
 
         conexion = datos["conexion"].get()
         usar_reg = datos["regulacion_cfe"].get() == "Sí"
