@@ -6360,19 +6360,11 @@ def _boton_menu_ra(
             )
             ancho_tinta = derecha - izquierda
             alto_tinta = abajo - arriba
-            ancho_m = max(int(fuente_num.measure(marca)), ancho_tinta)
-            if tema == "neon_morado":
-                lw, lh = 44, 38
-                margen = 0
-                origen = (
-                    (lw - ancho_tinta) / 2 - izquierda,
-                    (lh - alto_tinta) / 2 - arriba,
-                )
-            else:
-                margen = 24
-                lw = ancho_tinta + margen * 2
-                lh = alto_tinta + margen * 2
-                origen = (margen - izquierda, margen - arriba)
+            lw, lh = 44, 38
+            origen = (
+                (lw - ancho_tinta) / 2 - izquierda,
+                (lh - alto_tinta) / 2 - arriba,
+            )
 
             def capa_letra(color):
                 capa = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
@@ -6409,20 +6401,12 @@ def _boton_menu_ra(
             letra = Image.alpha_composite(placa, letra)
             foto_letra = ImageTk.PhotoImage(letra)
             estado["foto_letra"] = foto_letra
-            if tema == "neon_morado":
-                x_placa = 14
-                lienzo.create_image(
-                    x_placa, centro - lh / 2,
-                    image=foto_letra, anchor="nw",
-                )
-                x_texto = x_placa + lw + 12
-            else:
-                x_tinta = 20 + (ancho_m - ancho_tinta) / 2
-                lienzo.create_image(
-                    x_tinta - margen, centro - lh / 2,
-                    image=foto_letra, anchor="nw",
-                )
-                x_texto = 20 + ancho_m + 14
+            x_placa = 14
+            lienzo.create_image(
+                x_placa, centro - lh / 2,
+                image=foto_letra, anchor="nw",
+            )
+            x_texto = x_placa + lw + 12
         lienzo.create_text(
             x_texto, centro, text=texto.upper(), anchor="w",
             fill=color_txt, font=fuente_txt,
