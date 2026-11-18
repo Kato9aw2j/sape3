@@ -12388,10 +12388,6 @@ class AppSAPE(tk.Tk):
             datos["configuracion"].get(),
             datos["conexion"].get(),
         )
-        tk.Label(
-            frame, text=equipo, bg=RA_VISTA_FONDO, fg="#334155",
-            font=("Segoe UI", 18, "bold"),
-        ).pack(anchor="w", pady=(0, 10))
         if not filas:
             ctk.CTkLabel(
                 frame, text=nota, font=ctk.CTkFont(family="Segoe UI", size=14),
@@ -14417,10 +14413,6 @@ class AppSAPE(tk.Tk):
         cuerpo_col.pack(fill="both", expand=True)
         self._montar_correccion_fp(cuerpo_col)
 
-        tk.Label(
-            cuerpo, text=equipo, bg=RA_VISTA_FONDO, fg="#334155",
-            font=("Segoe UI", 18, "bold"),
-        ).pack(anchor="w", pady=(0, 6))
         nota_criterio = tk.Label(
             cuerpo, text=self._nota_criterio_fp(),
             bg=RA_VISTA_FONDO, fg="#475569", font=("Segoe UI", 10),
