@@ -11921,6 +11921,182 @@ class AppSAPE(tk.Tk):
         boton.bind("<FocusOut>", lambda _e=None: boton.marcar(False), add="+")
         return boton
 
+    def _montar_correccion_ttr(self, padre):
+        """Panel de relación teórica y semáforo del dictamen, como el de FP."""
+        datos = self.datos_ttr
+        panel = tk.Frame(padre, bg=RA_VISTA_PANEL)
+        panel.pack(fill="x")
+        fila_rt = tk.Frame(panel, bg=RA_VISTA_PANEL)
+        fila_rt.pack(fill="x", padx=16, pady=(14, 8))
+        tk.Label(
+            fila_rt, text="CORRECCIÓN ST-CT-007", bg=RA_VISTA_PANEL,
+            fg=TTR_MORADO_CLARO, font=("Consolas", 10, "bold"),
+        ).pack(side="left")
+        ref_tap = tk.Label(
+            fila_rt, text="Ref: —", bg="#1F2937", fg="#9CA3AF",
+            font=("Consolas", 9),
+        )
+        ref_tap.pack(side="right")
+        tk.Frame(panel, bg="#374151", height=1).pack(fill="x", padx=16)
+        cuerpo_rt = tk.Frame(panel, bg=RA_VISTA_PANEL)
+        cuerpo_rt.pack(fill="x", padx=16, pady=(12, 8))
+        tk.Label(
+            cuerpo_rt, text="Relación Teórica  RT:",
+            bg=RA_VISTA_PANEL, fg="#D1D5DB", font=("Segoe UI", 10),
+        ).pack(side="left")
+        valor_rt = tk.Label(
+            cuerpo_rt, text="—", bg=RA_VISTA_PANEL, fg=TTR_MORADO_CLARO,
+            font=("Consolas", 28, "bold"),
+        )
+        valor_rt.pack(side="right")
+        caja = tk.Frame(panel, bg="#111827")
+        caja.pack(fill="x", padx=16, pady=(0, 8))
+        filas_caja = {}
+        for clave, rotulo, relleno in (
+            ("ecuacion", "Ecuación usada:", (8, 2)),
+            ("tap", "Tap seleccionado:", (2, 2)),
+            ("rm", "Relación medida (RM):", (2, 8)),
+        ):
+            fila = tk.Frame(caja, bg="#111827")
+            fila.pack(fill="x", padx=10, pady=relleno)
+            tk.Label(
+                fila, text=rotulo, bg="#111827", fg="#9CA3AF",
+                font=("Consolas", 9),
+            ).pack(side="left")
+            valor = tk.Label(
+                fila, text="—", bg="#111827", fg="#E5E7EB",
+                font=("Consolas", 9, "bold"), wraplength=200, justify="right",
+            )
+            valor.pack(side="right")
+            filas_caja[clave] = valor
+        filas_caja["ecuacion"].configure(
+            text="%DIF = (RT − RM) / RT × 100", fg="#E5E7EB",
+        )
+        aviso = tk.Label(
+            panel, text="", bg="#1F2937", fg="#E5E7EB",
+            font=("Segoe UI", 9), justify="left", anchor="nw", wraplength=300,
+        )
+        aviso.pack(fill="x", padx=16, pady=(0, 10))
+
+        panel_estado = tk.Frame(panel, bg=RA_VISTA_PANEL)
+        panel_estado.pack(fill="x", padx=16, pady=(4, 16))
+        tk.Label(
+            panel_estado, text="ESTADO DEL DICTAMEN",
+            bg=RA_VISTA_PANEL, fg=TTR_MORADO_CLARO,
+            font=("Consolas", 9, "bold"), anchor="w",
+        ).pack(fill="x", pady=(0, 8))
+        luces = tk.Frame(panel_estado, bg=RA_VISTA_PANEL, height=108)
+        luces.pack(fill="x", pady=(0, 10))
+        luces.pack_propagate(False)
+
+        def foto_emoji(emoji):
+            from PIL import Image, ImageDraw, ImageFont, ImageTk
+            fuente = ImageFont.truetype(r"C:\Windows\Fonts\seguiemj.ttf", 52)
+            sonda = ImageDraw.Draw(Image.new("RGBA", (4, 4)))
+            caja_e = sonda.textbbox(
+                (0, 0), emoji, font=fuente, embedded_color=True,
+            )
+            imagen = Image.new(
+                "RGBA",
+                (caja_e[2] - caja_e[0] + 4, caja_e[3] - caja_e[1] + 4),
+                (0, 0, 0, 0),
+            )
+            ImageDraw.Draw(imagen).text(
+                (2 - caja_e[0], 2 - caja_e[1]),
+                emoji, font=fuente, embedded_color=True,
+            )
+            contenido = imagen.getbbox()
+            if contenido:
+                imagen = imagen.crop(contenido)
+            foto = ImageTk.PhotoImage(imagen)
+            vacio = tk.PhotoImage(width=foto.width(), height=foto.height())
+            return foto, vacio
+
+        focos = {}
+        for indice, (clave, nombre, emoji) in enumerate((
+            ("normal", "NORMAL", "✅"),
+            ("precaucion", "PRECAUCIÓN", "⚠️"),
+            ("alerta", "ALERTA", "❌"),
+        )):
+            luces.columnconfigure(indice, weight=1, uniform="focos")
+            celda = tk.Frame(luces, bg="#1F2937", width=96, height=100)
+            celda.grid(row=0, column=indice, sticky="nsew", padx=4)
+            celda.grid_propagate(False)
+            foto, vacio = foto_emoji(emoji)
+            punto = tk.Label(celda, image=foto, bg="#1F2937", bd=0)
+            punto.pack(pady=(10, 0))
+            punto._foto = foto
+            punto._vacio = vacio
+            punto._emoji = emoji
+            nombre_lbl = tk.Label(
+                celda, text=nombre, bg="#1F2937", fg="#E5E7EB",
+                font=("Segoe UI", 8, "bold"), height=1,
+            )
+            nombre_lbl.pack(pady=(4, 0))
+            focos[clave] = (celda, punto, nombre_lbl)
+        luces.rowconfigure(0, weight=1)
+        datos_txt = tk.Text(
+            panel_estado, bg=RA_VISTA_PANEL, fg="#E5E7EB",
+            font=("Segoe UI", 9), wrap="word", height=2, width=40,
+            bd=0, highlightthickness=0, padx=2, pady=2, cursor="arrow",
+        )
+        datos_txt.pack(fill="both", expand=True, pady=(0, 4))
+        datos_txt.configure(state="disabled")
+        self._focos_ieee = focos
+        self._aviso_ieee = aviso
+        self._datos_ieee = datos_txt
+        self._nivel_foco_ieee = None
+
+        def refrescar(_evento=None):
+            equipo = datos["tipo_equipo"].get().strip()
+            prueba = self.prueba_ttr
+            conexion = datos["conexion"].get()
+            usar_reg = datos["regulacion_cfe"].get() == "Sí"
+            n_taps, centro = _taps_ttr(datos["tipo_cambiador"].get())
+            ref_tap.configure(text=f"Ref: Tap {centro}")
+            if not prueba:
+                valor_rt.configure(text="—")
+                filas_caja["tap"].configure(text="—")
+                filas_caja["rm"].configure(text="—")
+                aviso.configure(
+                    bg="#1F2937", fg="#E5E7EB",
+                    text="Elija una prueba en el paso 02.",
+                )
+                return
+            nominal, _par = _relacion_nominal_ttr(datos, prueba, equipo, conexion)
+            if datos["tap"].get() not in [str(t) for t in range(1, n_taps + 1)]:
+                datos["tap"].set(str(centro))
+            tap = int(datos["tap"].get())
+            if nominal is not None:
+                rt = _relacion_teorica_tap_ttr(nominal, tap, centro, usar_reg)
+            else:
+                rt = _leer_ttr(datos["relacion_teorica_manual"].get())
+            rm = _leer_ttr(datos["relacion_medida"].get())
+            valor_rt.configure(text="—" if rt is None else f"{rt:.4f}")
+            filas_caja["tap"].configure(text=f"{tap} de {n_taps}")
+            filas_caja["rm"].configure(text="—" if rm is None else f"{rm:.4f}")
+            if rt is None:
+                aviso.configure(
+                    bg="#451A03", fg="#FDE68A",
+                    text=(
+                        "Falta el kV de placa para la relación teórica; "
+                        "escríbala a mano en el paso 04."
+                    ),
+                )
+            elif rm is None:
+                aviso.configure(
+                    bg="#451A03", fg="#FDE68A",
+                    text="Falta la relación medida. Captúrela y pulse CALCULAR DICTAMEN.",
+                )
+            else:
+                aviso.configure(
+                    bg="#052E16", fg="#BBF7D0",
+                    text="Datos listos. Pulse CALCULAR DICTAMEN.",
+                )
+
+        refrescar()
+        return refrescar
+
     def _captura_ttr(self, frame):
         datos = self.datos_ttr
         equipo = datos["tipo_equipo"].get().strip()
@@ -11933,6 +12109,11 @@ class AppSAPE(tk.Tk):
                 text_color="#475569", fg_color="transparent",
             ).pack(anchor="w")
             return
+
+        columna_rt = tk.Frame(frame, bg=RA_VISTA_PANEL, width=360)
+        columna_rt.pack(side="right", fill="both", padx=(18, 0))
+        tk.Frame(columna_rt, bg=RA_VISTA_PANEL, width=346, height=1).pack()
+        refrescar_rt = self._montar_correccion_ttr(columna_rt)
 
         conexion = datos["conexion"].get()
         usar_reg = datos["regulacion_cfe"].get() == "Sí"
@@ -11999,6 +12180,7 @@ class AppSAPE(tk.Tk):
             etiqueta_rt_valor.configure(
                 text="—" if rt is None else f"{rt:.4f}",
             )
+            refrescar_rt()
 
         combo_tap.configure(command=lambda _v=None: obtener_rt())
         ctk.CTkButton(
@@ -12052,6 +12234,7 @@ class AppSAPE(tk.Tk):
         def calcular():
             for hijo in panel_resultado.winfo_children():
                 hijo.destroy()
+            refrescar_rt()
             if nominal is not None:
                 rt = rt_del_tap()
             else:
@@ -12104,6 +12287,13 @@ class AppSAPE(tk.Tk):
                 font=fuente_opcion, wraplength=600, justify="left",
                 anchor="w",
             ).pack(anchor="w")
+            nivel = "normal" if aceptado else "alerta"
+            resumen = (
+                f"Relación teórica: {resultado['rt']:.4f}\n"
+                f"Relación medida: {resultado['rm']:.4f}\n"
+                f"%DIF: {resultado['dif']:.3f} %"
+            )
+            self._publicar_foco_ieee(nivel, resumen, resultado["estado"])
 
         ctk.CTkButton(
             frame, text="CALCULAR DICTAMEN", fg_color=TTR_MORADO,
