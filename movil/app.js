@@ -3,6 +3,7 @@
 
 const CLAVE_ESTADO = "sape-movil-estado";
 const CLAVE_HISTORIAL = "sape-movil-historial";
+const CLAVE_ANEXO_A = "sape-movil-anexo-a";
 
 const estado = {
   vista: "inicio", // inicio | ra | fp | historial
@@ -42,6 +43,12 @@ const estado = {
   tapTtr: null,
   lecturasTtr: { relacionTeoricaManual: "", relacionMedida: "" },
   resultadoTtr: null,
+  // Anexo A — Formatos de Prueba (captura de todas las pruebas del equipo)
+  lecturasAnexoRa: {},
+  firmasRa: { tecnico: "", puesto: "", fecha: "", supervisor: "" },
+  lecturasAnexoFp: {},
+  firmasFp: { tecnico: "", puesto: "", fecha: "", supervisor: "" },
+  anexoEstado: "",
 };
 
 function leer(clave, respaldo) {
@@ -67,6 +74,8 @@ function recordar() {
     datosFp: estado.datosFp, pruebaFp: estado.pruebaFp, lecturasFp: estado.lecturasFp,
     datosTtr: estado.datosTtr, pasoTtr: estado.pasoTtr, pruebaTtr: estado.pruebaTtr,
     tapTtr: estado.tapTtr, lecturasTtr: estado.lecturasTtr,
+    lecturasAnexoRa: estado.lecturasAnexoRa, firmasRa: estado.firmasRa,
+    lecturasAnexoFp: estado.lecturasAnexoFp, firmasFp: estado.firmasFp,
   });
 }
 
@@ -86,6 +95,12 @@ if (previo && previo.datosTtr) {
   estado.pruebaTtr = previo.pruebaTtr || 0;
   estado.tapTtr = previo.tapTtr || null;
   Object.assign(estado.lecturasTtr, previo.lecturasTtr || {});
+}
+if (previo) {
+  Object.assign(estado.lecturasAnexoRa, previo.lecturasAnexoRa || {});
+  Object.assign(estado.firmasRa, previo.firmasRa || {});
+  Object.assign(estado.lecturasAnexoFp, previo.lecturasAnexoFp || {});
+  Object.assign(estado.firmasFp, previo.firmasFp || {});
 }
 
 const esc = (texto) =>
@@ -284,6 +299,7 @@ function vistaRa() {
     <header class="barra">
       <button class="atras" data-ir="inicio" aria-label="Volver al menú">‹</button>
       <div><b>Resistencia de Aislamiento</b><small>ST-CT-001</small></div>
+      <button class="anexo" data-ir="anexoA">Anexo A</button>
     </header>
     ${barraPasos()}
     <main class="contenido">${cuerpo}</main>
@@ -499,6 +515,7 @@ function vistaFp() {
     <header class="barra">
       <button class="atras" data-ir="inicio" aria-label="Volver al menú">‹</button>
       <div><b>Factor de Potencia al Aislamiento</b><small>ST-CT-002</small></div>
+      <button class="anexo" data-ir="anexoAFp">Anexo A</button>
     </header>
     <ol class="pasos">${PASOS_FP.map((nombre, i) => `
       <li><button data-pasofp="${i + 1}" class="${estado.pasoFp === i + 1 ? "activo" : ""}" aria-label="${esc(nombre)}">
@@ -754,6 +771,116 @@ function vistaTtr() {
     </footer>`;
 }
 
+// ---------- Anexo A — Formatos de Prueba (captura en una sola pantalla) ----------
+
+function badgeEstadoAnexo(res) {
+  if (!res || res.error) return `<span class="badge-anexo">—</span>`;
+  return `<span class="badge-anexo ${res.estado}">${esc(res.estado)}</span>`;
+}
+
+function campoFirma(etiqueta, clave, grupo, extra) {
+  return `<label class="campo"><span>${esc(etiqueta)}</span>
+    <input data-firma="${grupo}:${clave}" value="${esc(estado[grupo][clave])}" ${extra || ""}></label>`;
+}
+
+function vistaAnexoA() {
+  const d = estado.datos;
+  const eq = equipoDe(d.equipo);
+  const lista = pruebasDe(d);
+  const lec = estado.lecturasAnexoRa;
+  const filas = lista.map((pr, i) => {
+    const l = lec[i] || (lec[i] = { r30: "", r1: "", r10: "" });
+    const res = dictamen(d, pr, l);
+    return `
+      <tr>
+        <td>${esc(pr.prueba)}<br><small>${esc(pr.medicion)}</small></td>
+        <td>${pr.minutos === 10
+          ? `<input inputmode="decimal" data-anexora="${i}:r30" value="${esc(l.r30)}">`
+          : "—"}</td>
+        <td><input inputmode="decimal" data-anexora="${i}:r1" value="${esc(l.r1)}"></td>
+        <td>${pr.minutos === 10
+          ? `<input inputmode="decimal" data-anexora="${i}:r10" value="${esc(l.r10)}">`
+          : "—"}</td>
+        <td>${badgeEstadoAnexo(res)}</td>
+      </tr>`;
+  }).join("");
+  return `
+    <header class="barra">
+      <button class="atras" data-ir="ra" aria-label="Volver">‹</button>
+      <div><b>Anexo A · Formatos de Prueba</b><small>${esc(eq.nombre)}</small></div>
+    </header>
+    <main class="contenido anexo-a">
+      <h3>Datos del equipo</h3>
+      <div class="rejilla">
+        <div class="dato"><small>Temp. ambiente</small><b>${esc(d.tempAmbiente) || "—"} °C</b></div>
+        <div class="dato"><small>Humedad relativa</small><b>${esc(d.humedad) || "—"} %</b></div>
+        <div class="dato"><small>Temp. del devanado</small><b>${esc(d.tempDevanado) || "—"} °C</b></div>
+      </div>
+      <h3>Lecturas (MΩ) — todas las pruebas de este equipo</h3>
+      <p class="nota">Sin letra son MΩ. Agregue G para gigaohms o T para teraohms.</p>
+      <div class="tabla-anexo"><table>
+        <thead><tr><th>Prueba</th><th>30 s</th><th>1 min</th><th>10 min</th><th>Dictamen</th></tr></thead>
+        <tbody>${filas}</tbody>
+      </table></div>
+      <h3>Firmas</h3>
+      <div class="rejilla">
+        ${campoFirma("Técnico", "tecnico", "firmasRa")}
+        ${campoFirma("Puesto", "puesto", "firmasRa")}
+        ${campoFirma("Fecha", "fecha", "firmasRa", 'type="date"')}
+        ${campoFirma("Supervisor", "supervisor", "firmasRa")}
+      </div>
+      <button class="primario" data-accion="guardar-anexo-a">Guardar Anexo A</button>
+      <p class="nota">${esc(estado.anexoEstado)}</p>
+    </main>`;
+}
+
+function vistaAnexoAFp() {
+  const d = estado.datosFp;
+  const lista = filasFp(d.equipo, d.arreglo);
+  const lec = estado.lecturasAnexoFp;
+  const filas = lista.map((pr, i) => {
+    const l = lec[i] || (lec[i] = { kv: "10", ma: "", watts: "" });
+    const res = numero(l.kv) && numero(l.ma) != null && numero(l.watts) != null
+      ? evaluarFp(d, numero(l.kv), numero(l.ma), numero(l.watts))
+      : null;
+    return `
+      <tr>
+        <td>${esc(pr.prueba)}<br><small>${esc(pr.medicion || pr.modo)}</small></td>
+        <td><input inputmode="decimal" data-anexofp="${i}:kv" value="${esc(l.kv)}"></td>
+        <td><input inputmode="decimal" data-anexofp="${i}:ma" value="${esc(l.ma)}"></td>
+        <td><input inputmode="decimal" data-anexofp="${i}:watts" value="${esc(l.watts)}"></td>
+        <td>${badgeEstadoAnexo(res)}</td>
+      </tr>`;
+  }).join("");
+  return `
+    <header class="barra">
+      <button class="atras" data-ir="fp" aria-label="Volver">‹</button>
+      <div><b>Anexo A · Formatos de Prueba</b><small>${esc(d.equipo)}</small></div>
+    </header>
+    <main class="contenido anexo-a">
+      <h3>Datos del equipo</h3>
+      <div class="rejilla">
+        <div class="dato"><small>Temp. ambiente</small><b>${esc(d.tempAmbiente) || "—"} °C</b></div>
+        <div class="dato"><small>Humedad relativa</small><b>${esc(d.humedad) || "—"} %</b></div>
+        <div class="dato"><small>Temp. del aceite</small><b>${esc(d.tempAceite) || "—"} °C</b></div>
+      </div>
+      <h3>Lecturas — todas las pruebas de este equipo</h3>
+      <div class="tabla-anexo"><table>
+        <thead><tr><th>Prueba</th><th>kV</th><th>mA</th><th>W</th><th>Dictamen</th></tr></thead>
+        <tbody>${filas}</tbody>
+      </table></div>
+      <h3>Firmas</h3>
+      <div class="rejilla">
+        ${campoFirma("Técnico", "tecnico", "firmasFp")}
+        ${campoFirma("Puesto", "puesto", "firmasFp")}
+        ${campoFirma("Fecha", "fecha", "firmasFp", 'type="date"')}
+        ${campoFirma("Supervisor", "supervisor", "firmasFp")}
+      </div>
+      <button class="primario" data-accion="guardar-anexo-a-fp">Guardar Anexo A</button>
+      <p class="nota">${esc(estado.anexoEstado)}</p>
+    </main>`;
+}
+
 function vistaHistorial() {
   const lista = leer(CLAVE_HISTORIAL, []);
   const filas = lista.length
@@ -777,8 +904,11 @@ function vistaHistorial() {
 const raiz = document.getElementById("app");
 
 function pintar() {
-  raiz.innerHTML = { inicio: vistaInicio, ra: vistaRa, fp: vistaFp, ttr: vistaTtr, historial: vistaHistorial }[estado.vista]();
-  raiz.className = estado.vista;
+  raiz.innerHTML = {
+    inicio: vistaInicio, ra: vistaRa, fp: vistaFp, ttr: vistaTtr,
+    anexoA: vistaAnexoA, anexoAFp: vistaAnexoAFp, historial: vistaHistorial,
+  }[estado.vista]();
+  raiz.className = { anexoA: "ra", anexoAFp: "fp" }[estado.vista] || estado.vista;
 }
 
 function resumenResultado(res) {
@@ -795,6 +925,43 @@ function avisar(texto) {
   aviso.textContent = texto;
   document.body.appendChild(aviso);
   setTimeout(() => aviso.remove(), 2200);
+}
+
+// Guarda el Anexo A en este celular y lo manda al servidor de la PC (si hay
+// conexión), para que SAPE2.py lo pueda importar desde "Anexo A → Importar
+// del celular". Un registro por módulo+equipo (el último capturado manda).
+function guardarAnexoA(modulo, equipo, cuerpo) {
+  const registro = {
+    modulo, equipo, ...cuerpo,
+    fecha: new Date().toISOString(),
+    fechaTexto: new Date().toLocaleString("es-MX", { dateStyle: "short", timeStyle: "short" }),
+  };
+  const lista = leer(CLAVE_ANEXO_A, []).filter(
+    (r) => !(r.modulo === modulo && r.equipo === equipo),
+  );
+  lista.unshift(registro);
+  guardar(CLAVE_ANEXO_A, lista.slice(0, 50));
+  estado.anexoEstado = "Guardado en este celular…";
+  fetch("/api/anexo-a", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(registro),
+  }).then((r) => {
+    estado.anexoEstado = r.ok
+      ? "Guardado en el celular y enviado a la PC."
+      : "Guardado en el celular. La PC no pudo recibirlo (reintente).";
+    pintarEstadoAnexo();
+  }).catch(() => {
+    estado.anexoEstado = "Guardado en el celular. Sin conexión con la PC — ábralo en el mismo WiFi que la PC para sincronizar.";
+    pintarEstadoAnexo();
+  });
+  avisar("Guardando Anexo A…");
+}
+
+function pintarEstadoAnexo() {
+  if (estado.vista !== "anexoA" && estado.vista !== "anexoAFp") return;
+  const p = raiz.querySelector(".anexo-a .nota:last-of-type");
+  if (p) p.textContent = estado.anexoEstado;
 }
 
 raiz.addEventListener("click", (evento) => {
@@ -930,6 +1097,14 @@ raiz.addEventListener("click", (evento) => {
   } else if (d.accion === "borrar-historial") {
     if (!confirm("¿Borrar todo el historial de este celular?")) return;
     guardar(CLAVE_HISTORIAL, []);
+  } else if (d.accion === "guardar-anexo-a") {
+    guardarAnexoA("RA", equipoDe(estado.datos.equipo).nombre, {
+      datos: estado.datos, lecturas: estado.lecturasAnexoRa, firmas: estado.firmasRa,
+    });
+  } else if (d.accion === "guardar-anexo-a-fp") {
+    guardarAnexoA("FP", estado.datosFp.equipo, {
+      datos: estado.datosFp, lecturas: estado.lecturasAnexoFp, firmas: estado.firmasFp,
+    });
   } else {
     return;
   }
@@ -957,6 +1132,15 @@ raiz.addEventListener("input", (evento) => {
   } else if (el.dataset.lecturattr) {
     estado.lecturasTtr[el.dataset.lecturattr] = el.value;
     estado.resultadoTtr = null;
+  } else if (el.dataset.anexora) {
+    const [indice, campo] = el.dataset.anexora.split(":");
+    (estado.lecturasAnexoRa[indice] ||= { r30: "", r1: "", r10: "" })[campo] = el.value;
+  } else if (el.dataset.anexofp) {
+    const [indice, campo] = el.dataset.anexofp.split(":");
+    (estado.lecturasAnexoFp[indice] ||= { kv: "10", ma: "", watts: "" })[campo] = el.value;
+  } else if (el.dataset.firma) {
+    const [grupo, campo] = el.dataset.firma.split(":");
+    estado[grupo][campo] = el.value;
   } else {
     return;
   }

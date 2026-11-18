@@ -4,7 +4,7 @@
     {
       "name": "sape-movil",
       "runtimeExecutable": "C:\\Users\\LapOne MX\\AppData\\Local\\Programs\\Python\\Python314\\python.exe",
-      "runtimeArgs": ["-m", "http.server", "8765", "--bind", "0.0.0.0", "--directory", "movil"],
+      "runtimeArgs": ["movil/server.py", "8765"],
       "port": 8765
     }
   ]

@@ -272,3 +272,38 @@ button:disabled { cursor: default; }
   position: fixed; left: 50%; bottom: 84px; transform: translateX(-50%);
   background: #111827; color: #FFF; padding: 10px 16px; border-radius: 999px; font-size: 14px; z-index: 20;
 }
+
+/* ---------- Anexo A: botón de la barra y pantalla de captura completa ---------- */
+.anexo {
+  margin-left: auto; flex: none; height: 36px; padding: 0 12px; border-radius: 999px;
+  border: 1.5px solid var(--naranja); background: transparent; color: var(--naranja-claro);
+  font: 700 12px Consolas, monospace; white-space: nowrap;
+}
+#app.fp .anexo { border-color: var(--fp-verde); color: var(--fp-verde-claro); }
+#app.ra .anexo { border-color: var(--naranja); }
+
+.anexo-a .dato { background: #111827; color: #E5E7EB; border-radius: 10px; padding: 10px 12px; }
+.anexo-a .dato small { display: block; font-size: 11px; color: #9CA3AF; }
+.anexo-a .dato b { font: 700 16px Consolas, monospace; color: var(--naranja-claro); }
+#app.fp .anexo-a .dato b { color: var(--fp-verde-claro); }
+
+.tabla-anexo { overflow-x: auto; border: 1px solid #E5E0D5; border-radius: 10px; margin-bottom: 4px; -webkit-overflow-scrolling: touch; }
+.tabla-anexo table { width: 100%; border-collapse: collapse; background: #FFF; }
+.tabla-anexo th {
+  background: #F1F5F9; color: #475569; font: 700 10px Consolas, monospace; text-transform: uppercase;
+  padding: 8px 6px; text-align: left; white-space: nowrap;
+}
+.tabla-anexo td { padding: 6px; border-top: 1px solid #F1F5F9; vertical-align: middle; }
+.tabla-anexo td:first-child { font-weight: 700; font-size: 13px; white-space: nowrap; }
+.tabla-anexo td small { display: block; color: #64748B; font-weight: 400; font-size: 11px; }
+.tabla-anexo input {
+  width: 72px; height: 36px; padding: 0 8px; font-size: 14px; text-align: center;
+  border: 1.5px solid #C5BCAC; border-radius: 7px; background: #FFFCF8; color: var(--tinta-papel);
+}
+.badge-anexo {
+  display: inline-block; min-width: 68px; padding: 4px 6px; border-radius: 5px; text-align: center;
+  font: 700 10px Consolas, monospace; color: #475569; background: #F1F5F9;
+}
+.badge-anexo.ACEPTADO { background: #007A33; color: #FFF; }
+.badge-anexo.INVESTIGAR { background: #F5C400; color: #1A1A1A; }
+.badge-anexo.RECHAZADO { background: #C62828; color: #FFF; }
