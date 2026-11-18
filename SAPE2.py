@@ -12650,7 +12650,7 @@ class AppSAPE(tk.Tk):
             ).measure(titulo) + 28
             _boton_relieve_ra(
                 caja, titulo, lambda: None,
-                ancho=ancho_titulo, modo="diagnostico_verde",
+                ancho=ancho_titulo, modo="diagnostico_morado",
                 fondo="#FFFFFF", alto_caja=28, alto_lienzo=40,
                 fuente_nombre="Consolas",
             ).pack(anchor="w", padx=14, pady=(8, 0))
