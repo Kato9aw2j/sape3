@@ -1817,6 +1817,8 @@ def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_a
         x, y, text=texto, fill=color, anchor=anchor,
         font=("Consolas", 11, "bold"),
     )
+    if color == TTR_ROSA_NEON:
+        lienzo.addtag_withtag("parpadeo", marca)
     x1, y1, x2, y2 = lienzo.bbox(marca)
     fondo = lienzo.create_rectangle(x1 - 3, y1 - 1, x2 + 3, y2 + 1, fill="#FFFFFF", outline="")
     lienzo.tag_raise(marca)
@@ -1857,7 +1859,7 @@ def _linea_ttr(
             lienzo.addtag_withtag("parpadeo", linea)
 
     if mide_a and mide_b:
-        trazo(x1, y1, x2, y2, base, True)
+        trazo(x1, y1, x2, y2, TTR_ROSA_NEON, True)
         ca = cb = TTR_ROSA_NEON
     elif {ca, cb} <= {"#000000", "#111111", "#FF0000"} and ca != cb:
         mx = (x1 + x2) / 2
@@ -1889,7 +1891,9 @@ def _puntos_ttr(lienzo, nodos):
             x - radio, y - radio, x + radio, y + radio,
             fill=color, outline=color,
         )
-        if color == "#000000":
+        if color == TTR_ROSA_NEON:
+            lienzo.addtag_withtag("parpadeo", punto)
+        elif color == "#000000":
             lienzo.addtag_withtag("parpadeo_negro", punto)
         elif color == "#FF0000":
             lienzo.addtag_withtag("parpadeo_rojo", punto)
@@ -12679,7 +12683,7 @@ class AppSAPE(tk.Tk):
 
         def aplicar_parpadeo():
             linea_visible = self._vector_mide_visible
-            tinta = TTR_MORADO if linea_visible else "#FFFFFF"
+            tinta = TTR_ROSA_NEON if linea_visible else "#FFFFFF"
             fase = "hidden" if linea_visible else "normal"
             try:
                 if not medicion.winfo_exists():
