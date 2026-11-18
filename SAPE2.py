@@ -1785,7 +1785,8 @@ def _fase_a_mitad_ttr(
     marca = lienzo.create_text(
         (x1 + x2) / 2 + (-dy / largo) * 16 * lado,
         (y1 + y2) / 2 + (dx / largo) * 16 * lado,
-        text=f"∅{letra}", fill=TTR_LILA_FASE,
+        text=f"∅{letra}",
+        fill=TTR_MORADO_MEDICION if parpadeo else TTR_LILA_FASE,
         font=("Segoe UI", 9, "bold"),
     )
     if parpadeo:
