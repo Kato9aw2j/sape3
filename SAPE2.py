@@ -7553,13 +7553,15 @@ class AppSAPE(tk.Tk):
                 font=ctk.CTkFont(family="Consolas", size=11, weight="bold"),
             ).pack(padx=10, pady=2)
             equipo_actual = self.datos_prueba["tipo_equipo"].get().strip()
-            texto_sub = subtitulos[numero]
-            if numero != 1 and equipo_actual:
-                texto_sub = f"{equipo_actual}  ·  {texto_sub}"
             tk.Label(
-                izquierda, text=texto_sub, bg=fondo, fg="#596573",
+                izquierda, text=subtitulos[numero], bg=fondo, fg="#596573",
                 font=("Segoe UI", 10), anchor="w",
             ).pack(anchor="w", pady=(4, 0))
+            if numero != 1 and equipo_actual:
+                tk.Label(
+                    izquierda, text=equipo_actual, bg=fondo, fg="#334155",
+                    font=("Segoe UI", 18, "bold"), anchor="w",
+                ).pack(anchor="w", pady=(2, 0))
             numero_paso, _, resto_paso = titulos[numero].partition(" ")
             insignia = ctk.CTkFrame(
                 fila, fg_color=RA_VISTA_NARANJA, corner_radius=10,
@@ -8007,12 +8009,6 @@ class AppSAPE(tk.Tk):
                 pady=(12, 8) if numero == 3 else (18, 8),
             )
             poner_titulos(contenido, espacio=8)
-            equipo = self.datos_prueba["tipo_equipo"].get().strip()
-            if equipo and numero != 3:
-                tk.Label(
-                    contenido, text=equipo,
-                    bg="#F8FAFC", fg="#334155", font=("Segoe UI", 18, "bold"),
-                ).pack(anchor="w", pady=(0, 10))
 
             prueba_ra = self.prueba_seleccionada or {}
             textos_diag = {
@@ -11864,14 +11860,17 @@ class AppSAPE(tk.Tk):
             font=ctk.CTkFont(family="Consolas", size=11, weight="bold"),
         ).pack(padx=10, pady=2)
         equipo_actual = self.datos_ttr["tipo_equipo"].get().strip()
-        texto_sub = subtitulos[numero]
-        if numero != 1 and equipo_actual:
-            texto_sub = f"{equipo_actual}  ·  {texto_sub}"
         tk.Label(
-            izquierda, text=texto_sub,
+            izquierda, text=subtitulos[numero],
             bg=fondo, fg="#596573",
             font=("Segoe UI", 10), anchor="w",
         ).pack(anchor="w", pady=(4, 0))
+        if numero != 1 and equipo_actual:
+            tk.Label(
+                izquierda, text=equipo_actual,
+                bg=fondo, fg="#334155",
+                font=("Segoe UI", 18, "bold"), anchor="w",
+            ).pack(anchor="w", pady=(2, 0))
         insignia = ctk.CTkFrame(
             fila, fg_color=TTR_MORADO, corner_radius=10,
         )
@@ -13246,13 +13245,15 @@ class AppSAPE(tk.Tk):
             font=ctk.CTkFont(family="Consolas", size=11, weight="bold"),
         ).pack(padx=10, pady=2)
         equipo_actual = self.datos_fp["tipo_equipo"].get().strip()
-        texto_sub = subtitulos[numero]
-        if numero != 1 and equipo_actual:
-            texto_sub = f"{equipo_actual}  ·  {texto_sub}"
         tk.Label(
-            izquierda, text=texto_sub, bg=fondo, fg="#596573",
+            izquierda, text=subtitulos[numero], bg=fondo, fg="#596573",
             font=("Segoe UI", 10), anchor="w",
         ).pack(anchor="w", pady=(4, 0))
+        if numero != 1 and equipo_actual:
+            tk.Label(
+                izquierda, text=equipo_actual, bg=fondo, fg="#334155",
+                font=("Segoe UI", 18, "bold"), anchor="w",
+            ).pack(anchor="w", pady=(2, 0))
         insignia = ctk.CTkFrame(
             fila, fg_color=FP_VISTA_VERDE, corner_radius=10,
         )
