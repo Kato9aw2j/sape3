@@ -84,8 +84,8 @@ TTR_ROSA_MEDICION = "#FF0077"  # bornes/bolitas/línea que se están midiendo.
 TTR_ROSA_PASTEL = "#F5A3D0"
 TTR_MORADO_PASTEL = "#C4B5FD"
 TTR_MORADO_TRAS = "#D8C4FB"
-TTR_MORADO_NEON = "#A57EDC"  # bornes libres (sin rol en la prueba).
-TTR_LILA_FASE = "#CBB6EE"  # etiquetas ∅A/∅B/∅C.
+TTR_MORADO_NEON = "#8E22BB"  # bornes libres (sin rol en la prueba).
+TTR_LILA_FASE = "#AB49CC"  # etiquetas ∅A/∅B/∅C.
 # Pastilla "Modo Diagnóstico" del encabezado de cada paso, igual que en RA/FP.
 TTR_VISTA_PASTEL = "#EDE9FE"
 TTR_VISTA_PASTEL_BORDE = "#C4B5FD"
@@ -1841,7 +1841,7 @@ def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_a
     lienzo.tag_lower(fondo)
 
 
-_COLOR_LINEA_TTR = "#9F4CA5"  # líneas del diagrama vectorial.
+_COLOR_LINEA_TTR = "#7F00B2"  # líneas del diagrama vectorial.
 
 
 def _linea_ttr(
