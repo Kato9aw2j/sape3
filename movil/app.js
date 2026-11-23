@@ -139,7 +139,7 @@ function vistaInicio() {
     </button>`).join("");
   return `
     <main class="inicio">
-      <div class="logo-cfe">CFE</div>
+      <div class="logo-cfe-3d" id="logo-cfe-3d"><div class="logo-cfe">CFE</div></div>
       <p class="org">COMISIÓN FEDERAL DE ELECTRICIDAD<br>ZONA DE TRANSMISIÓN JALISCO ORIENTE<br>SUBESTACIONES</p>
       <h1 class="logo-sape">[ S.A.P.E. ]</h1>
       <p class="sub">SISTEMA DE ANÁLISIS DE PRUEBAS ELÉCTRICAS<br>VERSIÓN MÓVIL 1.0</p>
@@ -1059,6 +1059,11 @@ function pintar() {
     anexoA: vistaAnexoA, anexoAFp: vistaAnexoAFp, historial: vistaHistorial,
   }[estado.vista]();
   raiz.className = { anexoA: "ra", anexoAFp: "fp" }[estado.vista] || estado.vista;
+  if (estado.vista === "inicio" && typeof iniciarCfe3D === "function") {
+    iniciarCfe3D(document.getElementById("logo-cfe-3d"));
+  } else if (typeof detenerCfe3D === "function") {
+    detenerCfe3D();
+  }
 }
 
 function resumenResultado(res) {
