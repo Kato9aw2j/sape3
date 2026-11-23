@@ -1867,6 +1867,9 @@ def _linea_ttr(
         )
         if parpadeo:
             lienzo.addtag_withtag("parpadeo", linea)
+        etiqueta = {"#000000": "parpadeo_negro", "#FF0000": "parpadeo_rojo"}.get(color)
+        if etiqueta:
+            lienzo.addtag_withtag(etiqueta, linea)
 
     if mide_a and mide_b:
         trazo(x1, y1, x2, y2, TTR_ROSA_MEDICION, parpadeo=True)
