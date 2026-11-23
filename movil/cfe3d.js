@@ -1,5 +1,5 @@
-// Logo "CFE" en 3D (Three.js) para el menú principal del móvil. Vive dentro
-// de #logo-cfe-3d, con el tamaño de ese contenedor (no pantalla completa).
+﻿// Logo "CFE" en 3D (Three.js) para el menÃº principal del mÃ³vil. Vive dentro
+// de #logo-cfe-3d, con el tamaÃ±o de ese contenedor (no pantalla completa).
 // Si no hay internet para bajar Three.js o el celular no soporta WebGL, se
 // queda el logo de texto de respaldo que ya trae el contenedor.
 "use strict";
@@ -63,7 +63,7 @@ async function iniciarCfe3D(contenedor) {
   } catch (_e) {
     return; // Sin internet: se queda el logo de texto de respaldo.
   }
-  if (!contenedor.isConnected) return; // El usuario ya cambió de pantalla.
+  if (!contenedor.isConnected) return; // El usuario ya cambiÃ³ de pantalla.
   const {
     THREE, OrbitControls, FontLoader, TextGeometry,
     EffectComposer, RenderPass, UnrealBloomPass,
@@ -109,12 +109,12 @@ async function iniciarCfe3D(contenedor) {
       color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.2, roughness: 0.2,
     });
     const geoExterior = _inclinar(THREE, new TextGeometry("CFE", {
-      font: fuente, size: 5, height: 1.0, curveSegments: 24,
+      font: fuente, size: 7, height: 1.0, curveSegments: 24,
       bevelEnabled: true, bevelThickness: 0.1, bevelSize: 0.25, bevelSegments: 4,
     }));
     escena.add(new THREE.Mesh(geoExterior, matVerde));
     const geoInterior = _inclinar(THREE, new TextGeometry("CFE", {
-      font: fuente, size: 5, height: 1.05, curveSegments: 24,
+      font: fuente, size: 7, height: 1.05, curveSegments: 24,
       bevelEnabled: true, bevelThickness: 0.1, bevelSize: 0.1, bevelSegments: 4,
     }));
     escena.add(new THREE.Mesh(geoInterior, [matVerde, matBlanco]));

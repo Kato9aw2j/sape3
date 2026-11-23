@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1"> 
-    <title>S.A.P.E. - Menú Principal</title>
+    <title>S.A.P.E. - MenÃº Principal</title>
     <script type="importmap">
     {
       "imports": {
@@ -188,17 +188,17 @@
     <div class="console-container">
         <div class="logo-cfe-3d" id="logo-cfe-3d"><div class="logo-cfe">CFE</div></div>
         <div class="header-text">
-            COMISIÓN FEDERAL DE ELECTRICIDAD<br>
-            ZONA DE TRANSMISIÓN JALISCO ORIENTE<br>
+            COMISIÃ“N FEDERAL DE ELECTRICIDAD<br>
+            ZONA DE TRANSMISIÃ“N JALISCO ORIENTE<br>
             SUBESTACIONES
         </div>
         <div class="sape-title">[ S.A.P.E. ]</div>
         <div class="version-text">
-            SISTEMA DE ANÁLISIS DE PRUEBAS ELÉCTRICAS<br>
-            VERSIÓN 3.2.0 - © 2026
+            SISTEMA DE ANÃLISIS DE PRUEBAS ELÃ‰CTRICAS<br>
+            VERSIÃ“N 3.2.0 - Â© 2026
         </div>
         <div class="diagnostico-text">
-            "Diagnóstico De Transformadores De Potencia<br>
+            "DiagnÃ³stico De Transformadores De Potencia<br>
             E Instrumentales"
         </div>
         <div class="menu-list">
@@ -210,24 +210,24 @@
                 <span class="nombre">2. Factor de Potencia al Aislamiento</span>
                 <span class="tag">[ %F.P. ]</span>
             </button>
-            <button class="menu-item" type="button" onclick="seleccionar('3', 'Relación de Transformación')">
-                <span class="nombre">3. Relación de Transformación</span>
+            <button class="menu-item" type="button" onclick="seleccionar('3', 'RelaciÃ³n de TransformaciÃ³n')">
+                <span class="nombre">3. RelaciÃ³n de TransformaciÃ³n</span>
                 <span class="tag">[ T.T.R ]</span>
             </button>
-            <button class="menu-item" type="button" onclick="seleccionar('4', 'Corriente de Excitación')">
-                <span class="nombre">4. Corriente de Excitación</span>
+            <button class="menu-item" type="button" onclick="seleccionar('4', 'Corriente de ExcitaciÃ³n')">
+                <span class="nombre">4. Corriente de ExcitaciÃ³n</span>
                 <span class="tag">[ I.EXC ]</span>
             </button>
-            <button class="menu-item" type="button" onclick="seleccionar('5', 'Resistencia Óhmica de Devanados')">
-                <span class="nombre">5. Resistencia Óhmica de Devanados</span>
-                <span class="tag">[ R.O.Ω ]</span>
+            <button class="menu-item" type="button" onclick="seleccionar('5', 'Resistencia Ã“hmica de Devanados')">
+                <span class="nombre">5. Resistencia Ã“hmica de Devanados</span>
+                <span class="tag">[ R.O.Î© ]</span>
             </button>
             <button class="menu-item amarillo" type="button" onclick="seleccionar('6', 'Normativa y Procedimientos')">
                 <span class="nombre">6. Normativa y Procedimientos</span>
                 <span class="tag">[ CFE-IEEE ]</span>
             </button>
-            <button class="menu-item amarillo" type="button" onclick="seleccionar('7', 'Historial de Análisis')">
-                <span class="nombre">7. Historial de Análisis</span>
+            <button class="menu-item amarillo" type="button" onclick="seleccionar('7', 'Historial de AnÃ¡lisis')">
+                <span class="nombre">7. Historial de AnÃ¡lisis</span>
                 <span class="tag">[ ]</span>
             </button>
             <button class="menu-item amarillo" type="button" onclick="seleccionar('8', 'Desarrollador')">
@@ -239,7 +239,7 @@
                 <span class="tag">[ ]</span>
             </button>
         </div>
-        <div class="footer-text">Seleccione Una Opción Para Continuar</div>
+        <div class="footer-text">Seleccione Una OpciÃ³n Para Continuar</div>
     </div>
     <script>
         function esperarApi() {
@@ -248,7 +248,7 @@
             }
             return new Promise((resolve, reject) => {
                 const timeout = setTimeout(
-                    () => reject(new Error("La conexión con SAPE no está disponible.")),
+                    () => reject(new Error("La conexiÃ³n con SAPE no estÃ¡ disponible.")),
                     10000
                 );
                 window.addEventListener("pywebviewready", () => {
@@ -256,14 +256,14 @@
                     if (window.pywebview && window.pywebview.api) {
                         resolve(window.pywebview.api);
                     } else {
-                        reject(new Error("No se pudo iniciar la conexión con SAPE."));
+                        reject(new Error("No se pudo iniciar la conexiÃ³n con SAPE."));
                     }
                 }, { once: true });
             });
         }
 
         async function seleccionar(num, nombre) {
-            console.log("Opción seleccionada: " + num + ". " + nombre);
+            console.log("OpciÃ³n seleccionada: " + num + ". " + nombre);
             try {
                 const api = await esperarApi();
                 await api.seleccionar_opcion(num, nombre);
@@ -345,12 +345,12 @@
                         color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.2, roughness: 0.2,
                     });
                     const geoExterior = inclinar(new TextGeometry("CFE", {
-                        font: fuente, size: 5, height: 1.0, curveSegments: 24,
+                        font: fuente, size: 7, height: 1.0, curveSegments: 24,
                         bevelEnabled: true, bevelThickness: 0.1, bevelSize: 0.25, bevelSegments: 4,
                     }));
                     escena.add(new THREE.Mesh(geoExterior, matVerde));
                     const geoInterior = inclinar(new TextGeometry("CFE", {
-                        font: fuente, size: 5, height: 1.05, curveSegments: 24,
+                        font: fuente, size: 7, height: 1.05, curveSegments: 24,
                         bevelEnabled: true, bevelThickness: 0.1, bevelSize: 0.1, bevelSegments: 4,
                     }));
                     escena.add(new THREE.Mesh(geoInterior, [matVerde, matBlanco]));
