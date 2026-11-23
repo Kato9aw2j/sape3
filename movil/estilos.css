@@ -375,7 +375,7 @@ button:disabled { cursor: default; }
 .pildora.ground { background: #FECACA; color: #991B1B; }
 .pildora.ust { background: #CFFAFE; color: #155E75; }
 .pildora.cn { background: #E9ECEF; color: #111111; }
-.pildora.cr { background: #FFE3E3; color: #FF0000; }
+.pildora.cr { background: #FF0000; color: #FFFFFF; font-weight: 900; text-shadow: 0 0 6px rgba(255, 0, 0, .6); }
 .pildora.mide { background: #FDF2F8; color: #DB2777; }
 
 .th-linea, .th-ground { color: #DC2626 !important; }
@@ -385,7 +385,7 @@ button:disabled { cursor: default; }
 .th-hv { color: #111827 !important; }
 .th-ust { color: #0891B2 !important; }
 .th-cn { color: #111111 !important; }
-.th-cr { color: #FF0000 !important; }
+.th-cr { color: #FF0000 !important; font-weight: 900 !important; }
 
 #app.fp .tabla-pruebas tbody tr.activa { background: var(--fp-verde-texto); }
 #app.fp .tabla-pruebas tbody tr.activa td:first-child { box-shadow: inset 4px 0 0 var(--fp-verde-oscuro); }
