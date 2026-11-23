@@ -251,15 +251,12 @@ function paso3() {
   return `
     <h2>03. Diagramas de bloques</h2>
     <p class="nota">Prueba ${esc(prueba.prueba)} · ${esc(prueba.medicion)}</p>
-    <div class="segmentos vista">
-      <button data-modo="mide" class="${estado.modo === "mide" ? "activo" : ""}">Medición</button>
-      <button data-modo="conexiones" class="${estado.modo === "conexiones" ? "activo" : ""}">Conexiones</button>
-    </div>
-    <div class="diagrama">${dibujarDiagrama(estado.datos, prueba, estado.modo)}</div>
     <h3>Medición</h3>
+    <div class="diagrama">${dibujarDiagrama(estado.datos, prueba, "mide")}</div>
     <ul class="leyenda">${medicion.map((fila) => `
       <li><span class="badge ${fila.medido ? "medido" : ""}">${fila.codigo}</span>${esc(fila.texto)}</li>`).join("")}</ul>
     <h3>Conexiones</h3>
+    <div class="diagrama">${dibujarDiagrama(estado.datos, prueba, "conexiones")}</div>
     <ul class="leyenda">${conexiones.map((fila) => `
       <li><span class="badge ${fila.rol}">${ROTULO[fila.rol]}</span>${esc(fila.texto)}</li>`).join("")}</ul>`;
 }
@@ -456,11 +453,10 @@ function pasoFp3() {
   return `
     <h2>03. Diagramas de bloques</h2>
     <p class="nota">Prueba ${esc(pr.prueba || "—")} · ${esc(pr.medicion || "—")} · ${esc(pr.kv || "—")} kV · ${esc(pr.modo || "—")}</p>
-    <div class="segmentos vista">
-      <button data-modofp="mide" class="${estado.modoFp === "conexiones" ? "" : "activo"}">Medición</button>
-      <button data-modofp="conexiones" class="${estado.modoFp === "conexiones" ? "activo" : ""}">Conexiones</button>
-    </div>
-    <div class="diagrama">${dibujarDiagramaFp(d, pr, estado.modoFp)}</div>
+    <h3>Medición</h3>
+    <div class="diagrama">${dibujarDiagramaFp(d, pr, "mide")}</div>
+    <h3>Conexiones</h3>
+    <div class="diagrama">${dibujarDiagramaFp(d, pr, "conexiones")}</div>
     <h3>Conexiones de esta prueba</h3>
     <div class="chips" style="justify-content:center;margin-bottom:6px;">
       ${chipFp("HV", "LINEA", pr.hv)}
