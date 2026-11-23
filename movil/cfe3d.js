@@ -141,10 +141,6 @@ async function iniciarCfe3D(contenedor) {
   controles.autoRotate = true;
   controles.autoRotateSpeed = 1.5;
 
-  const gridHelper = new THREE.GridHelper(80, 80, 0x00ff88, 0x003322);
-  gridHelper.position.y = -5;
-  escena.add(gridHelper);
-
   new FontLoader().load(_CFE3D_FUENTE, (fuente) => {
     if (!estadoLocal.vivo) return;
     const matVerde = new THREE.MeshStandardMaterial({

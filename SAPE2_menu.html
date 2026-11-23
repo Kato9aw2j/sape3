@@ -374,10 +374,6 @@
             controles.autoRotate = true;
             controles.autoRotateSpeed = 1.5;
 
-            const gridHelper = new THREE.GridHelper(80, 80, 0x00ff88, 0x003322);
-            gridHelper.position.y = -5;
-            escena.add(gridHelper);
-
             const estadoPlasma = { material: null };
             new FontLoader().load(
                 "https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json",
