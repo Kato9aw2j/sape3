@@ -66,7 +66,16 @@ button:disabled { cursor: default; }
   font: 900 64px/1 Consolas, "Courier New", monospace;
   letter-spacing: 6px;
   color: #22E06B;
-  text-shadow: 0 0 18px rgba(34, 224, 107, .7);
+  /* Relieve 3D: capas cada vez más oscuras hacia abajo-derecha, como si las
+     letras tuvieran grosor, más el resplandor de siempre. */
+  text-shadow:
+    1px 1px 0 #1ba853,
+    2px 2px 0 #178a46,
+    3px 3px 0 #136b38,
+    4px 4px 0 #0f4c29,
+    5px 5px 0 #0a331b,
+    6px 6px 10px rgba(0, 0, 0, .45),
+    0 0 18px rgba(34, 224, 107, .7);
 }
 .org { font: 700 11px/1.6 Consolas, monospace; letter-spacing: 1px; margin: 14px 0 18px; }
 .logo-sape {

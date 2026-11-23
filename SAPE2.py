@@ -6759,6 +6759,16 @@ class AppSAPE(tk.Tk):
             x_pos(8), y_pos(8), width - x_pos(8), height - y_pos(8),
             outline=NEON, width=4, tags=tags
         )
+        # Relieve 3D: copias desplazadas en verde cada vez más oscuro detrás
+        # del texto principal, como si las letras tuvieran grosor.
+        for i, color_capa in zip(
+            (5, 4, 3, 2, 1),
+            ("#06230F", "#0B3A1C", "#115028", "#1A7038", "#248A48"),
+        ):
+            self.canvas.create_text(
+                center_x + i, y_pos(90) + i, text=CFE_ASCII, font=self.f_cfe,
+                fill=color_capa, justify="center", tags=tags,
+            )
         self.canvas.create_text(
             center_x, y_pos(90), text=CFE_ASCII, font=self.f_cfe,
             fill=VERDE_CLARO, justify="center", tags=tags
