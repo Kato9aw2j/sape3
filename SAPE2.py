@@ -12560,7 +12560,7 @@ class AppSAPE(tk.Tk):
             (4, 5, "TERMINALES SECUNDARIAS"),
         ):
             tk.Label(
-                tabla, text=titulo_g, bg=TTR_MORADO_OSCURO, fg=TTR_PLATA,
+                tabla, text=titulo_g, bg=TTR_MORADO_OSCURO, fg="#FFFFFF",
                 font=("Segoe UI", 10, "bold"), anchor="center",
                 padx=8, pady=8,
             ).grid(
