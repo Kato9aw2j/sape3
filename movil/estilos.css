@@ -375,7 +375,7 @@ button:disabled { cursor: default; }
 .pildora.ground { background: #FECACA; color: #991B1B; }
 .pildora.ust { background: #CFFAFE; color: #155E75; }
 .pildora.cn { background: #E9ECEF; color: #111111; }
-.pildora.cr { background: #FFE3E3; color: #DC143C; }
+.pildora.cr { background: #FFE3E3; color: #FF0000; }
 .pildora.mide { background: #FDF2F8; color: #DB2777; }
 
 .th-linea, .th-ground { color: #DC2626 !important; }
@@ -385,7 +385,7 @@ button:disabled { cursor: default; }
 .th-hv { color: #111827 !important; }
 .th-ust { color: #0891B2 !important; }
 .th-cn { color: #111111 !important; }
-.th-cr { color: #DC143C !important; }
+.th-cr { color: #FF0000 !important; }
 
 #app.fp .tabla-pruebas tbody tr.activa { background: var(--fp-verde-texto); }
 #app.fp .tabla-pruebas tbody tr.activa td:first-child { box-shadow: inset 4px 0 0 var(--fp-verde-oscuro); }
@@ -397,4 +397,3 @@ button:disabled { cursor: default; }
 #app.ttr .tabla-pruebas tbody tr.activa td:first-child { box-shadow: inset 4px 0 0 var(--ttr-morado); }
 #app.ttr .punto.on { border-color: var(--ttr-morado); }
 #app.ttr .punto.on::after { background: var(--ttr-morado); }
-#app.ttr .th-cn, #app.ttr .th-cr { color: var(--ttr-morado-oscuro) !important; }
