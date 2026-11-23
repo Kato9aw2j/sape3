@@ -6166,11 +6166,6 @@ def _boton_menu_ra(
             "filo": "#E07A1A", "texto": "#FFFFFF", "numero": "#FFFFFF",
         },
     }
-    # Resplandor, halo, medio, núcleo y centro caliente de la letra en neón.
-    neon_letra = (
-        (255, 72, 0), (255, 104, 0), (255, 138, 24),
-        (255, 168, 64), (255, 247, 228),
-    )
     color_resaltado = RA_VISTA_NARANJA
     if tema == "verde":
         caras["activo"].update(
@@ -6180,10 +6175,6 @@ def _boton_menu_ra(
         caras["activo_hundido"].update(
             paradas=((0.0, "#059669"), (1.0, "#047857")),
             labio="#064E3B", filo="#059669",
-        )
-        neon_letra = (
-            (0, 200, 83), (0, 220, 110), (34, 230, 140),
-            (74, 240, 170), (236, 253, 245),
         )
         color_resaltado = "#34D399"
     elif tema == "neon":
@@ -6195,10 +6186,6 @@ def _boton_menu_ra(
             paradas=((0.0, "#07141A"), (1.0, "#051015")),
             labio="#004D5A", filo="#00B8CC",
         )
-        neon_letra = (
-            (0, 130, 160), (0, 190, 220), (0, 229, 255),
-            (140, 245, 255), (240, 254, 255),
-        )
         color_resaltado = "#00E5FF"
     elif tema == "morado":
         caras["activo"].update(
@@ -6208,10 +6195,6 @@ def _boton_menu_ra(
         caras["activo_hundido"].update(
             paradas=((0.0, "#7C3AED"), (1.0, "#5B21B6")),
             labio="#4C1D95", filo="#7C3AED",
-        )
-        neon_letra = (
-            (91, 33, 182), (109, 40, 217), (124, 58, 237),
-            (167, 139, 250), (245, 243, 255),
         )
         color_resaltado = TTR_MORADO_CLARO
     elif tema == "morado_recurso":
@@ -6225,10 +6208,6 @@ def _boton_menu_ra(
         )
         color_resaltado = TTR_MORADO_CLARO
     elif tema == "neon_morado":
-        neon_letra = (
-            (76, 29, 149), (91, 33, 182), (124, 58, 237),
-            (167, 139, 250), (221, 214, 254),
-        )
         color_resaltado = TTR_MORADO_CLARO
 
     def cara_actual():
@@ -6356,61 +6335,39 @@ def _boton_menu_ra(
             )
             x_texto = chip_x + chip_w + 12
         elif marca:
+            # Misma caja y el mismo resplandor cian que el chip de número,
+            # nada más que con una letra en vez de un dígito.
             from PIL import ImageFont, ImageFilter
-            fuente_letra = ImageFont.truetype(
-                r"C:\Windows\Fonts\segoeuib.ttf", 22,
-            )
-            sonda = ImageDraw.Draw(Image.new("RGBA", (4, 4)))
-            izquierda, arriba, derecha, abajo = sonda.textbbox(
-                (0, 0), marca, font=fuente_letra,
-            )
-            ancho_tinta = derecha - izquierda
-            alto_tinta = abajo - arriba
             lw, lh = 44, 38
-            origen = (
-                (lw - ancho_tinta) / 2 - izquierda,
-                (lh - alto_tinta) / 2 - arriba,
+            color_letra = "#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF"
+            placa = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
+            trazo = ImageDraw.Draw(placa)
+            trazo.rounded_rectangle(
+                (0, 0, lw - 1, lh - 1), radius=6, fill=(26, 26, 26, 255),
             )
-
-            def capa_letra(color):
-                capa = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
-                ImageDraw.Draw(capa).text(
-                    origen, marca, font=fuente_letra, fill=color,
-                )
-                return capa
-
-            # Neón en la letra (A, B, C), con un halo ancho y saturado.
-            resplandor = capa_letra(neon_letra[0] + (255,)).filter(
-                ImageFilter.GaussianBlur(9),
+            trazo.rounded_rectangle(
+                (4, 5, lw - 5, lh - 6), radius=5, fill=(5, 5, 5, 255),
             )
-            halo = capa_letra(neon_letra[1] + (255,)).filter(
-                ImageFilter.GaussianBlur(5),
+            fuente_brillo_letra = ImageFont.truetype(
+                r"C:\Windows\Fonts\consolab.ttf", 16,
             )
-            medio = capa_letra(neon_letra[2] + (255,)).filter(
-                ImageFilter.GaussianBlur(2),
+            brillo = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
+            ImageDraw.Draw(brillo).text(
+                (lw / 2, lh / 2), marca, font=fuente_brillo_letra,
+                fill=_rgb(color_letra) + (230,), anchor="mm",
             )
-            nucleo = capa_letra(neon_letra[3] + (255,))
-            caliente = capa_letra(neon_letra[4] + (255,))
-            caliente.putalpha(
-                caliente.getchannel("A")
-                .filter(ImageFilter.MinFilter(3))
-                .filter(ImageFilter.GaussianBlur(0.7))
-            )
-            letra = resplandor
-            for capa in (resplandor, halo, halo, medio, nucleo, caliente):
-                letra = Image.alpha_composite(letra, capa)
-            placa = Image.new("RGBA", (lw, lh), (0, 0, 0, 255))
-            ImageDraw.Draw(placa).rounded_rectangle(
-                (0, 0, lw - 1, lh - 1), radius=6,
-                fill=(5, 5, 5, 255), outline=(26, 30, 36, 255), width=2,
-            )
-            letra = Image.alpha_composite(placa, letra)
-            foto_letra = ImageTk.PhotoImage(letra)
+            brillo = brillo.filter(ImageFilter.GaussianBlur(2))
+            placa = Image.alpha_composite(placa, brillo)
+            foto_letra = ImageTk.PhotoImage(placa)
             estado["foto_letra"] = foto_letra
             x_placa = 14
             lienzo.create_image(
                 x_placa, centro - lh / 2,
                 image=foto_letra, anchor="nw",
+            )
+            lienzo.create_text(
+                x_placa + lw / 2, centro - 1, text=marca,
+                fill=color_letra, font=fuente_chip,
             )
             x_texto = x_placa + lw + 12
         lienzo.create_text(
