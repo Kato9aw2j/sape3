@@ -1811,7 +1811,10 @@ def _color_rol_ttr(rol):
     return "#000000"
 
 
-def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_arriba=False):
+def _poner_borne_ttr(
+    lienzo, x, y, texto, colores, roles, anchor="center", rol_arriba=False,
+    rol_derecha=False,
+):
     libre = getattr(lienzo, "_tono_libre_ttr", None)
     colores_borne = getattr(lienzo, "_colores_borne_ttr", None)
     if colores_borne is None:
@@ -1829,11 +1832,15 @@ def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_a
     rol = _roles_etiqueta_ttr(texto, roles)
     if not rol:
         return
-    ry = (y1 - 11) if rol_arriba else (y2 + 11)
     color_rol = _color_rol_ttr(rol)
+    if rol_derecha:
+        posicion = dict(x=x2 + 8, y=(y1 + y2) / 2, anchor="w")
+    else:
+        ry = (y1 - 11) if rol_arriba else (y2 + 11)
+        posicion = dict(x=(x1 + x2) / 2, y=ry, anchor="center")
     etiqueta = lienzo.create_text(
-        (x1 + x2) / 2, ry, text=rol, fill=color_rol,
-        font=("Segoe UI", 9, "bold"),
+        posicion["x"], posicion["y"], text=rol, fill=color_rol,
+        anchor=posicion["anchor"], font=("Segoe UI", 9, "bold"),
     )
     if color_rol == "#FF0000":
         lienzo.addtag_withtag("parpadeo_rojo", etiqueta)
@@ -2251,6 +2258,7 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
             )
             _poner_borne_ttr(
                 lienzo, cx + 28, cy, centro, colores, roles, "w",
+                rol_derecha=True,
             )
             _fase_a_mitad_ttr(
                 lienzo, x_izq, y_izq, cx, cy, izq, 1,
