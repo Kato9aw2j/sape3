@@ -107,6 +107,11 @@ button:disabled { cursor: default; }
 .menu-item:disabled .marca { color: var(--tenue); font-weight: 400; }
 .menu-item:not(:disabled):active { background: rgba(0, 229, 255, .14); }
 
+/* Resistencia de Aislamiento: naranja, igual que en el escritorio. */
+.menu-item-ra { border-color: var(--naranja); }
+.menu-item-ra .marca { color: var(--naranja); }
+.menu-item-ra:not(:disabled):active { background: rgba(234, 88, 12, .16); }
+
 /* Factor de Potencia al Aislamiento: verdes esmeralda, igual que en el
    programa de escritorio (FP_VERDE, FP_VERDE_OSCURO, FP_VERDE_HOVER…). */
 .menu-item-fp { border-color: var(--fp-verde); }
@@ -325,3 +330,71 @@ button:disabled { cursor: default; }
 .badge-anexo.ACEPTADO { background: #007A33; color: #FFF; }
 .badge-anexo.INVESTIGAR { background: #F5C400; color: #1A1A1A; }
 .badge-anexo.RECHAZADO { background: #C62828; color: #FFF; }
+
+/* ---------- Tabla de pruebas (paso 02): calco de la tabla de PC ---------- */
+.tabla-pruebas {
+  overflow-x: auto; border: 1px solid #E2E8F0; border-radius: 10px;
+  margin-bottom: 14px; background: #FFF; -webkit-overflow-scrolling: touch;
+}
+.tabla-pruebas table { width: 100%; border-collapse: collapse; }
+.tabla-pruebas th {
+  background: #F1F5F9; color: #334155; font: 700 10px Consolas, monospace;
+  text-transform: uppercase; padding: 10px 8px; text-align: center;
+  white-space: nowrap; border-bottom: 2px solid #CBD5E1;
+}
+.tabla-pruebas td {
+  padding: 10px 8px; text-align: center; white-space: nowrap;
+  border-top: 1px solid #E2E8F0; font: 600 13px Consolas, monospace; color: #475569;
+}
+.tabla-pruebas td.num { font: 700 14px Consolas, monospace; color: #1E293B; }
+.tabla-pruebas td.vacia { color: #94A3B8; }
+.tabla-pruebas td.led { padding: 6px; }
+.tabla-pruebas tbody tr { cursor: pointer; }
+.tabla-pruebas tbody tr:active { background: #F8FAFC; }
+.tabla-pruebas tbody tr.activa { background: #FFF7ED; }
+.tabla-pruebas tbody tr.activa td:first-child { box-shadow: inset 4px 0 0 var(--naranja); }
+
+.punto {
+  display: inline-block; width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid #94A3B8; background: #F8FAFC;
+}
+.punto.on { border-color: var(--naranja); background: #FFF; position: relative; }
+.punto.on::after {
+  content: ""; position: absolute; inset: 4px; border-radius: 50%; background: var(--naranja);
+}
+
+.pildora {
+  display: inline-block; padding: 4px 10px; border-radius: 999px;
+  font: 700 11px "Segoe UI", sans-serif; white-space: nowrap;
+}
+.pildora.linea { background: #FECACA; color: #991B1B; }
+.pildora.tierra { background: #E5E7EB; color: #111111; }
+.pildora.guarda, .pildora.guard { background: #DBEAFE; color: #1E40AF; }
+.pildora.medicion { background: #FFEDD5; color: #C2410C; }
+.pildora.hv { background: #E5E7EB; color: #111111; }
+.pildora.ground { background: #FECACA; color: #991B1B; }
+.pildora.ust { background: #CFFAFE; color: #155E75; }
+.pildora.cn { background: #E9ECEF; color: #111111; }
+.pildora.cr { background: #FFE3E3; color: #DC143C; }
+.pildora.mide { background: #FDF2F8; color: #DB2777; }
+
+.th-linea, .th-ground { color: #DC2626 !important; }
+.th-tierra { color: #334155 !important; }
+.th-guarda, .th-guard { color: #2563EB !important; }
+.th-medicion, .th-mide { color: #EA580C !important; }
+.th-hv { color: #111827 !important; }
+.th-ust { color: #0891B2 !important; }
+.th-cn { color: #111111 !important; }
+.th-cr { color: #DC143C !important; }
+
+#app.fp .tabla-pruebas tbody tr.activa { background: var(--fp-verde-texto); }
+#app.fp .tabla-pruebas tbody tr.activa td:first-child { box-shadow: inset 4px 0 0 var(--fp-verde-oscuro); }
+#app.fp .punto.on { border-color: var(--fp-verde-oscuro); }
+#app.fp .punto.on::after { background: var(--fp-verde-oscuro); }
+#app.fp .th-mide { color: var(--fp-verde-oscuro) !important; }
+
+#app.ttr .tabla-pruebas tbody tr.activa { background: var(--ttr-morado-texto); }
+#app.ttr .tabla-pruebas tbody tr.activa td:first-child { box-shadow: inset 4px 0 0 var(--ttr-morado); }
+#app.ttr .punto.on { border-color: var(--ttr-morado); }
+#app.ttr .punto.on::after { background: var(--ttr-morado); }
+#app.ttr .th-cn, #app.ttr .th-cr { color: var(--ttr-morado-oscuro) !important; }

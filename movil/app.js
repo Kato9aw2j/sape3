@@ -133,7 +133,7 @@ const MENU = [
 
 function vistaInicio() {
   const filas = MENU.map(([num, nombre, marca, destino]) => `
-    <button class="menu-item ${destino === "fp" ? "menu-item-fp" : ""} ${destino === "ttr" ? "menu-item-ttr" : ""}" ${destino ? `data-ir="${destino}"` : "disabled"}>
+    <button class="menu-item ${destino === "ra" ? "menu-item-ra" : ""} ${destino === "fp" ? "menu-item-fp" : ""} ${destino === "ttr" ? "menu-item-ttr" : ""}" ${destino ? `data-ir="${destino}"` : "disabled"}>
       <span>${num}. ${esc(nombre)}</span>
       <span class="marca">${destino ? (marca ? `[ ${esc(marca)} ]` : "›") : "Próximamente"}</span>
     </button>`).join("");
@@ -210,21 +210,38 @@ function chips(prueba) {
   return par("LINEA", prueba.linea) + par("TIERRA", prueba.tierra) + par("GUARDA", prueba.guarda);
 }
 
+// Celda de tabla de pruebas: pastilla de color si hay valor, "—" si no la
+// hay. Igual que las columnas de _crear_tabla_pruebas / _tabla_fp en PC.
+function celdaPildora(valor, clase) {
+  return !valor || VACIO.has(valor)
+    ? `<td class="vacia">—</td>`
+    : `<td><span class="pildora ${clase}">${esc(valor)}</span></td>`;
+}
+
 function paso2() {
   const lista = pruebasDe(estado.datos);
-  pruebaActual();
+  const actual = pruebaActual();
   return `
     <h2>02. Selección de pruebas</h2>
     <p class="nota">${esc(equipoDe(estado.datos.equipo).nombre)}. Elija la prueba a realizar.</p>
-    <div class="pruebas">${lista.map((prueba, i) => `
-      <button class="prueba ${i === estado.prueba ? "activo" : ""}" data-prueba="${i}">
-        <span class="num">${esc(prueba.prueba)}</span>
-        <span class="cuerpo">
-          <b>${esc(prueba.medicion)}</b>
-          <span class="chips">${chips(prueba)}</span>
-          <small>${esc(formatoKv(prueba.kv))} · ${prueba.minutos} min</small>
-        </span>
-      </button>`).join("")}</div>`;
+    <div class="tabla-pruebas"><table>
+      <thead><tr>
+        <th></th><th>Prueba</th><th>kV CC</th>
+        <th class="th-linea">Línea (+)</th><th class="th-tierra">Tierra (−)</th>
+        <th class="th-guarda">Guarda</th><th class="th-medicion">Medición</th>
+      </tr></thead>
+      <tbody>${lista.map((prueba, i) => `
+        <tr class="${i === estado.prueba ? "activa" : ""}" data-prueba="${i}">
+          <td class="led"><span class="punto ${i === estado.prueba ? "on" : ""}"></span></td>
+          <td class="num">${esc(prueba.prueba)}</td>
+          <td>${esc(formatoKv(prueba.kv))}</td>
+          ${celdaPildora(prueba.linea, "linea")}
+          ${celdaPildora(prueba.tierra, "tierra")}
+          ${celdaPildora(prueba.guarda, "guarda")}
+          ${celdaPildora(prueba.medicion, "medicion")}
+        </tr>`).join("")}</tbody>
+    </table></div>
+    <p class="nota">Prueba ${esc(actual.prueba)} · ${esc(actual.medicion)} · ${actual.minutos} min</p>`;
 }
 
 function paso3() {
@@ -393,19 +410,39 @@ function pasoFp2() {
   const d = estado.datosFp;
   const lista = filasFp(d.equipo, d.arreglo);
   if (estado.pruebaFp >= lista.length) estado.pruebaFp = 0;
+  if (!lista.length) {
+    return `
+      <h2>02. Selección de prueba</h2>
+      <p class="nota">${esc(d.equipo)}${d.arreglo ? " · " + esc(d.arreglo) : ""}.</p>
+      <p class="aviso">No hay pruebas definidas para este equipo.</p>`;
+  }
+  const actual = lista[estado.pruebaFp];
   return `
     <h2>02. Selección de prueba</h2>
     <p class="nota">${esc(d.equipo)}${d.arreglo ? " · " + esc(d.arreglo) : ""}. Elija la prueba a realizar.</p>
-    <div class="pruebas">${lista.map((pr, i) => `
-      <button class="prueba ${i === estado.pruebaFp ? "activo" : ""}" data-pruebafp="${i}">
-        <span class="num">${esc(pr.prueba)}</span>
-        <span class="cuerpo">
-          <b>${esc(pr.medicion || pr.modo)}</b>
-          <small>${esc(pr.kv)} kV · ${esc(pr.modo)}</small>
-        </span>
-      </button>`).join("")}
-      ${!lista.length ? `<p class="aviso">No hay pruebas definidas para este equipo.</p>` : ""}
-    </div>`;
+    <div class="tabla-pruebas"><table>
+      <thead><tr>
+        <th></th><th>Prueba</th><th>kV</th><th>Modo</th>
+        <th class="th-hv">Energizar (HV)</th><th class="th-ground">Ground</th>
+        <th class="th-guard">Guard</th><th class="th-ust">UST</th><th class="th-medicion">Mide</th>
+      </tr></thead>
+      <tbody>${lista.map((pr, i) => {
+        const guard = pr.flotando ? `${pr.flotando} flotando` : pr.guard;
+        return `
+        <tr class="${i === estado.pruebaFp ? "activa" : ""}" data-pruebafp="${i}">
+          <td class="led"><span class="punto ${i === estado.pruebaFp ? "on" : ""}"></span></td>
+          <td class="num">${esc(pr.prueba)}</td>
+          <td>${esc(pr.kv)}</td>
+          <td>${esc(pr.modo)}</td>
+          ${celdaPildora(pr.hv, "hv")}
+          ${celdaPildora(pr.ground, "ground")}
+          ${celdaPildora(guard, "guard")}
+          ${celdaPildora(pr.ust, "ust")}
+          ${celdaPildora(pr.medicion, "medicion")}
+        </tr>`;
+      }).join("")}</tbody>
+    </table></div>
+    <p class="nota">Prueba ${esc(actual.prueba)} · ${esc(actual.medicion || actual.modo)}</p>`;
 }
 
 function chipFp(rol, clase, valor) {
@@ -614,17 +651,37 @@ function pasoTtr2() {
       <p class="nota">${esc(d.equipo)}</p>
       <div class="aviso">${esc(nota)}</div>`;
   }
+  const actual = lista[estado.pruebaTtr];
   return `
     <h2>02. Selección de pruebas</h2>
     <p class="nota">${esc(d.equipo)}${d.configuracion === "Monofásico" ? " · Monofásico" : ""}. ${esc(nota)}</p>
-    <div class="pruebas">${lista.map((pr, i) => `
-      <button class="prueba ${i === estado.pruebaTtr ? "activo" : ""}" data-pruebattr="${i}">
-        <span class="num">${esc(pr.prueba)}</span>
-        <span class="cuerpo">
-          <b>${esc(pr.mide)}</b>
-          <span class="chips">${chipTtr("CN", pr.cn)}${chipTtr("CR", pr.cr)}${chipTtr("GN", pr.gn)}${chipTtr("GR", pr.gr)}</span>
-        </span>
-      </button>`).join("")}</div>`;
+    <div class="tabla-pruebas"><table>
+      <thead>
+        <tr>
+          <th></th><th>Prueba</th>
+          <th class="th-cn" colspan="2">Terminales de excitación</th>
+          <th class="th-gn" colspan="2">Terminales secundarias</th>
+          <th class="th-mide">Mide</th>
+        </tr>
+        <tr>
+          <th></th><th></th>
+          <th class="th-cn">CN</th><th class="th-cr">CR</th>
+          <th class="th-cn">GN</th><th class="th-cr">GR</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>${lista.map((pr, i) => `
+        <tr class="${i === estado.pruebaTtr ? "activa" : ""}" data-pruebattr="${i}">
+          <td class="led"><span class="punto ${i === estado.pruebaTtr ? "on" : ""}"></span></td>
+          <td class="num">${esc(pr.prueba)}</td>
+          ${celdaPildora(pr.cn, "cn")}
+          ${celdaPildora(pr.cr, "cr")}
+          ${celdaPildora(pr.gn, "cn")}
+          ${celdaPildora(pr.gr, "cr")}
+          ${celdaPildora(pr.mide, "mide")}
+        </tr>`).join("")}</tbody>
+    </table></div>
+    <p class="nota">Prueba ${esc(actual.prueba)} · ${esc(actual.mide)}</p>`;
 }
 
 function pasoTtr3() {
@@ -1120,7 +1177,9 @@ function pintarEstadoAnexo() {
 }
 
 raiz.addEventListener("click", (evento) => {
-  const boton = evento.target.closest("button");
+  const boton = evento.target.closest(
+    "button, tr[data-prueba], tr[data-pruebafp], tr[data-pruebattr]",
+  );
   if (!boton || boton.disabled) return;
   const d = boton.dataset;
   if (d.ir) {
