@@ -8055,30 +8055,13 @@ class AppSAPE(tk.Tk):
                         row=0, column=1, sticky="nw", padx=(18, 22), pady=(24, 16),
                     )
                     fila = 0
-                    botones_vista = {}
-
-                    def mostrar_vista(modo):
-                        lienzo._titulo = (
-                            "MEDICIÓN" if modo == "mide" else "CONEXIONES"
-                        )
-                        lienzo.cargar(textos_diag[modo])
 
                     for titulo, filas in secciones:
-                        modo_boton = (
-                            "mide" if titulo == "MEDICIÓN" else "conexiones"
-                        )
-                        ancho_titulo = tkfont.Font(
-                            family="Consolas", size=11, weight="bold",
-                        ).measure(titulo) + 28
-                        boton_titulo = _boton_relieve_ra(
-                            leyenda, titulo,
-                            lambda modo=modo_boton: mostrar_vista(modo),
-                            ancho=ancho_titulo, modo="diagnostico",
-                            fondo=fondo_leyenda, alto_caja=28, alto_lienzo=40,
-                            fuente_nombre="Consolas",
-                        )
-                        botones_vista[modo_boton] = boton_titulo
-                        boton_titulo.grid(
+                        tk.Label(
+                            leyenda, text=titulo, bg=fondo_leyenda,
+                            fg=RA_VISTA_NARANJA_OSCURO,
+                            font=("Consolas", 11, "bold"), anchor="w",
+                        ).grid(
                             row=fila, column=0, columnspan=2, sticky="w",
                             pady=(10 if fila else 0, 2),
                         )
@@ -8181,12 +8164,7 @@ class AppSAPE(tk.Tk):
                         )
                     ]
                     pintar_leyenda(
-                        [
-                            ("MEDICIÓN", filas_medicion),
-                            ("CONEXIONES", list(
-                                _leyenda_conexiones_ra(texto, prueba_ra)
-                            )),
-                        ],
+                        [("MEDICIÓN", filas_medicion)],
                         fondo_leyenda="#FFFFFF",
                     )
                 else:
@@ -8230,16 +8208,17 @@ class AppSAPE(tk.Tk):
                     )
 
                 seccion.bind("<Configure>", ajustar_region)
-                try:
-                    montar_diagrama(seccion, "mide")
-                except Exception:
-                    import traceback
-                    tk.Label(
-                        seccion,
-                        text=traceback.format_exc()[-900:],
-                        bg="#FFFFFF", fg="#B91C1C",
-                        font=("Consolas", 9), justify="left", anchor="w",
-                    ).pack(anchor="w", padx=12, pady=8)
+                for modo_diag in ("mide", "conexiones"):
+                    try:
+                        montar_diagrama(seccion, modo_diag)
+                    except Exception:
+                        import traceback
+                        tk.Label(
+                            seccion,
+                            text=traceback.format_exc()[-900:],
+                            bg="#FFFFFF", fg="#B91C1C",
+                            font=("Consolas", 9), justify="left", anchor="w",
+                        ).pack(anchor="w", padx=12, pady=8)
                 seccion.update_idletasks()
                 ajustar_region()
 
@@ -14019,32 +13998,31 @@ class AppSAPE(tk.Tk):
                 scrollregion=puerto.bbox("all") or (0, 0, 1, 1),
             ),
         )
-        panel = tk.Frame(seccion, bg="#FFFFFF")
-        panel.pack(anchor="nw", padx=12, pady=(4, 8))
-        columna = tk.Frame(panel, bg="#FFFFFF")
-        columna.grid(row=0, column=0, sticky="nw")
-        leyenda = tk.Frame(panel, bg="#FFFFFF")
-        leyenda.grid(row=0, column=1, sticky="nw", padx=(18, 22), pady=(24, 16))
-        # La leyenda parpadea al ritmo del diagrama, como en RA.
-        oyentes = []
+        filas_medicion, filas_conexion = self._leyenda_fp(prueba)
 
-        def avisar(fase):
-            for oir in oyentes:
-                oir(fase)
+        def montar_panel_fp(modo):
+            panel = tk.Frame(seccion, bg="#FFFFFF")
+            panel.pack(anchor="nw", padx=12, pady=(4, 8))
+            columna = tk.Frame(panel, bg="#FFFFFF")
+            columna.grid(row=0, column=0, sticky="nw")
+            leyenda = tk.Frame(panel, bg="#FFFFFF")
+            leyenda.grid(row=0, column=1, sticky="nw", padx=(18, 22), pady=(24, 16))
+            # La leyenda parpadea al ritmo del diagrama, como en RA.
+            oyentes = []
 
-        lienzo_bloques = None
-        if topo is None:
-            lienzo_bloques = _LienzoBloquesNeon(columna)
-            lienzo_bloques._oyentes_parpadeo = oyentes
-            lienzo_bloques._es_fp = True
-            lienzo_bloques._color_medicion = FP_VISTA_MEDICION
-            lienzo_bloques._alto_maximo = max(
-                280, lienzo_bloques.winfo_screenheight() - 420,
-            )
-            lienzo_bloques.pack(anchor="nw")
+            def avisar(fase):
+                for oir in oyentes:
+                    oir(fase)
 
-        def mostrar_vista(modo):
-            if lienzo_bloques is not None:
+            if topo is None:
+                lienzo_bloques = _LienzoBloquesNeon(columna)
+                lienzo_bloques._oyentes_parpadeo = oyentes
+                lienzo_bloques._es_fp = True
+                lienzo_bloques._color_medicion = FP_VISTA_MEDICION
+                lienzo_bloques._alto_maximo = max(
+                    280, lienzo_bloques.winfo_screenheight() - 420,
+                )
+                lienzo_bloques.pack(anchor="nw")
                 lienzo_bloques._titulo = (
                     "MEDICIÓN" if modo == "mide" else "CONEXIONES"
                 )
@@ -14053,33 +14031,19 @@ class AppSAPE(tk.Tk):
                     and _fp_ground_marca_tanque(prueba.get("ground", ""))
                 )
                 lienzo_bloques.cargar(self._texto_bloques_fp(modo))
-                return
-            for hijo in columna.winfo_children():
-                hijo.destroy()
-            avisar("MEDICION" if modo == "mide" else "CONEXIONES")
-            _dibujar_esquema_fp(
-                columna, topo, prueba, modo, al_parpadear=avisar,
-            ).pack(anchor="nw")
+            else:
+                avisar("MEDICION" if modo == "mide" else "CONEXIONES")
+                _dibujar_esquema_fp(
+                    columna, topo, prueba, modo, al_parpadear=avisar,
+                ).pack(anchor="nw")
 
-        filas_medicion, filas_conexion = self._leyenda_fp(prueba)
-        fila = 0
-        for titulo, modo, renglones in (
-            ("MEDICIÓN", "mide", filas_medicion),
-            ("CONEXIONES", "conexiones", filas_conexion),
-        ):
-            ancho_titulo = tkfont.Font(
-                family="Consolas", size=11, weight="bold",
-            ).measure(titulo) + 28
-            _boton_relieve_ra(
-                leyenda, titulo, lambda m=modo: mostrar_vista(m),
-                ancho=ancho_titulo, modo="diagnostico_verde",
-                fondo="#FFFFFF", alto_caja=28, alto_lienzo=40,
-                fuente_nombre="Consolas",
-            ).grid(
-                row=fila, column=0, columnspan=2, sticky="w",
-                pady=(10 if fila else 0, 2),
-            )
-            fila += 1
+            titulo = "MEDICIÓN" if modo == "mide" else "CONEXIONES"
+            renglones = filas_medicion if modo == "mide" else filas_conexion
+            tk.Label(
+                leyenda, text=titulo, bg="#FFFFFF", fg=FP_VISTA_VERDE_OSCURO,
+                font=("Consolas", 11, "bold"), anchor="w",
+            ).grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 2))
+            fila = 1
             for codigo, descripcion, color in renglones:
                 badge = ctk.CTkLabel(
                     leyenda, text=codigo, fg_color=color,
@@ -14114,15 +14078,17 @@ class AppSAPE(tk.Tk):
                     wraplength=250,
                 ).grid(row=fila, column=1, sticky="w", pady=6)
                 fila += 1
-        try:
-            mostrar_vista("mide")
-        except Exception:
-            import traceback
-            tk.Label(
-                columna, text=traceback.format_exc()[-900:],
-                bg="#FFFFFF", fg="#B91C1C", font=("Consolas", 9),
-                justify="left", anchor="w",
-            ).pack(anchor="w", padx=12, pady=8)
+
+        for modo_diag in ("mide", "conexiones"):
+            try:
+                montar_panel_fp(modo_diag)
+            except Exception:
+                import traceback
+                tk.Label(
+                    seccion, text=traceback.format_exc()[-900:],
+                    bg="#FFFFFF", fg="#B91C1C", font=("Consolas", 9),
+                    justify="left", anchor="w",
+                ).pack(anchor="w", padx=12, pady=8)
 
         tk.Label(
             fila_pie, text="Módulo 03 / 04", bg="#F6F3EB",
