@@ -8026,6 +8026,12 @@ class AppSAPE(tk.Tk):
                 panel.grid_columnconfigure(0, weight=0)
                 columna = tk.Frame(panel, bg=fondo_panel)
                 columna.grid(row=0, column=0, sticky="nw")
+                tk.Label(
+                    columna,
+                    text="MEDICIÓN" if modo == "mide" else "CONEXIONES",
+                    bg=fondo_panel, fg=RA_VISTA_NARANJA,
+                    font=("Consolas", 22, "bold"), anchor="w",
+                ).pack(anchor="nw", padx=6, pady=(0, 4))
                 lienzo = _LienzoBloquesNeon(columna)
                 lienzo._color_medicion = RA_NARANJA_PASTEL
                 lienzo._marco_paso = frame
@@ -8056,16 +8062,7 @@ class AppSAPE(tk.Tk):
                     )
                     fila = 0
 
-                    for titulo, filas in secciones:
-                        tk.Label(
-                            leyenda, text=titulo, bg=fondo_leyenda,
-                            fg=RA_VISTA_NARANJA_OSCURO,
-                            font=("Consolas", 11, "bold"), anchor="w",
-                        ).grid(
-                            row=fila, column=0, columnspan=2, sticky="w",
-                            pady=(10 if fila else 0, 2),
-                        )
-                        fila += 1
+                    for _titulo, filas in secciones:
                         for codigo, descripcion, color in filas:
                             es_conexion = codigo in ("LÍNEA", "TIERRA", "GUARDA")
                             medida = (
@@ -14014,6 +14011,12 @@ class AppSAPE(tk.Tk):
                 for oir in oyentes:
                     oir(fase)
 
+            tk.Label(
+                columna,
+                text="MEDICIÓN" if modo == "mide" else "CONEXIONES",
+                bg="#FFFFFF", fg="#DC2626",
+                font=("Consolas", 22, "bold"), anchor="w",
+            ).pack(anchor="nw", padx=6, pady=(0, 4))
             if topo is None:
                 lienzo_bloques = _LienzoBloquesNeon(columna)
                 lienzo_bloques._oyentes_parpadeo = oyentes
@@ -14037,13 +14040,8 @@ class AppSAPE(tk.Tk):
                     columna, topo, prueba, modo, al_parpadear=avisar,
                 ).pack(anchor="nw")
 
-            titulo = "MEDICIÓN" if modo == "mide" else "CONEXIONES"
             renglones = filas_medicion if modo == "mide" else filas_conexion
-            tk.Label(
-                leyenda, text=titulo, bg="#FFFFFF", fg=FP_VISTA_VERDE_OSCURO,
-                font=("Consolas", 11, "bold"), anchor="w",
-            ).grid(row=0, column=0, columnspan=2, sticky="w", pady=(0, 2))
-            fila = 1
+            fila = 0
             for codigo, descripcion, color in renglones:
                 badge = ctk.CTkLabel(
                     leyenda, text=codigo, fg_color=color,
