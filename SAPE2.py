@@ -1855,14 +1855,16 @@ def _linea_ttr(
     ca = color_a or base
     cb = color_b or base
 
-    def trazo(ax, ay, bx, by, color):
-        lienzo.create_line(
+    def trazo(ax, ay, bx, by, color, parpadeo=False):
+        linea = lienzo.create_line(
             ax, ay, bx, by, fill=color, width=6,
             capstyle="projecting", joinstyle="miter",
         )
+        if parpadeo:
+            lienzo.addtag_withtag("parpadeo", linea)
 
     if mide_a and mide_b:
-        trazo(x1, y1, x2, y2, TTR_ROSA_MEDICION)
+        trazo(x1, y1, x2, y2, TTR_ROSA_MEDICION, parpadeo=True)
         ca = cb = TTR_ROSA_MEDICION
     elif {ca, cb} <= {"#000000", "#111111", "#FF0000"} and ca != cb:
         mx = (x1 + x2) / 2
