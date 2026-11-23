@@ -1830,10 +1830,15 @@ def _poner_borne_ttr(lienzo, x, y, texto, colores, roles, anchor="center", rol_a
     if not rol:
         return
     ry = (y1 - 11) if rol_arriba else (y2 + 11)
+    color_rol = _color_rol_ttr(rol)
     etiqueta = lienzo.create_text(
-        (x1 + x2) / 2, ry, text=rol, fill=_color_rol_ttr(rol),
+        (x1 + x2) / 2, ry, text=rol, fill=color_rol,
         font=("Segoe UI", 9, "bold"),
     )
+    if color_rol == "#FF0000":
+        lienzo.addtag_withtag("parpadeo_rojo", etiqueta)
+    else:
+        lienzo.addtag_withtag("parpadeo_negro", etiqueta)
     rx1, ry1, rx2, ry2 = lienzo.bbox(etiqueta)
     lienzo.create_rectangle(rx1 - 2, ry1 - 1, rx2 + 2, ry2 + 1, fill="#FFFFFF", outline="")
     lienzo.tag_raise(etiqueta)
@@ -12806,9 +12811,15 @@ class AppSAPE(tk.Tk):
             negro = "#000000" if linea_visible else "#FFFFFF"
             rojo = "#FF0000" if linea_visible else "#FFFFFF"
             for item in conexiones.find_withtag("parpadeo_negro"):
-                conexiones.itemconfigure(item, fill=negro, outline=negro)
+                if conexiones.type(item) == "oval":
+                    conexiones.itemconfigure(item, fill=negro, outline=negro)
+                else:
+                    conexiones.itemconfigure(item, fill=negro)
             for item in conexiones.find_withtag("parpadeo_rojo"):
-                conexiones.itemconfigure(item, fill=rojo, outline=rojo)
+                if conexiones.type(item) == "oval":
+                    conexiones.itemconfigure(item, fill=rojo, outline=rojo)
+                else:
+                    conexiones.itemconfigure(item, fill=rojo)
             return True
 
         def pintar():
