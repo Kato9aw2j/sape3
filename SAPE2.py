@@ -2244,19 +2244,18 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
             _poner_borne_ttr(
                 lienzo, cx + 28, cy, centro, colores, roles, "w",
             )
-            if modo != "cables":
-                _fase_a_mitad_ttr(
-                    lienzo, x_izq, y_izq, cx, cy, izq, 1,
-                    parpadeo=mide(izq) and mide(centro),
-                )
-                _fase_a_mitad_ttr(
-                    lienzo, cx, cy, x_arr, y_arr, arriba, -1,
-                    parpadeo=mide(arriba) and mide(centro),
-                )
-                _fase_a_mitad_ttr(
-                    lienzo, cx, cy, x_der, y_der, der, -1,
-                    parpadeo=mide(der) and mide(centro),
-                )
+            _fase_a_mitad_ttr(
+                lienzo, x_izq, y_izq, cx, cy, izq, 1,
+                parpadeo=mide(izq) and mide(centro),
+            )
+            _fase_a_mitad_ttr(
+                lienzo, cx, cy, x_arr, y_arr, arriba, -1,
+                parpadeo=mide(arriba) and mide(centro),
+            )
+            _fase_a_mitad_ttr(
+                lienzo, cx, cy, x_der, y_der, der, -1,
+                parpadeo=mide(der) and mide(centro),
+            )
         elif kind == "delta":
             apex, izq, der = bornes
             medio = 46 if n == 1 else 40
@@ -2266,19 +2265,18 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
             _poner_borne_ttr(lienzo, cx, 80, apex, colores, roles, "s", True)
             _poner_borne_ttr(lienzo, cx - medio, 190, izq, colores, roles, "n")
             _poner_borne_ttr(lienzo, cx + medio, 190, der, colores, roles, "n")
-            if modo != "cables":
-                _fase_a_mitad_ttr(
-                    lienzo, cx, 96, cx - medio, 176, apex, 1, True,
-                    parpadeo=mide(apex) and mide(izq),
-                )
-                _fase_a_mitad_ttr(
-                    lienzo, cx, 96, cx + medio, 176, der, -1, True,
-                    parpadeo=mide(apex) and mide(der),
-                )
-                _fase_a_mitad_ttr(
-                    lienzo, cx - medio, 176, cx + medio, 176, izq, 1, True,
-                    parpadeo=mide(izq) and mide(der),
-                )
+            _fase_a_mitad_ttr(
+                lienzo, cx, 96, cx - medio, 176, apex, 1, True,
+                parpadeo=mide(apex) and mide(izq),
+            )
+            _fase_a_mitad_ttr(
+                lienzo, cx, 96, cx + medio, 176, der, -1, True,
+                parpadeo=mide(apex) and mide(der),
+            )
+            _fase_a_mitad_ttr(
+                lienzo, cx - medio, 176, cx + medio, 176, izq, 1, True,
+                parpadeo=mide(izq) and mide(der),
+            )
         elif kind == "cruz":
             arriba, izq, der, abajo = bornes
             linea(cx, 56, cx, 124, arriba, arriba)
