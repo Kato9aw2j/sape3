@@ -655,8 +655,8 @@ function pasoTtr2() {
       <thead>
         <tr>
           <th></th><th>Prueba</th>
-          <th class="th-cn" colspan="2">Terminales de excitación</th>
-          <th class="th-gn" colspan="2">Terminales secundarias</th>
+          <th class="grupo" colspan="2">Terminales de excitación</th>
+          <th class="grupo" colspan="2">Terminales secundarias</th>
           <th class="th-mide">Mide</th>
         </tr>
         <tr>

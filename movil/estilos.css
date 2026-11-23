@@ -393,6 +393,9 @@ button:disabled { cursor: default; }
 #app.fp .punto.on::after { background: var(--fp-verde-oscuro); }
 #app.fp .th-mide { color: var(--fp-verde-oscuro) !important; }
 
+#app.ttr .tabla-pruebas th.grupo {
+  background: var(--ttr-morado); color: #FFFFFF; font-weight: 900; border-bottom: 0;
+}
 #app.ttr .tabla-pruebas tbody tr.activa { background: var(--ttr-morado-texto); }
 #app.ttr .tabla-pruebas tbody tr.activa td:first-child { box-shadow: inset 4px 0 0 var(--ttr-morado); }
 #app.ttr .punto.on { border-color: var(--ttr-morado); }
