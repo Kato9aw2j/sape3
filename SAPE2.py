@@ -1811,6 +1811,18 @@ def _color_rol_ttr(rol):
     return "#000000"
 
 
+_SECUENCIA_CONEXIONES_TTR = ("linea", "GR", "CR", "GN", "CN")
+
+
+def _registrar_seq_ttr(lienzo, item, grupo, color):
+    """Marca un item del esquema de conexiones para la secuencia de parpadeo."""
+    lienzo.addtag_withtag(f"seq_{grupo}", item)
+    lienzo.addtag_withtag("seq_todo", item)
+    if not hasattr(lienzo, "_seq_color"):
+        lienzo._seq_color = {}
+    lienzo._seq_color[(item, grupo)] = color
+
+
 def _poner_borne_ttr(
     lienzo, x, y, texto, colores, roles, anchor="center", rol_arriba=False,
     rol_derecha=False,
@@ -1838,14 +1850,13 @@ def _poner_borne_ttr(
     else:
         ry = (y1 - 11) if rol_arriba else (y2 + 11)
         posicion = dict(x=(x1 + x2) / 2, y=ry, anchor="center")
+    tamano_rol = 10 if ("CR" in rol or "GR" in rol) else 9
     etiqueta = lienzo.create_text(
         posicion["x"], posicion["y"], text=rol, fill=color_rol,
-        anchor=posicion["anchor"], font=("Segoe UI", 9, "bold"),
+        anchor=posicion["anchor"], font=("Segoe UI", tamano_rol, "bold"),
     )
-    if color_rol == "#FF0000":
-        lienzo.addtag_withtag("parpadeo_rojo", etiqueta)
-    else:
-        lienzo.addtag_withtag("parpadeo_negro", etiqueta)
+    for grupo in rol.split("/"):
+        _registrar_seq_ttr(lienzo, etiqueta, grupo, _color_rol_ttr(grupo))
     rx1, ry1, rx2, ry2 = lienzo.bbox(etiqueta)
     lienzo.create_rectangle(rx1 - 2, ry1 - 1, rx2 + 2, ry2 + 1, fill="#FFFFFF", outline="")
     lienzo.tag_raise(etiqueta)
@@ -1874,9 +1885,8 @@ def _linea_ttr(
         )
         if parpadeo:
             lienzo.addtag_withtag("parpadeo", linea)
-        etiqueta = {"#000000": "parpadeo_negro", "#FF0000": "parpadeo_rojo"}.get(color)
-        if etiqueta:
-            lienzo.addtag_withtag(etiqueta, linea)
+        if color in ("#000000", "#FF0000"):
+            _registrar_seq_ttr(lienzo, linea, "linea", color)
 
     if mide_a and mide_b:
         trazo(x1, y1, x2, y2, TTR_ROSA_MEDICION, parpadeo=True)
@@ -1913,10 +1923,8 @@ def _puntos_ttr(lienzo, nodos):
         )
         if color == TTR_ROSA_MEDICION:
             lienzo.addtag_withtag("parpadeo", punto)
-        elif color == "#000000":
-            lienzo.addtag_withtag("parpadeo_negro", punto)
-        elif color == "#FF0000":
-            lienzo.addtag_withtag("parpadeo_rojo", punto)
+        elif color in ("#000000", "#FF0000"):
+            _registrar_seq_ttr(lienzo, punto, "linea", color)
 
 
 def _pie_grupo_ttr(lienzo, cx, texto):
@@ -2185,6 +2193,7 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
     """Dibuja el vector de medición o el de conexiones. Con `solo`, solo el
     devanado con ese índice (para un diagrama por devanado)."""
     lienzo.delete("all")
+    lienzo._seq_color = {}
     ficha = _VECTORES_TTR.get(clave)
     if not ficha:
         return
@@ -12790,6 +12799,7 @@ class AppSAPE(tk.Tk):
         _pintar_guia_conexiones_ttr(leyenda_cables, prueba, clave, modo_med)
 
         self._vector_mide_visible = True
+        self._seq_vector_ttr = 0
         job_previo = getattr(self, "_parpadeo_vector_ttr", None)
         if job_previo is not None:
             try:
@@ -12819,18 +12829,20 @@ class AppSAPE(tk.Tk):
                     return False
             except tk.TclError:
                 return False
-            negro = "#000000" if linea_visible else "#FFFFFF"
-            rojo = "#FF0000" if linea_visible else "#FFFFFF"
-            for item in conexiones.find_withtag("parpadeo_negro"):
-                if conexiones.type(item) == "oval":
-                    conexiones.itemconfigure(item, fill=negro, outline=negro)
+            activo = _SECUENCIA_CONEXIONES_TTR[
+                self._seq_vector_ttr % len(_SECUENCIA_CONEXIONES_TTR)
+            ]
+            colores_seq = getattr(conexiones, "_seq_color", {})
+            for item in conexiones.find_withtag("seq_todo"):
+                tags = conexiones.gettags(item)
+                if f"seq_{activo}" in tags:
+                    col = colores_seq.get((item, activo), "#000000")
                 else:
-                    conexiones.itemconfigure(item, fill=negro)
-            for item in conexiones.find_withtag("parpadeo_rojo"):
+                    col = "#FFFFFF"
                 if conexiones.type(item) == "oval":
-                    conexiones.itemconfigure(item, fill=rojo, outline=rojo)
+                    conexiones.itemconfigure(item, fill=col, outline=col)
                 else:
-                    conexiones.itemconfigure(item, fill=rojo)
+                    conexiones.itemconfigure(item, fill=col)
             return True
 
         def pintar():
@@ -12845,6 +12857,7 @@ class AppSAPE(tk.Tk):
         def parpadear():
             self._parpadeo_vector_ttr = None
             self._vector_mide_visible = not self._vector_mide_visible
+            self._seq_vector_ttr += 1
             if not aplicar_parpadeo():
                 return
             self._parpadeo_vector_ttr = self.after(450, parpadear)
