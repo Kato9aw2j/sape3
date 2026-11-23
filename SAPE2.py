@@ -6136,6 +6136,7 @@ def _boton_menu_ra(
         lienzo.pack(anchor="w", padx=(16, 8), pady=(0, 2))
     fuente_num = tkfont.Font(family="Segoe UI", size=16, weight="bold")
     fuente_chip = tkfont.Font(family="Consolas", size=15, weight="bold")
+    fuente_chip_numero = tkfont.Font(family="Consolas", size=18, weight="bold")
     fuente_txt = tkfont.Font(family="Segoe UI", size=9, weight="bold")
     fuente_flecha = tkfont.Font(family="Segoe UI", size=14, weight="bold")
     estado = {"activo": False, "hover": False, "presionado": False, "foto": None}
@@ -6286,8 +6287,8 @@ def _boton_menu_ra(
         x_texto = 22
         if marca and str(marca).isdigit():
             margen_x, margen_y = 6, 5
-            ancho_num = int(fuente_chip.measure(marca)) + 16
-            alto_num = 28
+            ancho_num = int(fuente_chip_numero.measure(marca)) + 16
+            alto_num = 32
             chip_w = ancho_num + margen_x * 2
             chip_h = alto_num + margen_y * 2
             if estado["activo"]:
@@ -6313,7 +6314,7 @@ def _boton_menu_ra(
             if estado["activo"]:
                 from PIL import ImageFont, ImageFilter
                 fuente_brillo = ImageFont.truetype(
-                    r"C:\Windows\Fonts\consolab.ttf", 15,
+                    r"C:\Windows\Fonts\consolab.ttf", 18,
                 )
                 brillo = Image.new("RGBA", (chip_w, chip_h), (0, 0, 0, 0))
                 ImageDraw.Draw(brillo).text(
@@ -6331,7 +6332,7 @@ def _boton_menu_ra(
             )
             lienzo.create_text(
                 chip_x + chip_w / 2, centro - 1, text=marca,
-                fill=color_digito, font=fuente_chip,
+                fill=color_digito, font=fuente_chip_numero,
             )
             x_texto = chip_x + chip_w + 12
         elif marca:
