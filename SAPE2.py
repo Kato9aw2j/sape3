@@ -17061,11 +17061,11 @@ def main():
     # que se borra al instante. El control queda del color de fondo y el
     # menú no se pinta. Esta carpeta vive mientras la ventana está abierta.
     datos_menu = tempfile.mkdtemp(prefix="sape-menu-")
-    menu_html = Path(__file__).with_name("SAPE2_menu.html").read_text(encoding="utf-8")
+    menu_archivo = Path(__file__).with_name("SAPE2_menu.html")
     try:
         ventana = webview.create_window(
             title="[ S.A.P.E. ] - Sistema de Análisis de Pruebas Eléctricas",
-            html=menu_html,
+            url=str(menu_archivo),
             width=500,
             height=960,
             resizable=False,
@@ -17074,7 +17074,7 @@ def main():
         )
         api._window = ventana
         ventana.events.shown += lambda: _aplicar_icono_webview(ventana)
-        webview.start(debug=False, storage_path=datos_menu)
+        webview.start(debug=False, storage_path=datos_menu, http_server=True)
     except Exception:
         if (
             api._ra_process is not None

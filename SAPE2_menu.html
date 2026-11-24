@@ -7,8 +7,8 @@
     <script type="importmap">
     {
       "imports": {
-        "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
-        "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+        "three": "./vendor/three/build/three.module.js",
+        "three/addons/": "./vendor/three/examples/jsm/"
       }
     }
     </script>
@@ -376,7 +376,7 @@
 
             const estadoPlasma = { material: null };
             new FontLoader().load(
-                "https://unpkg.com/three@0.160.0/examples/fonts/helvetiker_bold.typeface.json",
+                "./vendor/three/examples/fonts/helvetiker_bold.typeface.json",
                 (fuente) => {
                     const matVerde = new THREE.MeshStandardMaterial({
                         color: 0x008e60, emissive: 0x00ff88, emissiveIntensity: 2.0,
