@@ -420,7 +420,7 @@ function pasoFp2() {
     <div class="tabla-pruebas"><table>
       <thead><tr>
         <th></th><th>Prueba</th><th>kV</th><th>Modo</th>
-        <th class="th-hv">Energizar (HV)</th><th class="th-ground">Ground</th>
+        <th class="th-hv">Energizar (HV)</th><th class="th-ground">GROUND</th>
         <th class="th-guard">Guard</th><th class="th-ust">UST</th><th class="th-medicion">Mide</th>
       </tr></thead>
       <tbody>${lista.map((pr, i) => {
@@ -460,12 +460,12 @@ function pasoFp3() {
     <h3>Conexiones de esta prueba</h3>
     <div class="chips" style="justify-content:center;margin-bottom:6px;">
       ${chipFp("HV", "LINEA", pr.hv)}
-      ${chipFp("TIERRA", "TIERRA", pr.ground)}
+      ${chipFp("GROUND", "TIERRA", pr.ground)}
       ${chipFp("GUARDA", "GUARDA", pr.guard)}
       ${chipFp("UST", "UST", pr.ust)}
       ${pr.flotando ? `<span class="chip UST"><b>FLOTA</b> ${esc(pr.flotando)}</span>` : ""}
     </div>
-    <p class="nota">Modo del equipo de prueba: <b>${esc(pr.modo || "—")}</b>. Se energiza ${esc(pr.hv || "—")}; TIERRA se conecta al retorno del instrumento; GUARDA excluye esa parte de la medición; UST la deja flotando y fuera del cálculo.</p>
+    <p class="nota">Modo del equipo de prueba: <b>${esc(pr.modo || "—")}</b>. Se energiza ${esc(pr.hv || "—")}; GROUND se conecta al retorno del instrumento; GUARDA excluye esa parte de la medición; UST la deja flotando y fuera del cálculo.</p>
     <h3>Qué mide esta prueba</h3>
     <ul class="leyenda"><li><span class="badge medido">${esc(pr.prueba || "—")}</span>${esc(pr.medicion || "Sin definir")}</li></ul>`;
 }

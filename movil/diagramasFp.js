@@ -15,7 +15,7 @@ const COLOR_FP = {
   GUARDA: "#2563EB",
   UST: "#7C3AED",
 };
-const ROTULO_FP = { LINEA: "HV", TIERRA: "TIERRA", GUARDA: "GUARDA", UST: "UST" };
+const ROTULO_FP = { LINEA: "HV", TIERRA: "GROUND", GUARDA: "GUARDA", UST: "UST" };
 
 function _escFp(t) {
   return String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -97,7 +97,7 @@ function _dibujarPilaFp(equipoNombre, arreglo, pr, modo) {
   };
   const tierra = (x, y) => {
     linea(`M${x - 14} ${y} H${x + 14} M${x - 9} ${y + 6} H${x + 9} M${x - 4} ${y + 12} H${x + 4}`, COLOR_FP.cable, 2.5);
-    texto(x, y + 30, "TIERRA");
+    texto(x, y + 30, "GROUND");
   };
   const rotuloTanque = (x) => {
     texto(x, 16, "TANQUE", { ancla: "middle" });
@@ -408,7 +408,7 @@ function _dibujarEsquemaFp(topo, pr, modo) {
       [16, 10, 4].forEach((medio, i) => {
         partes.push(`<path d="M${x - medio} ${y + i * 6} H${x + medio}" stroke="${COLOR_FP.cable}" stroke-width="3" fill="none"/>`);
       });
-      texto(x, y + 30, "TIERRA", { tam: 9 });
+      texto(x, y + 30, "GROUND", { tam: 9 });
     } else if (tipo === "bobina") {
       const [, etiqueta, a, b] = el;
       const [[x1, y1], [x2, y2]] = [px(a), px(b)];
@@ -515,7 +515,7 @@ function _dibujarGenericoFp(equipoNombre, pr) {
     const yFondo = by1 + 42;
     linea(`M${cx} ${by1} V${yFondo}`, COLOR_FP.medido, 4, "butt");
     linea(`M${cx - 14} ${yFondo} H${cx + 14} M${cx - 9} ${yFondo + 6} H${cx + 9} M${cx - 4} ${yFondo + 12} H${cx + 4}`, COLOR_FP.TIERRA, 2.5);
-    texto(cx, yFondo + 28, `TIERRA ${pr.ground}`, { tam: 10, color: COLOR_FP.TIERRA, clase: "pulso" });
+    texto(cx, yFondo + 28, `GROUND ${pr.ground}`, { tam: 10, color: COLOR_FP.TIERRA, clase: "pulso" });
   }
   if (llevaGuard) {
     const gxp = bx1 + 60, gyp = cyBox;
