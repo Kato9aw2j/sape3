@@ -1811,16 +1811,21 @@ def _color_rol_ttr(rol):
     return "#000000"
 
 
-_SECUENCIA_CONEXIONES_TTR = ("linea", "GR", "CR", "GN", "CN")
+_SECUENCIA_CONEXIONES_TTR = ("linea", "roles")
 
 
 def _registrar_seq_ttr(lienzo, item, grupo, color):
-    """Marca un item del esquema de conexiones para la secuencia de parpadeo."""
+    """Marca un item del esquema de conexiones para la secuencia de parpadeo.
+
+    Las etiquetas de rol (CN, CR, GN, GR) van juntas en el grupo "roles".
+    """
+    if grupo != "linea":
+        grupo = "roles"
     lienzo.addtag_withtag(f"seq_{grupo}", item)
     lienzo.addtag_withtag("seq_todo", item)
     if not hasattr(lienzo, "_seq_color"):
         lienzo._seq_color = {}
-    lienzo._seq_color[(item, grupo)] = color
+    lienzo._seq_color.setdefault((item, grupo), color)
 
 
 def _poner_borne_ttr(
