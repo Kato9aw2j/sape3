@@ -1540,7 +1540,8 @@ def _par_mide_ttr(mide):
 
 
 def _leer_ttr(texto):
-    bruto = (texto or "").strip().replace(",", ".")
+    bruto = re.sub(r"\s*(kv|v)\s*$", "", (texto or "").strip(), flags=re.IGNORECASE)
+    bruto = bruto.strip().replace(",", ".")
     if not bruto:
         return None
     try:
