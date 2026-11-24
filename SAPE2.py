@@ -1645,7 +1645,7 @@ _VECTORES_TTR = {
         ("delta", "TERCIARIO", "DELTA", "Y2", "Y1", "Y3"),
     )),
     "AUTO_MONO": ("Autotransformador monofásico", "Fig. 9", "Ie por par H·X·Y", (
-        ("vertical3", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H1", "H0/X0", "X1"),
+        ("estrella", "ALTA-BAJA", "ESTRELLA-ESTRELLA", "H1", "X1", "H0/X0", ""),
         ("vertical", "TERCIARIO", "DELTA", "Y2", "Y1"),
     )),
     "MONO_2D": ("Monofásico 2 devanados", "Anexo A", "Ie H–X", (
@@ -2267,9 +2267,10 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
             _poner_borne_ttr(
                 lienzo, x_arr + 8, y_arr - 6, arriba, colores, roles, "sw",
             )
-            _poner_borne_ttr(
-                lienzo, x_der + 8, y_der + 6, der, colores, roles, "nw",
-            )
+            if der:
+                _poner_borne_ttr(
+                    lienzo, x_der + 8, y_der + 6, der, colores, roles, "nw",
+                )
             _poner_borne_ttr(
                 lienzo, cx + 28, cy, centro, colores, roles, "w",
                 rol_derecha=True,
