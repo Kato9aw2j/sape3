@@ -12171,7 +12171,6 @@ class AppSAPE(tk.Tk):
             text_color="white", font=ctk.CTkFont(size=13, weight="bold"),
             height=34, command=obtener_rt,
         ).grid(row=2, column=2, sticky="w", padx=(14, 0), pady=10)
-        obtener_rt()
 
         if nominal is None:
             tk.Label(
