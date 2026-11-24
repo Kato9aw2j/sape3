@@ -11,7 +11,7 @@ const COLOR_FP = {
   medido: "#EA580C",
   texto: "#065F46",
   LINEA: "#DC2626",
-  TIERRA: "#111111",
+  TIERRA: "#DC2626",
   GUARDA: "#2563EB",
   UST: "#7C3AED",
 };
@@ -97,13 +97,13 @@ function _dibujarPilaFp(equipoNombre, arreglo, pr, modo) {
   };
   const tierra = (x, y) => {
     linea(`M${x - 14} ${y} H${x + 14} M${x - 9} ${y + 6} H${x + 9} M${x - 4} ${y + 12} H${x + 4}`, COLOR_FP.cable, 2.5);
-    texto(x, y + 30, "GROUND");
+    texto(x, y + 30, "GROUND", { color: "#DC2626" });
   };
   const rotuloTanque = (x) => {
     texto(x, 16, "TANQUE", { ancla: "middle" });
     if (!conexiones) return;
     if (roles.TIERRA.has("Tanque") || roles.TIERRA.has("TANQUE")) {
-      texto(x + 36, 16, ROTULO_FP.TIERRA, { ancla: "start", color: COLOR_FP.TIERRA, clase: "pulso" });
+      texto(x + 36, 16, ROTULO_FP.TIERRA, { ancla: "start", color: "#DC2626", clase: "pulso" });
     }
   };
   // Capacitor con sus dos tramos de cable (con hueco real entre placas,
@@ -137,7 +137,7 @@ function _dibujarPilaFp(equipoNombre, arreglo, pr, modo) {
     partes.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="7" fill="#FFFFFF" stroke="${color}" stroke-width="3"/>`);
     if (rol) {
       texto(x + w / 2, y + h / 2 - 3, c.id, { tam: 10, color: "#64748B" });
-      texto(x + w / 2, y + h / 2 + 12, ROTULO_FP[rol], { color, clase: "pulso" });
+      texto(x + w / 2, y + h / 2 + 12, ROTULO_FP[rol], { color: rol === "LINEA" ? "#111827" : color, clase: "pulso" });
     } else {
       texto(x + w / 2, y + h / 2 + 4, c.titulo);
     }
@@ -408,7 +408,7 @@ function _dibujarEsquemaFp(topo, pr, modo) {
       [16, 10, 4].forEach((medio, i) => {
         partes.push(`<path d="M${x - medio} ${y + i * 6} H${x + medio}" stroke="${COLOR_FP.cable}" stroke-width="3" fill="none"/>`);
       });
-      texto(x, y + 30, "GROUND", { tam: 9 });
+      texto(x, y + 30, "GROUND", { tam: 9, color: "#DC2626" });
     } else if (tipo === "bobina") {
       const [, etiqueta, a, b] = el;
       const [[x1, y1], [x2, y2]] = [px(a), px(b)];
@@ -509,13 +509,13 @@ function _dibujarGenericoFp(equipoNombre, pr) {
 
   linea(`M${gx + gw} ${gy + gh / 2} H${cx} V${by0}`, COLOR_FP.medido, 4);
   punto(cx, by0, COLOR_FP.medido);
-  texto(cx + 10, by0 - 10, `HV ${pr.hv || "—"}`, { ancla: "start", color: COLOR_FP.LINEA, tam: 10, clase: "pulso" });
+  texto(cx + 10, by0 - 10, `HV ${pr.hv || "—"}`, { ancla: "start", color: "#111827", tam: 10, clase: "pulso" });
 
   if (llevaGnd) {
     const yFondo = by1 + 42;
     linea(`M${cx} ${by1} V${yFondo}`, COLOR_FP.medido, 4, "butt");
     linea(`M${cx - 14} ${yFondo} H${cx + 14} M${cx - 9} ${yFondo + 6} H${cx + 9} M${cx - 4} ${yFondo + 12} H${cx + 4}`, COLOR_FP.TIERRA, 2.5);
-    texto(cx, yFondo + 28, `GROUND ${pr.ground}`, { tam: 10, color: COLOR_FP.TIERRA, clase: "pulso" });
+    texto(cx, yFondo + 28, `GROUND ${pr.ground}`, { tam: 10, color: "#DC2626", clase: "pulso" });
   }
   if (llevaGuard) {
     const gxp = bx1 + 60, gyp = cyBox;

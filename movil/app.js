@@ -443,7 +443,9 @@ function pasoFp2() {
 }
 
 function chipFp(rol, clase, valor) {
-  return (!valor || valor === "-----") ? "" : `<span class="chip ${clase}"><b>${esc(rol)}</b> ${esc(valor)}</span>`;
+  const tinta = { GROUND: "#DC2626", HV: "#111827" }[rol];
+  const color = tinta ? ` style="color:${tinta}"` : "";
+  return (!valor || valor === "-----") ? "" : `<span class="chip ${clase}"><b${color}>${esc(rol)}</b> ${esc(valor)}</span>`;
 }
 
 function pasoFp3() {
