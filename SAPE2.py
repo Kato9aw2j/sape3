@@ -12772,7 +12772,7 @@ class AppSAPE(tk.Tk):
             )
             caja.pack(fill="x", pady=(0, 12))
             tk.Label(
-                caja, text=titulo, bg="#FFFFFF", fg="#31013F",
+                caja, text=titulo, bg="#FFFFFF", fg="#FF4A80",
                 font=("Consolas", 22, "bold"), anchor="w",
             ).pack(anchor="w", padx=14, pady=(8, 0))
             cuerpo = tk.Frame(caja, bg="#FFFFFF")
