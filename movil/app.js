@@ -856,6 +856,10 @@ const CAMPOS_ANEXO_RA = {
     ["exactitud", "Clase de exactitud"], ["burden", "Carga / Burden (VA)"],
     ["nbai", "NBAI (kV)"], ["frecuencia", "Frecuencia (Hz)"],
   ],
+  apartarrayos: [
+    ["nivel", "Tensión nominal (kV)"], ["mcov", "MCOV (kV)"],
+    ["secciones", "Número de secciones"],
+  ],
   rotativa: [
     ["vNominal", "Tensión nominal (kV)"], ["iNominal", "Corriente nominal (A)"],
     ["rpm", "Velocidad (RPM)"], ["fpNominal", "Factor de potencia"],
@@ -963,6 +967,7 @@ function bloqueIdentificacionRa(familia) {
   if (familia === "tc") return CAMPOS_ANEXO_RA.tc;
   if (familia === "tp") return CAMPOS_ANEXO_RA.tp;
   if (familia === "rotativa") return CAMPOS_ANEXO_RA.rotativa;
+  if (familia === "apartarrayos") return CAMPOS_ANEXO_RA.apartarrayos;
   return null;
 }
 
@@ -1010,7 +1015,9 @@ function vistaAnexoA() {
         eq.familia === "rotativa" ? "Datos de la máquina rotatoria"
           : esReactor ? "Datos del reactor"
           : eq.familia === "potencia" ? "Datos del transformador"
-          : eq.familia === "tc" ? "Datos del TC" : "Datos del TP / TPC",
+          : eq.familia === "tc" ? "Datos del TC"
+          : eq.familia === "apartarrayos" ? "Datos del apartarrayos"
+          : "Datos del TP / TPC",
         datosEquipo, v,
       )}
       ${seccionAnexo("Orden de trabajo", CAMPOS_ANEXO_RA.orden, v)}
