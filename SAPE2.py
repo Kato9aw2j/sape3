@@ -4431,7 +4431,22 @@ class _LienzoBloquesNeon(tk.Frame):
                             and filas[rr][k][0] in _TRAZOS_BLOQUE
                         ):
                             filas[rr][k] = (" ", filas[rr][k][1])
-                self._cajas_redondas.append((r, abajo, c, cierre, color))
+                color_caja = color
+                if (
+                    self._es_fp
+                    and (self._titulo or "").strip().upper() == "CONEXIONES"
+                ):
+                    texto_caja = "".join(
+                        filas[rr][k][0]
+                        for rr in range(r, abajo + 1)
+                        for k in range(c, cierre + 1)
+                        if k < len(filas[rr])
+                    )
+                    for rol_txt, color_rol in _COLOR_CAJA_ROL_FP:
+                        if rol_txt in texto_caja:
+                            color_caja = color_rol
+                            break
+                self._cajas_redondas.append((r, abajo, c, cierre, color_caja))
                 c = cierre + 1
 
     def _es_color_conexion(self, color):
@@ -16688,6 +16703,13 @@ def _topologia_fp(equipo, arreglo):
         }
     return None
 
+
+_COLOR_CAJA_ROL_FP = (
+    ("GROUND", "#DC2626"),
+    ("HV", "#111827"),
+    ("GUARD", "#2563EB"),
+    ("UST", "#0891B2"),
+)
 
 _ROLES_ESQUEMA_FP = {
     "HV": ("#111827", "#FFFFFF"),
