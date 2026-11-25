@@ -500,7 +500,28 @@ def _dibujar_diagrama_tpc(padre):
     return lienzo
 
 
-def _dibujar_diagrama_transformador_2d(padre, monofasico=False):
+def _marcar_conexiones_planta(lienzo, X, Y, s, marcas, roles):
+    """Marca sobre el dibujo de planta los bujes que llevan conexión de prueba:
+    aro negro (CN/GN) o rojo (CR/GR) y el rol encima del buje.
+
+    marcas: (nombre, cx, cy, radio) de cada buje; roles: token -> [CN, CR, ...].
+    """
+    for nombre, cx, cy, radio in marcas:
+        rs = [rol for rol in ("CN", "CR", "GN", "GR") if rol in roles.get(nombre, [])]
+        if not rs:
+            continue
+        color = "#FF0000" if ("CR" in rs or "GR" in rs) else "#000000"
+        lienzo.create_oval(
+            X(cx - radio - 7), Y(cy - radio - 7), X(cx + radio + 7), Y(cy + radio + 7),
+            outline=color, width=3,
+        )
+        lienzo.create_text(
+            X(cx), Y(cy - radio - 16), text="/".join(rs), fill=color,
+            font=("Arial", max(8, round(11 * s)), "bold"),
+        )
+
+
+def _dibujar_diagrama_transformador_2d(padre, monofasico=False, roles=None):
     """Transformador de potencia 2 devanados (vista de planta)."""
     s = 0.62
     lienzo = tk.Canvas(
@@ -586,6 +607,13 @@ def _dibujar_diagrama_transformador_2d(padre, monofasico=False):
         ovalo(cx, 360, 7, outline=azul, width=1)
         ovalo(cx, 360, 3, fill=azul, outline=azul)
         texto(cx, 395, nombre, 14, azul, ancla="center")
+    # Conexiones de prueba sobre los bujes (CN/CR/GN/GR).
+    if roles:
+        _marcar_conexiones_planta(
+            lienzo, X, Y, s,
+            [(n, c, 210, 20) for c, n in bujes_at] + [(n, c, 360, 14) for c, n in bujes_bt],
+            roles,
+        )
     # Accesorios
     for cx in (290, 710):
         ovalo(cx, 390, 12, outline="#222222", width=1)
@@ -637,7 +665,7 @@ def _dibujar_diagrama_transformador_2d(padre, monofasico=False):
     return lienzo
 
 
-def _dibujar_diagrama_transformador_3d(padre, naranja="#FF8C00"):
+def _dibujar_diagrama_transformador_3d(padre, naranja="#FF8C00", roles=None):
     """Transformador de potencia trifásico 3 devanados (vista de planta)."""
     s = 0.62
     lienzo = tk.Canvas(
@@ -718,6 +746,16 @@ def _dibujar_diagrama_transformador_3d(padre, naranja="#FF8C00"):
         ovalo(cx, 360, 6, outline=azul, width=1)
         ovalo(cx, 360, 2, fill=azul, outline=azul)
         texto(cx, 390, nombre, 12, azul, ancla="center")
+    # Conexiones de prueba sobre los bujes (CN/CR/GN/GR).
+    if roles:
+        _marcar_conexiones_planta(
+            lienzo, X, Y, s,
+            [("H1", 380, 200, 16), ("H2", 500, 200, 16), ("H3", 620, 200, 16),
+             ("Y1", 320, 360, 14), ("Y2", 380, 360, 14), ("Y3", 440, 360, 14),
+             ("X1", 540, 360, 12), ("X2", 590, 360, 12), ("X3", 640, 360, 12),
+             ("X0", 690, 360, 12)],
+            roles,
+        )
     # Accesorios
     for cx in (270, 730):
         ovalo(cx, 400, 10, outline="#222222", width=1)
@@ -11901,10 +11939,11 @@ class AppSAPE(tk.Tk):
 
         mono = configuracion == "Monofásico"
         subtitulo("DIBUJO DEL EQUIPO")
+        roles_ttr = _estilos_vector_ttr(prueba, "cables")[1] if prueba else None
         if "2 Devanados" in equipo:
-            _dibujar_diagrama_transformador_2d(contenido, monofasico=mono)
+            _dibujar_diagrama_transformador_2d(contenido, monofasico=mono, roles=roles_ttr)
         elif "3 Devanados" in equipo and not mono:
-            _dibujar_diagrama_transformador_3d(contenido)
+            _dibujar_diagrama_transformador_3d(contenido, roles=roles_ttr)
         elif "Autotransformadores" in equipo:
             _dibujar_diagrama_autotransformador(contenido, monofasico=mono)
         clave_vector = _clave_vector_ttr(equipo, configuracion, conexion) if prueba else None

@@ -1161,7 +1161,7 @@ function vistaAnexoATtr() {
   // En el formato no parpadea nada: los diagramas van con su color fijo.
   const diagrama = clave ? svgVectorTtr(clave, prueba, "mide", false) : "";
   const esquema = clave ? svgVectorTtr(clave, prueba, "cables", false) : "";
-  const dibujoEquipo = diagramaAnexoFp(d.equipo, d);
+  const dibujoEquipo = diagramaAnexoFp(d.equipo, d, prueba ? rolesVectorTtr(prueba) : null);
   return `
     <header class="barra">
       <button class="atras" data-ir="ttr" aria-label="Volver">‹</button>

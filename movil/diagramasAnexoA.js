@@ -259,7 +259,19 @@ function dibujarDiagramaTp() {
   return svg();
 }
 
-function dibujarDiagramaTransformador(tresDevanados, monofasico) {
+// Conexiones de prueba (CN/CR/GN/GR) sobre los bujes del dibujo de planta:
+// aro negro (CN/GN) o rojo (CR/GR) y el rol encima del buje.
+function marcarConexionesPlanta(ovalo, texto, marcas, roles) {
+  for (const [nombre, cx, cy, radio] of marcas) {
+    const rs = ["CN", "CR", "GN", "GR"].filter((r) => (roles[nombre] || []).includes(r));
+    if (!rs.length) continue;
+    const color = rs.some((r) => r === "CR" || r === "GR") ? "#FF0000" : "#000000";
+    ovalo(cx, cy, radio + 7, { outline: color, width: 3 });
+    texto(cx, cy - radio - 16, rs.join("/"), 11, color, true, "center");
+  }
+}
+
+function dibujarDiagramaTransformador(tresDevanados, monofasico, roles = null) {
   const s = 0.62;
   const { rect, ovalo, linea, texto, svg } = _anexoLienzo(950, 700, s);
   const rojo = _ROJO_DIAG, azul = _AZUL_DIAG, naranja = "#FF8C00";
@@ -309,6 +321,12 @@ function dibujarDiagramaTransformador(tresDevanados, monofasico) {
       ovalo(cx, 360, 7, { outline: azul, width: 1 });
       ovalo(cx, 360, 3, { fill: azul, outline: azul });
       texto(cx, 395, nombre, 14, azul, true, "center");
+    }
+    if (roles) {
+      marcarConexionesPlanta(ovalo, texto, [
+        ...bujesAt.map(([c, n]) => [n, c, 210, 20]),
+        ...bujesBt.map(([c, n]) => [n, c, 360, 14]),
+      ], roles);
     }
     for (const cx of [290, 710]) {
       ovalo(cx, 390, 12, { outline: "#222222", width: 1 });
@@ -379,6 +397,13 @@ function dibujarDiagramaTransformador(tresDevanados, monofasico) {
     ovalo(cx, 360, 6, { outline: azul, width: 1 });
     ovalo(cx, 360, 2, { fill: azul, outline: azul });
     texto(cx, 390, nombre, 12, azul, true, "center");
+  }
+  if (roles) {
+    marcarConexionesPlanta(ovalo, texto, [
+      ["H1", 380, 200, 16], ["H2", 500, 200, 16], ["H3", 620, 200, 16],
+      ["Y1", 320, 360, 14], ["Y2", 380, 360, 14], ["Y3", 440, 360, 14],
+      ["X1", 540, 360, 12], ["X2", 590, 360, 12], ["X3", 640, 360, 12], ["X0", 690, 360, 12],
+    ], roles);
   }
   for (const cx of [270, 730]) {
     ovalo(cx, 400, 10, { outline: "#222222", width: 1 });
@@ -612,13 +637,13 @@ function diagramaAnexoRa(equipoId, datos) {
   return "";
 }
 
-function diagramaAnexoFp(equipo, datos) {
+function diagramaAnexoFp(equipo, datos, roles = null) {
   const mono = datos && datos.configuracion === "Monofásico";
   if (equipo.includes("Corriente")) return dibujarDiagramaTc();
   if (equipo.includes("Capacitivo")) return dibujarDiagramaTpc();
   if (equipo.includes("Potencial - TPs")) return dibujarDiagramaTp();
-  if (equipo.includes("2 Devanados")) return dibujarDiagramaTransformador(false, mono);
-  if (equipo.includes("3 Devanados") && !mono) return dibujarDiagramaTransformador(true, false);
+  if (equipo.includes("2 Devanados")) return dibujarDiagramaTransformador(false, mono, roles);
+  if (equipo.includes("3 Devanados") && !mono) return dibujarDiagramaTransformador(true, false, roles);
   if (equipo.includes("Autotransformadores")) return dibujarDiagramaAutotransformador(mono);
   if (equipo.includes("Reactores")) return dibujarDiagramaReactor();
   if (equipo.includes("Apartarrayos")) return dibujarDiagramaApartarrayos();
