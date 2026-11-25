@@ -1075,8 +1075,17 @@ function vistaAnexoA() {
     </main>`;
 }
 
-function bloqueIdentificacionFp(equipo) {
-  if (esPotenciaFp(equipo)) return CAMPOS_ANEXO_FP.potencia;
+// Los datos del terciario (kV y conexión) solo aparecen si el devanado terciario
+// se especificó en el paso 01 (3 devanados o arreglo con terciario).
+const CAMPOS_TERCIARIO_ANEXO = ["kvTerc", "conTe"];
+
+function listaPotenciaFp(equipo, arreglo) {
+  const conTerciario = equipo.includes("3 Devanados") || String(arreglo || "").startsWith("Con terciario");
+  return CAMPOS_ANEXO_FP.potencia.filter(([clave]) => conTerciario || !CAMPOS_TERCIARIO_ANEXO.includes(clave));
+}
+
+function bloqueIdentificacionFp(equipo, arreglo) {
+  if (esPotenciaFp(equipo)) return listaPotenciaFp(equipo, arreglo);
   if (equipo.includes("Apartarrayos")) return CAMPOS_ANEXO_FP.apartarrayos;
   if (equipo.includes("Cables")) return CAMPOS_ANEXO_FP.cables;
   if (equipo.includes("Corriente")) return CAMPOS_ANEXO_FP.instrumento;
@@ -1110,7 +1119,7 @@ function vistaAnexoAFp() {
     <main class="contenido anexo-a">
       ${marcasAnexo("#059669")}
       ${seccionAnexo("Datos de identificación", CAMPOS_ANEXO_FP.identificacion, v)}
-      ${seccionAnexo("Datos propios del equipo", bloqueIdentificacionFp(d.equipo), v)}
+      ${seccionAnexo("Datos propios del equipo", bloqueIdentificacionFp(d.equipo, d.arreglo), v)}
       <h3>Condiciones: prueba &amp; climatológica</h3>
       <div class="rejilla">
         <div class="dato"><small>Temp. ambiente</small><b>${esc(d.tempAmbiente) || "—"} °C</b></div>
@@ -1176,7 +1185,8 @@ function vistaAnexoATtr() {
         <div class="dato"><small>Temp. del devanado</small><b>${esc(d.tempDevanado) || "—"} °C</b></div>
         ${CAMPOS_ANEXO_TTR.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v, true)).join("")}
       </div>
-      ${seccionAnexo("Datos del equipo", CAMPOS_ANEXO_TTR.potencia, v)}
+      ${seccionAnexo("Datos del equipo", llevaTerciarioTtr(d.equipo) ? CAMPOS_ANEXO_TTR.potencia
+        : CAMPOS_ANEXO_TTR.potencia.filter(([clave]) => !CAMPOS_TERCIARIO_ANEXO.includes(clave)), v)}
       ${seccionAnexo("Equipo de medición utilizado", CAMPOS_ANEXO_TTR.medicion, v)}
       ${dibujoEquipo ? `<h3>Diagrama del equipo</h3><div class="diagrama">${dibujoEquipo}</div>` : ""}
       ${diagrama ? `<h3>Diagrama vectorial</h3><div class="diagrama">${diagrama}</div>` : ""}
