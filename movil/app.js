@@ -780,6 +780,13 @@ function pasoTtr4() {
   const rtTap = usarReg ? relacionTeoricaTapTtr(nominal, estado.tapTtr, centro, true, mantener) : null;
   const l = estado.lecturasTtr;
   const taps = Array.from({ length: n }, (_, i) => i + 1);
+  // Lista de la relación teórica de todos los taps (botón "Obtener relación teórica").
+  const tablaRt = estado.verRtTaps && nominal != null
+    ? `<table class="tabla-pruebas"><tbody>${taps.map((t) => {
+        const rtT = relacionTeoricaTapTtr(nominal, t, centro, true, mantener);
+        return `<tr${t === estado.tapTtr ? ' class="on"' : ""}><td>Tap ${t}${t === centro ? " (central)" : ""}</td><td><b>${rtT.toFixed(4)}</b></td></tr>`;
+      }).join("")}</tbody></table>`
+    : "";
   return `
     <h2>04. Captura de lecturas</h2>
     <p class="nota">Prueba ${esc(prueba.prueba)} · ${esc(prueba.mide)} · mide ${esc(par)}</p>
@@ -792,7 +799,9 @@ function pasoTtr4() {
           <div><small>Relación teórica nominal</small><b>${nominal == null ? "—" : nominal.toFixed(4)}</b></div>
           <div><small>Relación teórica en este tap (0.625 %/paso)</small><b>${rtTap == null ? "—" : rtTap.toFixed(4)}</b></div>
         </div>
-        ${nominal == null ? `<div class="aviso">Falta el kV de placa de este devanado en el paso 01.</div>` : ""}`
+        ${nominal == null ? `<div class="aviso">Falta el kV de placa de este devanado en el paso 01.</div>` : ""}
+        <button class="secundario" data-accionttr="rt_taps">Obtener relación teórica</button>
+        ${tablaRt}`
       : `<label class="campo"><span>Relación teórica de este tap</span>
           <input inputmode="decimal" data-lecturattr="relacionTeoricaManual" value="${esc(l.relacionTeoricaManual)}"></label>`}
     <label class="campo"><span>Relación medida (TTR)</span>
@@ -1234,6 +1243,8 @@ raiz.addEventListener("click", (evento) => {
     estado.resultado = dictamen(estado.datos, pruebaActual(), estado.lecturas);
   } else if (d.accionfp === "calcular") {
     estado.resultadoFp = calcularFp();
+  } else if (d.accionttr === "rt_taps") {
+    estado.verRtTaps = !estado.verRtTaps;
   } else if (d.accionttr === "calcular") {
     estado.resultadoTtr = calcularTtr();
   } else if (d.accion === "guardar" && estado.resultado && !estado.resultado.error) {
