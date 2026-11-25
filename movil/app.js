@@ -957,8 +957,7 @@ const CAMPOS_ANEXO_FP = {
   medicion: [
     ["instMarca", "Marca"], ["instModelo", "Modelo"],
     ["instSerie", "Núm. Serie"], ["instEimp", "No. Inv. EIMP"],
-    ["instCal", "Fecha de Calibración"], ["instVenc", "Fecha Vencimiento"],
-    ["ultimaPrueba", "Fecha última prueba"],
+    ["instCal", "Fecha de Calibración"],
   ],
   firmas: [
     ["observaciones", "Observaciones"],
