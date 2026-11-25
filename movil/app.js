@@ -50,6 +50,8 @@ const estado = {
   datosAnexoRa: {},
   lecturasAnexoFp: {},
   datosAnexoFp: {},
+  lecturasAnexoTtr: {},
+  datosAnexoTtr: {},
   anexoEstado: "",
 };
 
@@ -78,6 +80,7 @@ function recordar() {
     tapTtr: estado.tapTtr, lecturasTtr: estado.lecturasTtr,
     lecturasAnexoRa: estado.lecturasAnexoRa, datosAnexoRa: estado.datosAnexoRa,
     lecturasAnexoFp: estado.lecturasAnexoFp, datosAnexoFp: estado.datosAnexoFp,
+    lecturasAnexoTtr: estado.lecturasAnexoTtr, datosAnexoTtr: estado.datosAnexoTtr,
   });
 }
 
@@ -103,6 +106,8 @@ if (previo) {
   Object.assign(estado.datosAnexoRa, previo.datosAnexoRa || {});
   Object.assign(estado.lecturasAnexoFp, previo.lecturasAnexoFp || {});
   Object.assign(estado.datosAnexoFp, previo.datosAnexoFp || {});
+  Object.assign(estado.lecturasAnexoTtr, previo.lecturasAnexoTtr || {});
+  Object.assign(estado.datosAnexoTtr, previo.datosAnexoTtr || {});
 }
 
 const esc = (texto) =>
@@ -831,6 +836,7 @@ function vistaTtr() {
     <header class="barra">
       <button class="atras" data-ir="inicio" aria-label="Volver al menú">‹</button>
       <div><b>Relación de Transformación (TTR)</b><small>ST-CT-007</small></div>
+      <button class="anexo" data-ir="anexoATtr">Anexo A</button>
     </header>
     <ol class="pasos">${PASOS_TTR.map((nombre, i) => `
       <li><button data-pasottr="${i + 1}" class="${estado.pasoTtr === i + 1 ? "activo" : ""}" aria-label="${esc(nombre)}">
@@ -961,6 +967,15 @@ const CAMPOS_ANEXO_FP = {
     ["reviso", "Revisó — Nombre y firma"],
     ["aprobo", "Aprobó — Nombre y firma"],
   ],
+};
+
+// Anexo A de TTR (ST-CT-007): mismos bloques que el de FP, más la tabla por tap.
+const CAMPOS_ANEXO_TTR = {
+  identificacion: CAMPOS_ANEXO_FP.identificacion,
+  potencia: CAMPOS_ANEXO_FP.potencia,
+  condiciones: CAMPOS_ANEXO_FP.condiciones,
+  medicion: CAMPOS_ANEXO_FP.medicion,
+  firmas: CAMPOS_ANEXO_FP.firmas,
 };
 
 function badgeEstadoAnexo(res) {
@@ -1107,6 +1122,63 @@ function vistaAnexoAFp() {
     </main>`;
 }
 
+function vistaAnexoATtr() {
+  const d = estado.datosTtr;
+  const v = estado.datosAnexoTtr;
+  const [lista] = filasTtr(d.equipo, d.configuracion, d.conexion);
+  const prueba = lista[estado.pruebaTtr] || lista[0] || null;
+  const { n, centro } = tapsTtr(d.tipoCambiador);
+  const nominal = prueba ? relacionNominalTtr(d, prueba).rt : null;
+  const usarReg = d.regulacionCfe === "Sí";
+  const mantener = d.tipoCambiador === "Bajo carga [ 23 TAPs ]" ? 1 : 0;
+  const lec = estado.lecturasAnexoTtr;
+  const filas = Array.from({ length: n }, (_, i) => i + 1).map((t) => {
+    const l = lec[t] || (lec[t] = { ps: "", rm: "" });
+    const rt = nominal == null ? null : relacionTeoricaTapTtr(nominal, t, centro, usarReg, mantener);
+    const rm = numero(l.rm);
+    const res = rt != null && rm != null ? evaluarTtr(rt, rm) : null;
+    const dif = rt != null && rm != null ? (100 * (rt - rm)) / rt : null;
+    return `
+      <tr${t === centro ? ' class="on"' : ""}>
+        <td>Tap ${t}${t === centro ? " (central)" : ""}</td>
+        <td><b>${rt == null ? "—" : rt.toFixed(4)}</b></td>
+        <td><input inputmode="decimal" data-anexottr="${t}:ps" value="${esc(l.ps)}"></td>
+        <td><input inputmode="decimal" data-anexottr="${t}:rm" value="${esc(l.rm)}"></td>
+        <td>${dif == null ? "—" : `${dif.toFixed(3)} %`}</td>
+        <td>${badgeEstadoAnexo(res)}</td>
+      </tr>`;
+  }).join("");
+  const diagrama = prueba ? svgVectorTtr(claveVectorTtr(d.equipo, d.configuracion, d.conexion), prueba, "mide") : "";
+  return `
+    <header class="barra">
+      <button class="atras" data-ir="ttr" aria-label="Volver">‹</button>
+      <div><b>Anexo A · Formatos de Prueba</b><small>${esc(d.equipo)}</small></div>
+    </header>
+    <main class="contenido anexo-a">
+      ${seccionAnexo("Datos de identificación", CAMPOS_ANEXO_TTR.identificacion, v)}
+      <h3>Condiciones de la prueba</h3>
+      <div class="rejilla">
+        <div class="dato"><small>Temp. ambiente</small><b>${esc(d.tempAmbiente) || "—"} °C</b></div>
+        <div class="dato"><small>Humedad relativa</small><b>${esc(d.humedad) || "—"} %</b></div>
+        <div class="dato"><small>Temp. del devanado</small><b>${esc(d.tempDevanado) || "—"} °C</b></div>
+        ${CAMPOS_ANEXO_TTR.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v)).join("")}
+      </div>
+      ${seccionAnexo("Datos del equipo", CAMPOS_ANEXO_TTR.potencia, v)}
+      ${seccionAnexo("Equipo de medición utilizado", CAMPOS_ANEXO_TTR.medicion, v)}
+      ${diagrama ? `<h3>Diagrama vectorial</h3><div class="diagrama">${diagrama}</div>` : ""}
+      <h3>Relación por tap${prueba ? ` — ${esc(prueba.prueba)} · ${esc(prueba.mide)}` : ""}</h3>
+      ${nominal == null ? `<div class="aviso">Falta el kV de placa en el paso 01 para la relación teórica.</div>` : ""}
+      <p class="nota">RT = kV de placa con 0.625 % por tap (taps nominales iguales). Dif % = 100 × (RT − RM) / RT.</p>
+      <div class="tabla-anexo"><table>
+        <thead><tr><th>Tap</th><th>RT teórica</th><th>RP.S.</th><th>RM</th><th>Dif %</th><th>Dictamen</th></tr></thead>
+        <tbody>${filas}</tbody>
+      </table></div>
+      ${seccionAnexo("Observaciones y firmas", CAMPOS_ANEXO_TTR.firmas, v)}
+      <button class="primario" data-accion="guardar-anexo-a-ttr">Guardar Anexo A</button>
+      <p class="nota">${esc(estado.anexoEstado)}</p>
+    </main>`;
+}
+
 function vistaHistorial() {
   const lista = leer(CLAVE_HISTORIAL, []);
   const filas = lista.length
@@ -1132,9 +1204,9 @@ const raiz = document.getElementById("app");
 function pintar() {
   raiz.innerHTML = {
     inicio: vistaInicio, ra: vistaRa, fp: vistaFp, ttr: vistaTtr,
-    anexoA: vistaAnexoA, anexoAFp: vistaAnexoAFp, historial: vistaHistorial,
+    anexoA: vistaAnexoA, anexoAFp: vistaAnexoAFp, anexoATtr: vistaAnexoATtr, historial: vistaHistorial,
   }[estado.vista]();
-  raiz.className = { anexoA: "ra", anexoAFp: "fp" }[estado.vista] || estado.vista;
+  raiz.className = { anexoA: "ra", anexoAFp: "fp", anexoATtr: "ttr" }[estado.vista] || estado.vista;
   if (estado.vista === "inicio" && typeof iniciarCfe3D === "function") {
     iniciarCfe3D(document.getElementById("logo-cfe-3d"));
   } else if (typeof detenerCfe3D === "function") {
@@ -1190,7 +1262,7 @@ function guardarAnexoA(modulo, equipo, cuerpo) {
 }
 
 function pintarEstadoAnexo() {
-  if (estado.vista !== "anexoA" && estado.vista !== "anexoAFp") return;
+  if (!["anexoA", "anexoAFp", "anexoATtr"].includes(estado.vista)) return;
   const p = raiz.querySelector(".anexo-a .nota:last-of-type");
   if (p) p.textContent = estado.anexoEstado;
 }
@@ -1342,6 +1414,11 @@ raiz.addEventListener("click", (evento) => {
       datos: estado.datosFp, lecturas: estado.lecturasAnexoFp,
       datosAnexo: estado.datosAnexoFp,
     });
+  } else if (d.accion === "guardar-anexo-a-ttr") {
+    guardarAnexoA("TTR", estado.datosTtr.equipo, {
+      datos: estado.datosTtr, lecturas: estado.lecturasAnexoTtr,
+      datosAnexo: estado.datosAnexoTtr,
+    });
   } else {
     return;
   }
@@ -1375,8 +1452,12 @@ raiz.addEventListener("input", (evento) => {
   } else if (el.dataset.anexofp) {
     const [indice, campo] = el.dataset.anexofp.split(":");
     (estado.lecturasAnexoFp[indice] ||= { kv: "10", ma: "", watts: "" })[campo] = el.value;
+  } else if (el.dataset.anexottr) {
+    const [indice, campo] = el.dataset.anexottr.split(":");
+    (estado.lecturasAnexoTtr[indice] ||= { ps: "", rm: "" })[campo] = el.value;
   } else if (el.dataset.anexodato) {
-    const destino = estado.vista === "anexoAFp" ? estado.datosAnexoFp : estado.datosAnexoRa;
+    const destino = estado.vista === "anexoATtr" ? estado.datosAnexoTtr
+      : estado.vista === "anexoAFp" ? estado.datosAnexoFp : estado.datosAnexoRa;
     destino[el.dataset.anexodato] = el.value;
   } else {
     return;
