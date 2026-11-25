@@ -307,20 +307,20 @@ function dibujarDiagramaTransformador(tresDevanados, monofasico, roles = null) {
     linea(740, 340, 760, 340, { fill: "#222222", width: 2 });
     const bujesAt = monofasico ? [[420, "H1"], [580, "H2"]] : [[390, "H1"], [500, "H2"], [610, "H3"], [700, "H0"]];
     for (const [cx, nombre] of bujesAt) {
-      ovalo(cx, 210, 20, { fill: "#FFFFFF", outline: rojo, width: 2 });
-      ovalo(cx, 210, 12, { outline: rojo, width: 1 });
-      ovalo(cx, 210, 5, { fill: rojo, outline: rojo });
+      ovalo(cx, 210, 20, { fill: "#FFFFFF", outline: "#333333", width: 2 });
+      ovalo(cx, 210, 12, { outline: "#333333", width: 1 });
+      ovalo(cx, 210, 5, { fill: "#333333", outline: "#333333" });
       linea(cx, 230, cx, 300, { fill: "#222222", width: 1, dash: [3, 3] });
-      texto(cx, 260, nombre, 14, rojo, true, "center");
+      texto(cx, 260, nombre, 14, "#333333", true, "center");
     }
     const bujesBt = monofasico
       ? [[470, "X1"], [530, "X2"]]
       : [[420, "X1"], [475, "X2"], [530, "X3"], [585, "X0"]];
     for (const [cx, nombre] of bujesBt) {
-      ovalo(cx, 360, 14, { fill: "#FFFFFF", outline: azul, width: 2 });
-      ovalo(cx, 360, 7, { outline: azul, width: 1 });
-      ovalo(cx, 360, 3, { fill: azul, outline: azul });
-      texto(cx, 395, nombre, 14, azul, true, "center");
+      ovalo(cx, 360, 14, { fill: "#FFFFFF", outline: "#333333", width: 2 });
+      ovalo(cx, 360, 7, { outline: "#333333", width: 1 });
+      ovalo(cx, 360, 3, { fill: "#333333", outline: "#333333" });
+      texto(cx, 395, nombre, 14, "#333333", true, "center");
     }
     if (roles) {
       marcarConexionesPlanta(ovalo, texto, [
@@ -381,22 +381,22 @@ function dibujarDiagramaTransformador(tresDevanados, monofasico, roles = null) {
   linea(760, 260, 780, 260, { fill: "#222222", width: 2 });
   linea(760, 340, 780, 340, { fill: "#222222", width: 2 });
   for (const [cx, nombre] of [[380, "H1"], [500, "H2"], [620, "H3"], [740, "H0"]]) {
-    ovalo(cx, 200, 16, { fill: "#FFFFFF", outline: rojo, width: 2 });
-    ovalo(cx, 200, 9, { outline: rojo, width: 1 });
-    ovalo(cx, 200, 4, { fill: rojo, outline: rojo });
-    texto(cx, 240, nombre, 12, rojo, true, "center");
+    ovalo(cx, 200, 16, { fill: "#FFFFFF", outline: "#333333", width: 2 });
+    ovalo(cx, 200, 9, { outline: "#333333", width: 1 });
+    ovalo(cx, 200, 4, { fill: "#333333", outline: "#333333" });
+    texto(cx, 240, nombre, 12, "#333333", true, "center");
   }
   for (const [cx, nombre] of [[320, "Y1"], [380, "Y2"], [440, "Y3"]]) {
-    ovalo(cx, 360, 14, { fill: "#FFFFFF", outline: naranja, width: 2 });
-    ovalo(cx, 360, 7, { outline: naranja, width: 1 });
-    ovalo(cx, 360, 3, { fill: naranja, outline: naranja });
-    texto(cx, 395, nombre, 12, naranja, true, "center");
+    ovalo(cx, 360, 14, { fill: "#FFFFFF", outline: "#333333", width: 2 });
+    ovalo(cx, 360, 7, { outline: "#333333", width: 1 });
+    ovalo(cx, 360, 3, { fill: "#333333", outline: "#333333" });
+    texto(cx, 395, nombre, 12, "#333333", true, "center");
   }
   for (const [cx, nombre] of [[540, "X1"], [590, "X2"], [640, "X3"], [690, "X0"]]) {
-    ovalo(cx, 360, 12, { fill: "#FFFFFF", outline: azul, width: 2 });
-    ovalo(cx, 360, 6, { outline: azul, width: 1 });
-    ovalo(cx, 360, 2, { fill: azul, outline: azul });
-    texto(cx, 390, nombre, 12, azul, true, "center");
+    ovalo(cx, 360, 12, { fill: "#FFFFFF", outline: "#333333", width: 2 });
+    ovalo(cx, 360, 6, { outline: "#333333", width: 1 });
+    ovalo(cx, 360, 2, { fill: "#333333", outline: "#333333" });
+    texto(cx, 390, nombre, 12, "#333333", true, "center");
   }
   if (roles) {
     marcarConexionesPlanta(ovalo, texto, [
