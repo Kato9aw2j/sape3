@@ -926,7 +926,7 @@ const CAMPOS_ANEXO_RA = {
 const CAMPOS_ANEXO_FP = {
   identificacion: [
     ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "Zona"],
-    ["subestacion", "Subestación"], ["nomenclatura", "Nomenclatura"],
+    ["nomenclatura", "Nomenclatura"], ["subestacion", "Subestación"],
     ["marca", "Marca"], ["modelo", "Modelo / Tipo"],
     ["serie", "No. de Serie"], ["fabricacion", "Año de Fabricación"],
     ["servicio", "Año Puesta en Servicio"],
