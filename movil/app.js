@@ -908,6 +908,7 @@ const CAMPOS_ANEXO_RA = {
   orden: [
     ["ot", "O.T."], ["fecha", "Fecha"], ["programado", "Programado"],
     ["ps", "P.S."], ["falla", "Falla"],
+    ["rim", "RIM"], ["rig", "RIG"], ["licencia", "No. Licencia"],
   ],
   medicion: [
     ["instModelo", "Modelo"], ["instMarca", "Marca"],
