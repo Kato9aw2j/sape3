@@ -9723,10 +9723,16 @@ class AppSAPE(tk.Tk):
             )
             etiqueta_sape._foto_sape = foto_sape
             etiqueta_sape.place(relx=1.0, x=-2, y=0, anchor="ne")
+            fila_titulo_ra = tk.Frame(contenido, bg="#FFFFFF")
+            fila_titulo_ra.pack(fill="x", padx=15, pady=(2, 10))
             tk.Label(
-                contenido, text=texto, bg="#FFFFFF", fg="#1E293B",
+                fila_titulo_ra, text="ST-CT-001", bg="#FFFFFF",
+                fg=RA_VISTA_NARANJA, font=("Segoe UI", 14, "bold"), anchor="w",
+            ).pack(side="left", padx=(0, 10))
+            tk.Label(
+                fila_titulo_ra, text=texto, bg="#FFFFFF", fg="#1E293B",
                 font=("Segoe UI", 14, "bold"), anchor="w",
-            ).pack(fill="x", padx=15, pady=(2, 10))
+            ).pack(side="left")
 
         def subtitulo_seccion(texto):
             tk.Label(
