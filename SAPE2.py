@@ -16112,7 +16112,7 @@ class AppSAPE(tk.Tk):
                 grupo(rej, "Clase (kV)", var_scratch("nivel"), 2, 1)
                 grupo(rej, "Calibre", var_scratch("calibre"), 2, 2)
                 grupo(rej, "Longitud (m)", var_scratch("longitud"), 2, 3)
-            elif "Aceite" not in equipo:
+            elif "Corriente" in equipo:
                 grupo(rej, "Tensión nominal (kV)", var_scratch("nivel"), 2, 1)
                 grupo(rej, "Relación", var_scratch("relacion"), 2, 2)
                 grupo(rej, "Clase de exactitud", var_scratch("exactitud"), 2, 3)

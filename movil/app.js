@@ -1082,7 +1082,7 @@ function bloqueIdentificacionFp(equipo) {
   if (esPotenciaFp(equipo)) return CAMPOS_ANEXO_FP.potencia;
   if (equipo.includes("Apartarrayos")) return CAMPOS_ANEXO_FP.apartarrayos;
   if (equipo.includes("Cables")) return CAMPOS_ANEXO_FP.cables;
-  if (!equipo.includes("Aceite")) return CAMPOS_ANEXO_FP.instrumento;
+  if (equipo.includes("Corriente")) return CAMPOS_ANEXO_FP.instrumento;
   return null;
 }
 
