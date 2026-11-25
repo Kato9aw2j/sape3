@@ -909,6 +909,7 @@ const CAMPOS_ANEXO_RA = {
     ["ot", "O.T."], ["fecha", "Fecha"], ["programado", "Programado"],
     ["falla", "Falla"],
     ["rim", "RIM"], ["rig", "RIG"], ["licencia", "No. Licencia"],
+    ["registro", "Registro de calidad"],
   ],
   medicion: [
     ["instModelo", "Modelo"], ["instMarca", "Marca"],
@@ -957,7 +958,7 @@ const CAMPOS_ANEXO_FP = {
   medicion: [
     ["instMarca", "Marca"], ["instModelo", "Modelo"],
     ["instSerie", "Núm. Serie"], ["instEimp", "No. Inv. EIMP"],
-    ["instCal", "Fecha de Calibración"],
+    ["instCal", "Fecha de Calibración"], ["registro", "Registro de calidad"],
   ],
   firmas: [
     ["observaciones", "Observaciones"],
@@ -972,7 +973,9 @@ const CAMPOS_ANEXO_TTR = {
   identificacion: CAMPOS_ANEXO_FP.identificacion,
   potencia: CAMPOS_ANEXO_FP.potencia,
   condiciones: CAMPOS_ANEXO_FP.condiciones,
-  medicion: CAMPOS_ANEXO_FP.medicion,
+  // El registro de calidad va en la orden de trabajo, no en el equipo de medición.
+  medicion: CAMPOS_ANEXO_FP.medicion.filter(([clave]) => clave !== "registro"),
+  orden: CAMPOS_ANEXO_RA.orden,
   firmas: CAMPOS_ANEXO_FP.firmas,
 };
 
@@ -1170,6 +1173,7 @@ function vistaAnexoATtr() {
     <main class="contenido anexo-a">
       ${marcasAnexo("#7C3AED")}
       ${seccionAnexo("Datos de identificación", CAMPOS_ANEXO_TTR.identificacion, v)}
+      ${seccionAnexo("Orden de trabajo", CAMPOS_ANEXO_TTR.orden, v)}
       <h3>Condiciones de la prueba</h3>
       <div class="rejilla">
         <div class="dato"><small>Temp. ambiente</small><b>${esc(d.tempAmbiente) || "—"} °C</b></div>
