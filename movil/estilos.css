@@ -175,7 +175,8 @@ button:disabled { cursor: default; }
 .campo input:focus, .campo select:focus { outline: 2px solid var(--naranja-claro); border-color: var(--naranja); }
 .rejilla { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 10px; }
 /* Anexo A: las cajas quedan a la misma altura aunque la etiqueta ocupe 1, 2 o 3 renglones. */
-.anexo-a .rejilla { align-items: start; }
+.anexo-a .rejilla { align-items: stretch; }
+.anexo-a .rejilla .dato { display: flex; flex-direction: column; justify-content: center; }
 .anexo-a .rejilla .campo > span { min-height: 3.6em; line-height: 1.2; }
 
 .segmentos { display: flex; gap: 8px; flex-wrap: wrap; }
