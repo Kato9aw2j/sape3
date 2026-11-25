@@ -909,7 +909,7 @@ const CAMPOS_ANEXO_RA = {
     ["ot", "O.T."], ["fecha", "Fecha"], ["programado", "Programado"],
     ["falla", "Falla"],
     ["rim", "RIM"], ["rig", "RIG"], ["licencia", "No. Licencia"],
-    ["registro", "Registro de calidad"],
+    ["registro", "Número de registro"],
   ],
   medicion: [
     ["instModelo", "Modelo"], ["instMarca", "Marca"],
@@ -958,7 +958,7 @@ const CAMPOS_ANEXO_FP = {
   medicion: [
     ["instMarca", "Marca"], ["instModelo", "Modelo"],
     ["instSerie", "Núm. Serie"], ["instEimp", "No. Inv. EIMP"],
-    ["instCal", "Fecha de Calibración"], ["registro", "Registro de calidad"],
+    ["instCal", "Fecha de Calibración"], ["registro", "Número de registro"],
   ],
   firmas: [
     ["observaciones", "Observaciones"],

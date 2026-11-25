@@ -9907,7 +9907,7 @@ class AppSAPE(tk.Tk):
             grupo(rej_ot, "RIM", var_scratch("rim"), 1, 2)
             grupo(rej_ot, "RIG", var_scratch("rig"), 2, 0)
             grupo(rej_ot, "No. Licencia", var_scratch("licencia"), 2, 1)
-            grupo(rej_ot, "Registro de calidad", var_scratch("registro"), 2, 2)
+            grupo(rej_ot, "Número de registro", var_scratch("registro"), 2, 2)
 
         def seccion_equipo_medicion():
             subtitulo_seccion("EQUIPO DE MEDICIÓN UTILIZADO")
@@ -11913,7 +11913,7 @@ class AppSAPE(tk.Tk):
         for indice, (clave, texto) in enumerate((
             ("ot", "O.T."), ("fecha", "Fecha"), ("programado", "Programado"),
             ("falla", "Falla"), ("rim", "RIM"), ("rig", "RIG"),
-            ("licencia", "No. Licencia"), ("registro", "Registro de calidad"),
+            ("licencia", "No. Licencia"), ("registro", "Número de registro"),
         )):
             grupo(rej, texto, var(clave), indice // 4, indice % 4)
 
@@ -16196,7 +16196,7 @@ class AppSAPE(tk.Tk):
             grupo(rej, "Núm. Serie", var_scratch("inst_serie"), 0, 2)
             grupo(rej, "No. Inv. EIMP", var_scratch("inst_eimp"), 0, 3)
             grupo(rej, "Fecha de Calibración", var_scratch("inst_cal"), 1, 0)
-            grupo(rej, "Registro de calidad", var_scratch("registro"), 1, 1)
+            grupo(rej, "Número de registro", var_scratch("registro"), 1, 1)
 
         def seccion_firmas():
             subtitulo_seccion("OBSERVACIONES Y FIRMAS")
