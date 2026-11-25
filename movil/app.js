@@ -1158,8 +1158,9 @@ function vistaAnexoATtr() {
       </tr>`;
   }).join("");
   const clave = prueba ? claveVectorTtr(d.equipo, d.configuracion, d.conexion) : null;
-  const diagrama = clave ? svgVectorTtr(clave, prueba, "mide") : "";
-  const esquema = clave ? svgVectorTtr(clave, prueba, "cables") : "";
+  // En el formato no parpadea nada: los diagramas van con su color fijo.
+  const diagrama = clave ? svgVectorTtr(clave, prueba, "mide", false) : "";
+  const esquema = clave ? svgVectorTtr(clave, prueba, "cables", false) : "";
   const dibujoEquipo = diagramaAnexoFp(d.equipo, d);
   return `
     <header class="barra">

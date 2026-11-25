@@ -271,7 +271,7 @@ function medidaVectorTtr(n) {
 //  - "cables": esquema de conexiones. CN/GN negro, CR/GR rojo; primero
 //    parpadea la línea (negro/rojo) y luego los roles CN/CR/GN/GR.
 // Las animaciones van dentro del propio SVG (mismo ritmo de 450 ms).
-function svgVectorTtr(clave, prueba, modo) {
+function svgVectorTtr(clave, prueba, modo, parpadeo = true) {
   const ficha = VECTORES_TTR[clave];
   if (!ficha) return "";
   const grupos = ficha[3];
@@ -407,7 +407,7 @@ function svgVectorTtr(clave, prueba, modo) {
   });
 
   const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-  const estilo = `<style>` +
+  const estilo = !parpadeo ? "" : `<style>` +
     `@keyframes vpar{0%,49.9%{fill:${VEC_ROSA};stroke:${VEC_ROSA}}50%,100%{fill:#FFFFFF;stroke:#FFFFFF}}` +
     `@keyframes vlin{0%,49.9%{fill:var(--c);stroke:var(--c)}50%,100%{fill:#FFFFFF;stroke:#FFFFFF}}` +
     `@keyframes vrol{0%,49.9%{fill:#FFFFFF}50%,100%{fill:var(--c)}}` +
@@ -441,8 +441,9 @@ function svgVectorTtr(clave, prueba, modo) {
     } else {
       rx = x0 + ancho_b / 2; ry = t.rolArriba ? t.y - 17 : t.y + 19; anc = "middle";
     }
-    svg += `<text x="${rx.toFixed(1)}" y="${ry.toFixed(1)}" text-anchor="${anc}" class="vrol" style="--c:${rojo ? VEC_ROJO : VEC_NEGRO}"` +
-      ` font-family="Segoe UI, sans-serif" font-size="${rojo ? 12 : 11}" font-weight="bold" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3" paint-order="stroke">${rol.join("/")}</text>`;
+    const colorRol = rojo ? VEC_ROJO : VEC_NEGRO;
+    svg += `<text x="${rx.toFixed(1)}" y="${ry.toFixed(1)}" text-anchor="${anc}"${parpadeo ? ` class="vrol" style="--c:${colorRol}"` : ""}` +
+      ` font-family="Segoe UI, sans-serif" font-size="${rojo ? 12 : 11}" font-weight="bold" fill="${parpadeo ? "#FFFFFF" : colorRol}" stroke="#FFFFFF" stroke-width="3" paint-order="stroke">${rol.join("/")}</text>`;
   }
   for (const [cx, texto] of pies) {
     svg += `<text x="${cx.toFixed(1)}" y="266" text-anchor="middle" fill="${VEC_PIE}" font-family="Segoe UI, sans-serif" font-size="12" font-weight="bold">${esc(texto)}</text>`;
