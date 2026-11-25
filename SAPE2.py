@@ -9708,6 +9708,8 @@ class AppSAPE(tk.Tk):
             grupo(rej_id, "MVA", var_scratch("mva"), 1, 1)
             grupo(rej_id, "Año de Fabricación", var_scratch("fabricacion"), 1, 2)
             grupo(rej_id, "Nivel de Tensión (kV)", var_scratch("nivel"), 1, 3)
+            grupo(rej_id, "Gerencia Regional de Transmisión", var_scratch("gerencia"), 2, 0)
+            grupo(rej_id, "Zona", var_scratch("subarea"), 2, 1)
 
         def seccion_condiciones(incluir_devanado=True, incluir_kt=False):
             # Condiciones de prueba del formato ST-CT-001 (_ETIQUETAS_COND_RA)
