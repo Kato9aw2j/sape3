@@ -11969,6 +11969,36 @@ class AppSAPE(tk.Tk):
         filas_caja["ecuacion"].configure(
             text="%DIF = (RT − RM) / RT × 100", fg="#E5E7EB",
         )
+        tabla_taps = tk.Frame(caja, bg="#111827")
+        tabla_taps.pack(fill="x", padx=10, pady=(0, 8))
+
+        def mostrar_taps(nominal, n_taps, centro, usar_reg):
+            """Lista la relación teórica de cada tap; el tap elegido va resaltado."""
+            for hijo in tabla_taps.winfo_children():
+                hijo.destroy()
+            if nominal is None:
+                return
+            tap_sel = int(datos["tap"].get())
+            tk.Label(
+                tabla_taps, text="RT POR TAP", bg="#111827",
+                fg=TTR_MORADO_CLARO, font=("Consolas", 9, "bold"),
+            ).pack(anchor="w", pady=(2, 4))
+            for t in range(1, n_taps + 1):
+                rt_t = _relacion_teorica_tap_ttr(nominal, t, centro, usar_reg)
+                sel = t == tap_sel
+                color = "#FFFFFF" if sel else "#E5E7EB"
+                estilo = "bold" if sel else "normal"
+                fila = tk.Frame(tabla_taps, bg="#111827")
+                fila.pack(fill="x")
+                tk.Label(
+                    fila, text=f"Tap {t}" + ("  ◄" if sel else ""),
+                    bg="#111827", fg=color, font=("Consolas", 9, estilo),
+                ).pack(side="left")
+                tk.Label(
+                    fila, text="—" if rt_t is None else f"{rt_t:.4f}",
+                    bg="#111827", fg=color, font=("Consolas", 9, estilo),
+                ).pack(side="right")
+
         aviso = tk.Label(
             panel, text="", bg="#1F2937", fg="#E5E7EB",
             font=("Segoe UI", 9), justify="left", anchor="nw", wraplength=300,
@@ -12092,6 +12122,7 @@ class AppSAPE(tk.Tk):
                 )
 
         refrescar()
+        refrescar.mostrar_taps = mostrar_taps
         return refrescar
 
     def _captura_ttr(self, frame):
@@ -12178,6 +12209,7 @@ class AppSAPE(tk.Tk):
                 text="—" if rt is None else f"{rt:.4f}",
             )
             refrescar_rt()
+            refrescar_rt.mostrar_taps(nominal, n_taps, centro, usar_reg)
 
         combo_tap.configure(command=lambda _v=None: obtener_rt())
         ctk.CTkButton(
