@@ -953,8 +953,6 @@ const CAMPOS_ANEXO_FP = {
   ],
   condiciones: [
     ["tempDevanado", "Temp. Devanado (°C)"], ["clima", "Clima"],
-    ["motivo", "Motivo de la prueba"], ["ot", "Orden de Trabajo (O.T.)"],
-    ["fecha", "Fecha"],
   ],
   medicion: [
     ["instMarca", "Marca"], ["instModelo", "Modelo"],
