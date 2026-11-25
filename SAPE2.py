@@ -9726,13 +9726,14 @@ class AppSAPE(tk.Tk):
             fila_titulo_ra = tk.Frame(contenido, bg="#FFFFFF")
             fila_titulo_ra.pack(fill="x", padx=15, pady=(2, 10))
             tk.Label(
-                fila_titulo_ra, text="ST-CT-001", bg="#FFFFFF",
-                fg=RA_VISTA_NARANJA, font=("Segoe UI", 14, "bold"), anchor="w",
-            ).pack(side="left", padx=(0, 10))
+                fila_titulo_ra, text="ST-CT-001", bg="#FFEDD5",
+                fg=RA_VISTA_NARANJA_OSCURO, font=("Consolas", 12, "bold"),
+                padx=10, pady=3,
+            ).pack(side="left")
             tk.Label(
                 fila_titulo_ra, text=texto, bg="#FFFFFF", fg="#1E293B",
                 font=("Segoe UI", 14, "bold"), anchor="w",
-            ).pack(side="left")
+            ).pack(side="left", padx=(12, 0))
 
         def subtitulo_seccion(texto):
             tk.Label(
@@ -9937,7 +9938,7 @@ class AppSAPE(tk.Tk):
                 )
 
         def formato_1min(equipo, pruebas):
-            titulo_formato(f"{equipo}: Medición de Resistencia de Aislamiento")
+            titulo_formato(f"Medición de Resistencia de Aislamiento — {equipo}")
             seccion_identificacion()
             seccion_condiciones(incluir_kt=True)
             if self._familia_ra(equipo) == "tc":
@@ -10029,7 +10030,7 @@ class AppSAPE(tk.Tk):
             seccion_firmas()
 
         def formato_10min(equipo, pruebas):
-            titulo_formato(f"{equipo}: Medición de Resistencia de Aislamiento")
+            titulo_formato(f"Medición de Resistencia de Aislamiento — {equipo}")
             seccion_identificacion()
             seccion_condiciones(incluir_kt=True)
             if "Reactores" in equipo:
@@ -10166,7 +10167,7 @@ class AppSAPE(tk.Tk):
             seccion_firmas()
 
         def formato_generador(equipo, pruebas):
-            titulo_formato(f"{equipo}: Medición de Resistencia de Aislamiento")
+            titulo_formato(f"Medición de Resistencia de Aislamiento — {equipo}")
             seccion_identificacion()
             seccion_condiciones(incluir_devanado=False)
             seccion_datos_maquina()
@@ -10285,7 +10286,7 @@ class AppSAPE(tk.Tk):
             seccion_firmas()
 
         def formato_apartarrayos(equipo, pruebas):
-            titulo_formato(f"{equipo}: Medición de Resistencia de Aislamiento")
+            titulo_formato(f"Medición de Resistencia de Aislamiento — {equipo}")
             seccion_identificacion()
             seccion_condiciones(incluir_devanado=False)
             subtitulo_seccion("DATOS DEL APARTARRAYOS")
@@ -16425,7 +16426,9 @@ class AppSAPE(tk.Tk):
             arreglo = self._arreglo_fp()
             clave, nombre, figura = self._formato_fp()
             titulo_formato(
-                nombre + (f"  ·  {arreglo}" if arreglo else ""), clave,
+                f"Factor de Potencia al Aislamiento — {equipo}"
+                + (f"  ·  {arreglo}" if arreglo else ""),
+                clave,
             )
             seccion_identificacion(equipo)
             seccion_condiciones()
