@@ -589,7 +589,7 @@ def _dibujar_diagrama_transformador_2d(padre, monofasico=False, roles=None):
     # Bujes de alta tensión
     bujes_at = (
         ((420, "H1"), (580, "H2")) if monofasico
-        else ((390, "H1"), (500, "H2"), (610, "H3"))
+        else ((390, "H1"), (500, "H2"), (610, "H3"), (700, "H0"))
     )
     for cx, nombre in bujes_at:
         ovalo(cx, 210, 20, fill="#FFFFFF", outline=rojo, width=2)
@@ -625,7 +625,7 @@ def _dibujar_diagrama_transformador_2d(padre, monofasico=False, roles=None):
     etiquetas_lat = (
         (
             205, "ALTA TENSIÓN",
-            "(H1, H2)" if monofasico else "(H1, H2, H3)", rojo,
+            "(H1, H2)" if monofasico else "(H0, H1, H2, H3)", rojo,
         ),
         (
             415, "BAJA TENSIÓN",
@@ -729,7 +729,7 @@ def _dibujar_diagrama_transformador_3d(padre, naranja="#FF8C00", roles=None):
     linea(760, 260, 780, 260, fill="#222222", width=2)
     linea(760, 340, 780, 340, fill="#222222", width=2)
     # Bujes de alta tensión
-    for cx, nombre in ((380, "H1"), (500, "H2"), (620, "H3")):
+    for cx, nombre in ((380, "H1"), (500, "H2"), (620, "H3"), (740, "H0")):
         ovalo(cx, 200, 16, fill="#FFFFFF", outline=rojo, width=2)
         ovalo(cx, 200, 9, outline=rojo, width=1)
         ovalo(cx, 200, 4, fill=rojo, outline=rojo)
@@ -750,7 +750,7 @@ def _dibujar_diagrama_transformador_3d(padre, naranja="#FF8C00", roles=None):
     if roles:
         _marcar_conexiones_planta(
             lienzo, X, Y, s,
-            [("H1", 380, 200, 16), ("H2", 500, 200, 16), ("H3", 620, 200, 16),
+            [("H1", 380, 200, 16), ("H2", 500, 200, 16), ("H3", 620, 200, 16), ("H0", 740, 200, 16),
              ("Y1", 320, 360, 14), ("Y2", 380, 360, 14), ("Y3", 440, 360, 14),
              ("X1", 540, 360, 12), ("X2", 590, 360, 12), ("X3", 640, 360, 12),
              ("X0", 690, 360, 12)],
@@ -765,7 +765,7 @@ def _dibujar_diagrama_transformador_3d(padre, naranja="#FF8C00", roles=None):
         rect(x_a, 250, 14, 6, outline="#222222", width=1)
     # Etiquetas fuera del dibujo, sin líneas que crucen radiadores o tanque.
     etiquetas_lat = (
-        (175, "ALTA TENSIÓN", "(H1, H2, H3)", rojo),
+        (175, "ALTA TENSIÓN", "(H0, H1, H2, H3)", rojo),
         (375, "TERCIARIO", "(Y1, Y2, Y3)", naranja),
         (475, "BAJA TENSIÓN", "(X1, X2, X3, X0)", azul),
     )

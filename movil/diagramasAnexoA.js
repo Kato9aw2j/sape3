@@ -305,7 +305,7 @@ function dibujarDiagramaTransformador(tresDevanados, monofasico, roles = null) {
     linea(240, 340, 260, 340, { fill: "#222222", width: 2 });
     linea(740, 260, 760, 260, { fill: "#222222", width: 2 });
     linea(740, 340, 760, 340, { fill: "#222222", width: 2 });
-    const bujesAt = monofasico ? [[420, "H1"], [580, "H2"]] : [[390, "H1"], [500, "H2"], [610, "H3"]];
+    const bujesAt = monofasico ? [[420, "H1"], [580, "H2"]] : [[390, "H1"], [500, "H2"], [610, "H3"], [700, "H0"]];
     for (const [cx, nombre] of bujesAt) {
       ovalo(cx, 210, 20, { fill: "#FFFFFF", outline: rojo, width: 2 });
       ovalo(cx, 210, 12, { outline: rojo, width: 1 });
@@ -380,7 +380,7 @@ function dibujarDiagramaTransformador(tresDevanados, monofasico, roles = null) {
   linea(220, 340, 240, 340, { fill: "#222222", width: 2 });
   linea(760, 260, 780, 260, { fill: "#222222", width: 2 });
   linea(760, 340, 780, 340, { fill: "#222222", width: 2 });
-  for (const [cx, nombre] of [[380, "H1"], [500, "H2"], [620, "H3"]]) {
+  for (const [cx, nombre] of [[380, "H1"], [500, "H2"], [620, "H3"], [740, "H0"]]) {
     ovalo(cx, 200, 16, { fill: "#FFFFFF", outline: rojo, width: 2 });
     ovalo(cx, 200, 9, { outline: rojo, width: 1 });
     ovalo(cx, 200, 4, { fill: rojo, outline: rojo });
@@ -400,7 +400,7 @@ function dibujarDiagramaTransformador(tresDevanados, monofasico, roles = null) {
   }
   if (roles) {
     marcarConexionesPlanta(ovalo, texto, [
-      ["H1", 380, 200, 16], ["H2", 500, 200, 16], ["H3", 620, 200, 16],
+      ["H1", 380, 200, 16], ["H2", 500, 200, 16], ["H3", 620, 200, 16], ["H0", 740, 200, 16],
       ["Y1", 320, 360, 14], ["Y2", 380, 360, 14], ["Y3", 440, 360, 14],
       ["X1", 540, 360, 12], ["X2", 590, 360, 12], ["X3", 640, 360, 12], ["X0", 690, 360, 12],
     ], roles);
@@ -414,7 +414,7 @@ function dibujarDiagramaTransformador(tresDevanados, monofasico, roles = null) {
     rect(xA, 250, 14, 6, { outline: "#222222", width: 1 });
   }
   const etiquetasLat3 = [
-    [175, "ALTA TENSIÓN", "(H1, H2, H3)", rojo],
+    [175, "ALTA TENSIÓN", "(H0, H1, H2, H3)", rojo],
     [375, "TERCIARIO", "(Y1, Y2, Y3)", naranja],
     [475, "BAJA TENSIÓN", "(X1, X2, X3, X0)", azul],
   ];
