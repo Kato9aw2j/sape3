@@ -178,7 +178,9 @@ button:disabled { cursor: default; }
 .anexo-a .rejilla { align-items: stretch; }
 .anexo-a .rejilla .dato { display: flex; flex-direction: column; justify-content: center; }
 /* Campos de condiciones en negro, como las tarjetas de temperatura y humedad. */
-.anexo-a .rejilla .campo.oscuro input { background: #111827; color: #E5E7EB; border-color: #111827; }
+.anexo-a .rejilla .campo.oscuro { background: #111827; border-radius: 10px; padding: 10px 12px; }
+.anexo-a .rejilla .campo.oscuro > span { color: #9CA3AF; font-size: 11px; font-weight: 400; min-height: 0; margin-bottom: 2px; }
+.anexo-a .rejilla .campo.oscuro input { background: transparent; color: #FDBA74; border: 0; padding: 0; font: 700 16px Consolas, monospace; width: 100%; }
 .anexo-a .rejilla .campo > span { min-height: 3.6em; line-height: 1.2; }
 
 .segmentos { display: flex; gap: 8px; flex-wrap: wrap; }
