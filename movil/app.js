@@ -890,7 +890,6 @@ const CAMPOS_ANEXO_RA = {
     ["tipoMaquina", "Tipo de máquina (Generador/Motor)"],
   ],
   reactor: [
-    ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "SubÁrea"],
     ["mvar", "Potencia reactiva (MVAr)"],
     ["vNominal", "Tensión nominal (kV)"], ["iNominal", "Corriente nominal (A)"],
     ["reactancia", "Reactancia (%)"], ["claseEnf", "Clase de enfriamiento"],
