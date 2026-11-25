@@ -1148,13 +1148,20 @@ function vistaAnexoATtr() {
         <td>${badgeEstadoAnexo(res)}</td>
       </tr>`;
   }).join("");
-  const diagrama = prueba ? svgVectorTtr(claveVectorTtr(d.equipo, d.configuracion, d.conexion), prueba, "mide") : "";
+  const clave = prueba ? claveVectorTtr(d.equipo, d.configuracion, d.conexion) : null;
+  const diagrama = clave ? svgVectorTtr(clave, prueba, "mide") : "";
+  const esquema = clave ? svgVectorTtr(clave, prueba, "cables") : "";
+  const dibujoEquipo = diagramaAnexoFp(d.equipo, d);
   return `
     <header class="barra">
       <button class="atras" data-ir="ttr" aria-label="Volver">‹</button>
       <div><b>Anexo A · Formatos de Prueba</b><small>${esc(d.equipo)}</small></div>
     </header>
     <main class="contenido anexo-a">
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 2px 8px">
+        <b style="color:#00573F;font:800 22px Consolas,monospace">CFE</b>
+        <b style="color:#7C3AED;font:800 22px Consolas,monospace">S.A.P.E.</b>
+      </div>
       ${seccionAnexo("Datos de identificación", CAMPOS_ANEXO_TTR.identificacion, v)}
       <h3>Condiciones de la prueba</h3>
       <div class="rejilla">
@@ -1165,7 +1172,9 @@ function vistaAnexoATtr() {
       </div>
       ${seccionAnexo("Datos del equipo", CAMPOS_ANEXO_TTR.potencia, v)}
       ${seccionAnexo("Equipo de medición utilizado", CAMPOS_ANEXO_TTR.medicion, v)}
+      ${dibujoEquipo ? `<h3>Diagrama del equipo</h3><div class="diagrama">${dibujoEquipo}</div>` : ""}
       ${diagrama ? `<h3>Diagrama vectorial</h3><div class="diagrama">${diagrama}</div>` : ""}
+      ${esquema ? `<h3>Esquema de conexiones</h3><div class="diagrama">${esquema}</div>` : ""}
       <h3>Relación por tap${prueba ? ` — ${esc(prueba.prueba)} · ${esc(prueba.mide)}` : ""}</h3>
       ${nominal == null ? `<div class="aviso">Falta el kV de placa en el paso 01 para la relación teórica.</div>` : ""}
       <p class="nota">RT = kV de placa con 0.625 % por tap (taps nominales iguales). Dif % = 100 × (RT − RM) / RT.</p>
