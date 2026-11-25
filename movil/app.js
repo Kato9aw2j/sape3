@@ -1002,6 +1002,15 @@ function bloqueIdentificacionRa(familia) {
   return null;
 }
 
+// Encabezado de marcas del Anexo A: CFE (verde oficial) y S.A.P.E.
+function marcasAnexo(colorSape = "#1E293B") {
+  return `
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 2px 8px">
+        <b style="color:#00573F;font:800 22px Consolas,monospace">CFE</b>
+        <b style="color:${colorSape};font:800 22px Consolas,monospace">S.A.P.E.</b>
+      </div>`;
+}
+
 function vistaAnexoA() {
   const d = estado.datos;
   const eq = equipoDe(d.equipo);
@@ -1034,6 +1043,7 @@ function vistaAnexoA() {
       <div><b>Anexo A · Formatos de Prueba</b><small>${esc(eq.nombre)}</small></div>
     </header>
     <main class="contenido anexo-a">
+      ${marcasAnexo("#EA580C")}
       ${seccionAnexo("Datos de identificación", CAMPOS_ANEXO_RA.identificacion, v)}
       <h3>Condiciones de la prueba</h3>
       <div class="rejilla">
@@ -1100,6 +1110,7 @@ function vistaAnexoAFp() {
       <div><b>Anexo A · Formatos de Prueba</b><small>${esc(d.equipo)}</small></div>
     </header>
     <main class="contenido anexo-a">
+      ${marcasAnexo("#059669")}
       ${seccionAnexo("Datos de identificación", CAMPOS_ANEXO_FP.identificacion, v)}
       ${seccionAnexo("Datos propios del equipo", bloqueIdentificacionFp(d.equipo), v)}
       <h3>Condiciones: prueba &amp; climatológica</h3>
@@ -1158,10 +1169,7 @@ function vistaAnexoATtr() {
       <div><b>Anexo A · Formatos de Prueba</b><small>${esc(d.equipo)}</small></div>
     </header>
     <main class="contenido anexo-a">
-      <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 2px 8px">
-        <b style="color:#00573F;font:800 22px Consolas,monospace">CFE</b>
-        <b style="color:#7C3AED;font:800 22px Consolas,monospace">S.A.P.E.</b>
-      </div>
+      ${marcasAnexo("#7C3AED")}
       ${seccionAnexo("Datos de identificación", CAMPOS_ANEXO_TTR.identificacion, v)}
       <h3>Condiciones de la prueba</h3>
       <div class="rejilla">
