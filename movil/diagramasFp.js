@@ -134,7 +134,8 @@ function _dibujarPilaFp(equipoNombre, arreglo, pr, modo) {
   const cajaSvg = (c, x, y, w, h) => {
     const rol = rolDe(c.sitios);
     const color = rol ? COLOR_FP[rol] : COLOR_FP.cable;
-    partes.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="7" fill="#FFFFFF" stroke="${color}" stroke-width="3"/>`);
+    const borde = rol === "LINEA" ? "#111827" : color;
+    partes.push(`<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="7" fill="#FFFFFF" stroke="${borde}" stroke-width="3"/>`);
     if (rol) {
       texto(x + w / 2, y + h / 2 - 3, c.id, { tam: 10, color: "#64748B" });
       texto(x + w / 2, y + h / 2 + 12, ROTULO_FP[rol], { color: rol === "LINEA" ? "#111827" : color, clase: "pulso" });
