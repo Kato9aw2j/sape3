@@ -11877,11 +11877,17 @@ class AppSAPE(tk.Tk):
         )
         etiqueta_sape._foto_sape = foto_sape
         etiqueta_sape.place(relx=1.0, x=-2, y=0, anchor="ne")
+        fila_titulo = tk.Frame(contenido, bg="#FFFFFF")
+        fila_titulo.pack(fill="x", padx=15, pady=(2, 10))
         tk.Label(
-            contenido, text=f"ST-CT-007  ·  {equipo or 'Equipo sin elegir'}",
-            bg="#FFFFFF", fg=TTR_MORADO_OSCURO, font=("Consolas", 12, "bold"),
-            anchor="w",
-        ).pack(fill="x", padx=15, pady=(14, 2))
+            fila_titulo, text="ST-CT-007", bg=TTR_VISTA_PASTEL,
+            fg=TTR_MORADO_OSCURO, font=("Consolas", 12, "bold"), padx=10, pady=3,
+        ).pack(side="left")
+        tk.Label(
+            fila_titulo,
+            text=f"Relación de Transformación — {equipo or 'Equipo sin elegir'}",
+            bg="#FFFFFF", fg="#1E293B", font=("Segoe UI", 14, "bold"), anchor="w",
+        ).pack(side="left", padx=(12, 0))
 
         subtitulo("DATOS DE IDENTIFICACIÓN")
         rej = rejilla(4)
