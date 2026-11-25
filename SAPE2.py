@@ -9858,7 +9858,6 @@ class AppSAPE(tk.Tk):
             grupo(rej_ot, "O.T.", var_scratch("ot"), 0, 0)
             grupo(rej_ot, "Fecha", var_scratch("fecha"), 0, 1)
             grupo(rej_ot, "Programado", var_scratch("programado"), 0, 2)
-            grupo(rej_ot, "P.S.", var_scratch("ps"), 1, 0)
             grupo(rej_ot, "Falla", var_scratch("falla"), 1, 1)
             grupo(rej_ot, "RIM", var_scratch("rim"), 1, 2)
             grupo(rej_ot, "RIG", var_scratch("rig"), 2, 0)
