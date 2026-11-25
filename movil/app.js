@@ -983,8 +983,8 @@ function badgeEstadoAnexo(res) {
   return `<span class="badge-anexo ${res.estado}">${esc(res.estado)}</span>`;
 }
 
-function campoAnexo(clave, etiqueta, valores) {
-  return `<label class="campo"><span>${esc(etiqueta)}</span>
+function campoAnexo(clave, etiqueta, valores, oscuro = false) {
+  return `<label class="campo${oscuro ? " oscuro" : ""}"><span>${esc(etiqueta)}</span>
     <input data-anexodato="${clave}" value="${esc(valores[clave] || "")}"></label>`;
 }
 
@@ -1050,7 +1050,7 @@ function vistaAnexoA() {
         <div class="dato"><small>Temp. ambiente</small><b>${esc(d.tempAmbiente) || "—"} °C</b></div>
         <div class="dato"><small>Humedad relativa</small><b>${esc(d.humedad) || "—"} %</b></div>
         <div class="dato"><small>Temp. del devanado</small><b>${esc(d.tempDevanado) || "—"} °C</b></div>
-        ${CAMPOS_ANEXO_RA.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v)).join("")}
+        ${CAMPOS_ANEXO_RA.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v, true)).join("")}
       </div>
       ${seccionAnexo(
         eq.familia === "rotativa" ? "Datos de la máquina rotatoria"
@@ -1118,7 +1118,7 @@ function vistaAnexoAFp() {
         <div class="dato"><small>Temp. ambiente</small><b>${esc(d.tempAmbiente) || "—"} °C</b></div>
         <div class="dato"><small>Humedad relativa</small><b>${esc(d.humedad) || "—"} %</b></div>
         <div class="dato"><small>Temp. del aceite</small><b>${esc(d.tempAceite) || "—"} °C</b></div>
-        ${CAMPOS_ANEXO_FP.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v)).join("")}
+        ${CAMPOS_ANEXO_FP.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v, true)).join("")}
       </div>
       ${seccionAnexo("Equipo de medición utilizado", CAMPOS_ANEXO_FP.medicion, v)}
       ${diagramaAnexoFp(d.equipo, d) ? `<h3>Diagrama del equipo</h3><div class="diagrama">${diagramaAnexoFp(d.equipo, d)}</div>` : ""}
@@ -1176,7 +1176,7 @@ function vistaAnexoATtr() {
         <div class="dato"><small>Temp. ambiente</small><b>${esc(d.tempAmbiente) || "—"} °C</b></div>
         <div class="dato"><small>Humedad relativa</small><b>${esc(d.humedad) || "—"} %</b></div>
         <div class="dato"><small>Temp. del devanado</small><b>${esc(d.tempDevanado) || "—"} °C</b></div>
-        ${CAMPOS_ANEXO_TTR.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v)).join("")}
+        ${CAMPOS_ANEXO_TTR.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v, true)).join("")}
       </div>
       ${seccionAnexo("Datos del equipo", CAMPOS_ANEXO_TTR.potencia, v)}
       ${seccionAnexo("Equipo de medición utilizado", CAMPOS_ANEXO_TTR.medicion, v)}
