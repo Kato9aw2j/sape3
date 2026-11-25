@@ -9816,7 +9816,7 @@ class AppSAPE(tk.Tk):
             subtitulo_seccion("DATOS DEL REACTOR")
             rej_re = rejilla(contenido, 4)
             grupo(rej_re, "Gerencia Regional de Transmisión", var_scratch("gerencia"), 0, 0)
-            grupo(rej_re, "SubÁrea", var_scratch("subarea"), 0, 1)
+            grupo(rej_re, "Zona", var_scratch("subarea"), 0, 1)
             grupo(rej_re, "Potencia reactiva (MVAr)", var_scratch("mvar"), 0, 2)
             grupo(rej_re, "Tensión nominal (kV)", var_scratch("v_nominal"), 0, 3)
             grupo(rej_re, "Corriente nominal (A)", var_scratch("i_nominal"), 1, 0)
@@ -9828,7 +9828,7 @@ class AppSAPE(tk.Tk):
             subtitulo_seccion("DATOS DEL TRANSFORMADOR")
             rej_tr = rejilla(contenido, 4)
             grupo(rej_tr, "Gerencia Regional de Transmisión", var_scratch("gerencia"), 0, 0)
-            grupo(rej_tr, "SubÁrea", var_scratch("subarea"), 0, 1)
+            grupo(rej_tr, "Zona", var_scratch("subarea"), 0, 1)
             grupo_tipo = tk.Frame(rej_tr, bg="#FFFFFF")
             grupo_tipo.grid(row=0, column=2, sticky="ew", padx=8, pady=5)
             tk.Label(
@@ -11848,7 +11848,7 @@ class AppSAPE(tk.Tk):
         subtitulo("DATOS DE IDENTIFICACIÓN")
         rej = rejilla(4)
         for indice, (clave, texto) in enumerate((
-            ("gerencia", "Gerencia Regional de Transmisión"), ("subarea", "SubÁrea"),
+            ("gerencia", "Gerencia Regional de Transmisión"), ("subarea", "Zona"),
             ("subestacion", "Subestación"), ("nomenclatura", "Nomenclatura"),
             ("marca", "Marca"), ("modelo", "Modelo / Tipo"),
             ("serie", "No. de Serie"), ("fabricacion", "Año de Fabricación"),
@@ -16074,7 +16074,7 @@ class AppSAPE(tk.Tk):
             subtitulo_seccion("DATOS DE IDENTIFICACIÓN")
             rej = rejilla(4)
             grupo(rej, "Gerencia Regional de Transmisión", var_scratch("gerencia"), 0, 0)
-            grupo(rej, "SubÁrea", var_scratch("subarea"), 0, 1)
+            grupo(rej, "Zona", var_scratch("subarea"), 0, 1)
             grupo(rej, "Subestación", var_scratch("subestacion"), 0, 2)
             grupo(rej, "Nomenclatura", var_scratch("nomenclatura"), 0, 3)
             grupo(rej, "Marca", var_scratch("marca"), 1, 0)

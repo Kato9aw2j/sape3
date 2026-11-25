@@ -895,7 +895,7 @@ const CAMPOS_ANEXO_RA = {
     ["reactancia", "Reactancia (%)"], ["claseEnf", "Clase de enfriamiento"],
   ],
   transformador: [
-    ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "SubÁrea"],
+    ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "Zona"],
     ["claseEnf", "Clase de enfriamiento"],
     ["anioServicio", "Año puesta en servicio"], ["taps", "# Taps ± %"],
     ["kvAt", "kV nom A.T."], ["kvBt", "kV nom B.T."],
@@ -924,7 +924,7 @@ const CAMPOS_ANEXO_RA = {
 
 const CAMPOS_ANEXO_FP = {
   identificacion: [
-    ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "SubÁrea"],
+    ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "Zona"],
     ["subestacion", "Subestación"], ["nomenclatura", "Nomenclatura"],
     ["marca", "Marca"], ["modelo", "Modelo / Tipo"],
     ["serie", "No. de Serie"], ["fabricacion", "Año de Fabricación"],
