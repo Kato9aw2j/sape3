@@ -124,6 +124,27 @@ def _agregar_historial(registro):
 
 
 RUTA_LECTURAS_ANEXO_A = Path(__file__).with_name("lecturas_anexo_a.json")
+RUTA_ANEXO_TTR = Path(__file__).with_name("lecturas_anexo_a_ttr.json")
+
+
+def _cargar_anexo_ttr():
+    """Anexo A de TTR guardado, por tipo de equipo."""
+    try:
+        datos = json.loads(RUTA_ANEXO_TTR.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+    return datos if isinstance(datos, dict) else {}
+
+
+def _guardar_anexo_ttr_archivo(registros):
+    try:
+        RUTA_ANEXO_TTR.write_text(
+            json.dumps(registros, ensure_ascii=False, indent=2),
+            encoding="utf-8",
+        )
+    except OSError:
+        return False
+    return True
 
 
 def _cargar_lecturas_anexo_a():
@@ -11726,20 +11747,267 @@ class AppSAPE(tk.Tk):
         ))
 
     def mostrar_anexo_a_ttr(self, padre):
-        self._visor_guia_ttr(padre, "Anexo A: Formatos", (
-            ("Datos del equipo", (
-                "Subestación, nomenclatura, marca, modelo, número de serie, año de fabricación y de puesta en servicio, tipo (transformador, autotransformador o reactor), monofásico o trifásico, MVA y kV nominales de alta, baja y terciario.",
-                "También se registran el número de taps, la marca del equipo de medición, su calibración y su vencimiento.",
-            )),
-            ("Condiciones de prueba", (
-                "Temperatura ambiente, del aceite y del devanado, humedad relativa y clima: soleado, nublado, lluvia o brisa.",
-                "Fecha, orden de trabajo y fecha de la última prueba.",
-            )),
-            ("Resultados", (
-                "Por cada tap: relación teórica, relación de puesta en servicio, relación medida y diferencia en por ciento.",
-                "Se dibuja el diagrama vectorial. Con las observaciones se marca el equipo como aceptado o rechazado, y firman quien realizó, revisó y aprobó.",
-            )),
-        ))
+        """Formato del Anexo A de TTR (ST-CT-007): datos, tabla por tap y firmas."""
+        visor = tk.Toplevel(padre)
+        visor.title("ANEXO A  Formatos de Prueba — Relación de Transformación")
+        visor.configure(bg="#F4F6F8")
+        visor.geometry("1180x800")
+        visor.minsize(980, 640)
+        visor.transient(padre)
+        barra_sup = tk.Frame(visor, bg="#1E293B")
+        barra_sup.pack(fill="x")
+        tk.Label(
+            barra_sup, text="Formatos de Prueba - Anexo A",
+            bg="#1E293B", fg="#FFFFFF", font=("Segoe UI", 15, "bold"),
+        ).pack(side="left", padx=20, pady=14)
+        contenido = ctk.CTkScrollableFrame(visor, fg_color="#FFFFFF")
+        contenido.pack(fill="both", expand=True, padx=18, pady=18)
+
+        datos = self.datos_ttr
+        equipo = datos["tipo_equipo"].get().strip()
+        configuracion = datos["configuracion"].get()
+        conexion = datos["conexion"].get()
+        guardado = _cargar_anexo_ttr().get(equipo, {})
+        campos_guardados = guardado.get("campos", {})
+        taps_guardados = guardado.get("taps", {})
+        prueba = self.prueba_ttr
+        n_taps, centro = _taps_ttr(datos["tipo_cambiador"].get())
+        mantener = _mantener_nominal_ttr(datos["tipo_cambiador"].get())
+        usar_reg = datos["regulacion_cfe"].get() == "Sí"
+        nominal = _relacion_nominal_ttr(datos, prueba, equipo, conexion)[0] if prueba else None
+        scratch = {}
+
+        def var(clave, inicial=None):
+            if clave not in scratch:
+                valor = campos_guardados.get(clave, "") if inicial is None else inicial
+                scratch[clave] = tk.StringVar(visor, value=valor)
+            return scratch[clave]
+
+        def grupo(padre_g, texto, variable, fila, columna):
+            marco = tk.Frame(padre_g, bg="#FFFFFF")
+            marco.grid(row=fila, column=columna, sticky="ew", padx=8, pady=5)
+            tk.Label(
+                marco, text=texto, bg="#FFFFFF", fg="#64748B",
+                font=("Segoe UI", 9, "bold"), anchor="w",
+            ).pack(fill="x", pady=(0, 4))
+            ctk.CTkEntry(marco, textvariable=variable, height=30).pack(fill="x")
+
+        def grupo_combo(padre_g, texto, variable, valores, fila, columna):
+            marco = tk.Frame(padre_g, bg="#FFFFFF")
+            marco.grid(row=fila, column=columna, sticky="ew", padx=8, pady=5)
+            tk.Label(
+                marco, text=texto, bg="#FFFFFF", fg="#64748B",
+                font=("Segoe UI", 9, "bold"), anchor="w",
+            ).pack(fill="x", pady=(0, 4))
+            ctk.CTkComboBox(
+                marco, variable=variable, values=list(valores),
+                state="readonly", height=30,
+                button_color=TTR_MORADO_OSCURO,
+                button_hover_color=TTR_MORADO_HOVER,
+            ).pack(fill="x")
+
+        def rejilla(columnas_n):
+            marco = tk.Frame(contenido, bg="#FFFFFF")
+            marco.pack(fill="x", pady=(4, 12))
+            for c in range(columnas_n):
+                marco.grid_columnconfigure(c, weight=1)
+            return marco
+
+        def subtitulo(texto):
+            tk.Label(
+                contenido, text=texto, bg="#FFFFFF", fg="#1E293B",
+                font=("Segoe UI", 10, "bold"), anchor="w",
+            ).pack(fill="x", padx=15, pady=(12, 2))
+
+        tk.Label(
+            contenido, text=f"ST-CT-007  ·  {equipo or 'Equipo sin elegir'}",
+            bg="#FFFFFF", fg=TTR_MORADO_OSCURO, font=("Consolas", 12, "bold"),
+            anchor="w",
+        ).pack(fill="x", padx=15, pady=(14, 2))
+
+        subtitulo("DATOS DE IDENTIFICACIÓN")
+        rej = rejilla(4)
+        for indice, (clave, texto) in enumerate((
+            ("gerencia", "Gerencia Regional de Transmisión"), ("subarea", "SubÁrea"),
+            ("subestacion", "Subestación"), ("nomenclatura", "Nomenclatura"),
+            ("marca", "Marca"), ("modelo", "Modelo / Tipo"),
+            ("serie", "No. de Serie"), ("fabricacion", "Año de Fabricación"),
+            ("servicio", "Año Puesta en Servicio"),
+        )):
+            grupo(rej, texto, var(clave), indice // 4, indice % 4)
+
+        subtitulo("DATOS DEL EQUIPO")
+        rej = rejilla(4)
+        for indice, (clave, texto) in enumerate((
+            ("mva", "MVA"), ("clase_enf", "Clase de enfriamiento"),
+            ("taps", "# Taps"), ("kv_at", "kV nom. A.T."),
+            ("kv_bt", "kV nom. B.T."), ("kv_terc", "kV nom. Terciario"),
+            ("z", "% Z"),
+        )):
+            grupo(rej, texto, var(clave), indice // 4, indice % 4)
+        for columna, (clave, texto) in enumerate((
+            ("con_at", "Tipo de conexión A.T."), ("con_bt", "Tipo de conexión B.T."),
+            ("con_te", "Tipo de conexión Terciario"),
+        )):
+            grupo_combo(rej, texto, var(clave, campos_guardados.get(clave, "Y")), ("Y", "Δ"), 2, columna)
+
+        subtitulo("CONDICIONES: PRUEBA & CLIMATOLÓGICA")
+        rej = rejilla(4)
+        grupo(rej, "Temp. Ambiente (°C)", datos["temp_ambiente"], 0, 0)
+        grupo(rej, "% Hum. Relativa", datos["humedad"], 0, 1)
+        grupo(rej, "Temp. Devanado (°C)", datos["temp_devanado"], 0, 2)
+        grupo_combo(
+            rej, "Clima", var("clima"),
+            ("Soleado", "Nublado", "1/2 nublado", "Brisa", "Lluvia"), 1, 0,
+        )
+        grupo_combo(
+            rej, "Motivo de la prueba", var("motivo"),
+            ("Programado", "Puesta en servicio (P.S.)", "Falla"), 1, 1,
+        )
+        grupo(rej, "Orden de Trabajo (O.T.)", var("ot"), 1, 2)
+        grupo(rej, "Fecha", var("fecha"), 1, 3)
+
+        subtitulo("EQUIPO DE MEDICIÓN UTILIZADO")
+        rej = rejilla(4)
+        for indice, (clave, texto) in enumerate((
+            ("inst_marca", "Marca"), ("inst_modelo", "Modelo"),
+            ("inst_serie", "Núm. Serie"), ("inst_eimp", "No. Inv. EIMP"),
+            ("inst_cal", "Fecha de Calibración"), ("inst_venc", "Fecha Vencimiento"),
+            ("ultima_prueba", "Fecha última prueba"),
+        )):
+            grupo(rej, texto, var(clave), indice // 4, indice % 4)
+
+        clave_vector = _clave_vector_ttr(equipo, configuracion, conexion) if prueba else None
+        if clave_vector:
+            subtitulo("DIAGRAMA VECTORIAL")
+            _margen, _paso, ancho = _medida_vector_ttr(len(_VECTORES_TTR[clave_vector][3]))
+            lienzo_vec = tk.Canvas(
+                contenido, width=ancho, height=280, bg="#FFFFFF", highlightthickness=0,
+            )
+            lienzo_vec.pack(anchor="w", padx=15, pady=(2, 8))
+            _dibujar_vector_ttr(lienzo_vec, clave_vector, prueba, "mide")
+
+        subtitulo("TABLA POR TAP  ·  RELACIÓN TEÓRICA, PUESTA EN SERVICIO Y MEDIDA")
+        if nominal is None:
+            tk.Label(
+                contenido,
+                text="Falta el kV de placa en el paso 01 para la relación teórica.",
+                bg="#FFFFFF", fg="#B45309", font=("Segoe UI", 9, "bold"), anchor="w",
+            ).pack(fill="x", padx=15)
+        tabla = tk.Frame(contenido, bg="#E2E8F0")
+        tabla.pack(fill="x", padx=15, pady=(2, 8))
+        for c, texto in enumerate(("TAP", "RT TEÓRICA", "RP.S.", "RM", "DIF %", "DICTAMEN")):
+            tabla.grid_columnconfigure(c, weight=1)
+            tk.Label(
+                tabla, text=texto, bg="#F1F5F9", fg="#475569",
+                font=("Segoe UI", 8, "bold"), anchor="w", padx=6, pady=8,
+            ).grid(row=0, column=c, sticky="nsew", pady=(0, 1))
+
+        def actualizar_tap(t):
+            rt = None if nominal is None else _relacion_teorica_tap_ttr(
+                nominal, t, centro, usar_reg, mantener,
+            )
+            rm = _leer_ttr(scratch[f"rm_{t}"].get())
+            res = _evaluar_ttr(rt, rm)
+            etiquetas[t]["rt"].configure(text="—" if rt is None else f"{rt:.4f}")
+            etiquetas[t]["dif"].configure(text="—" if res is None else f"{res['dif']:.3f} %")
+            if res is None:
+                etiquetas[t]["estado"].configure(text="—", fg="#94A3B8")
+            else:
+                color = "#059669" if res["estado"] == "ACEPTADO" else "#D97706"
+                etiquetas[t]["estado"].configure(text=res["estado"], fg=color)
+
+        etiquetas = {}
+        for t in range(1, n_taps + 1):
+            guardado_tap = taps_guardados.get(str(t), {})
+            var(f"ps_{t}", guardado_tap.get("ps", ""))
+            var(f"rm_{t}", guardado_tap.get("rm", ""))
+            fondo = "#FEF3C7" if t == centro else "#FFFFFF"
+            etiquetas[t] = {}
+            tk.Label(
+                tabla, text=f"Tap {t}" + (" (central)" if t == centro else ""),
+                bg=fondo, fg="#1E293B", font=("Segoe UI", 9, "bold"), anchor="w", padx=6,
+            ).grid(row=t, column=0, sticky="nsew", pady=(0, 1))
+            etiquetas[t]["rt"] = tk.Label(
+                tabla, text="—", bg=fondo, fg="#334155", font=("Consolas", 9), anchor="w", padx=6,
+            )
+            etiquetas[t]["rt"].grid(row=t, column=1, sticky="nsew", pady=(0, 1))
+            for columna, clave in ((2, f"ps_{t}"), (3, f"rm_{t}")):
+                celda = tk.Frame(tabla, bg=fondo)
+                celda.grid(row=t, column=columna, sticky="nsew", padx=4, pady=2)
+                entrada = ctk.CTkEntry(celda, textvariable=scratch[clave], height=28)
+                entrada.pack(fill="x")
+            scratch[f"rm_{t}"].trace_add("write", lambda *_a, t=t: actualizar_tap(t))
+            etiquetas[t]["dif"] = tk.Label(
+                tabla, text="—", bg=fondo, fg="#334155", font=("Consolas", 9), anchor="w", padx=6,
+            )
+            etiquetas[t]["dif"].grid(row=t, column=4, sticky="nsew", pady=(0, 1))
+            etiquetas[t]["estado"] = tk.Label(
+                tabla, text="—", bg=fondo, fg="#94A3B8", font=("Segoe UI", 9, "bold"),
+                anchor="w", padx=6,
+            )
+            etiquetas[t]["estado"].grid(row=t, column=5, sticky="nsew", pady=(0, 1))
+            actualizar_tap(t)
+        tk.Label(
+            contenido,
+            text=(
+                "RT = kV de placa con 0.625 % por tap (los taps nominales del cambiador "
+                "de 23 taps dan la misma RT). Dif % = 100 × (RT − RM) / RT; "
+                "ST-CT-007 acepta hasta 0.5 % en la primera medición."
+            ),
+            bg="#FFFFFF", fg="#64748B", font=("Segoe UI", 9, "italic"),
+            anchor="w", justify="left", wraplength=1040,
+        ).pack(fill="x", padx=15, pady=(2, 8))
+
+        subtitulo("OBSERVACIONES Y FIRMAS")
+        rej_obs = rejilla(1)
+        grupo(rej_obs, "Observaciones", var("observaciones"), 0, 0)
+        rej = rejilla(3)
+        grupo(rej, "Realizó — Nombre y firma", var("realizo"), 0, 0)
+        grupo(rej, "Revisó — Nombre y firma", var("reviso"), 0, 1)
+        grupo(rej, "Aprobó — Nombre y firma", var("aprobo"), 0, 2)
+
+        def guardar():
+            if not equipo:
+                messagebox.showinfo(
+                    "Anexo A", "Elija el equipo en el paso 01 antes de guardar.",
+                    parent=visor,
+                )
+                return
+            campos = {
+                clave: valor.get() for clave, valor in scratch.items()
+                if not clave.startswith(("ps_", "rm_"))
+            }
+            taps = {
+                str(t): {"ps": scratch[f"ps_{t}"].get(), "rm": scratch[f"rm_{t}"].get()}
+                for t in range(1, n_taps + 1)
+            }
+            registros = _cargar_anexo_ttr()
+            registros[equipo] = {"campos": campos, "taps": taps}
+            if not _guardar_anexo_ttr_archivo(registros):
+                messagebox.showerror(
+                    "Anexo A", "No se pudo guardar el Anexo A de TTR.", parent=visor,
+                )
+                return
+            messagebox.showinfo("Anexo A", "Anexo A de TTR guardado.", parent=visor)
+
+        for texto_boton, comando in (
+            ("GUARDAR", guardar),
+            (
+                "IMPRIMIR",
+                lambda: _imprimir_formato_carta(
+                    contenido, "Anexo A — Relación de Transformación (TTR)",
+                ),
+            ),
+        ):
+            ctk.CTkButton(
+                barra_sup, text=texto_boton, fg_color=TTR_MORADO,
+                hover_color=TTR_MORADO_OSCURO, text_color="white",
+                font=ctk.CTkFont(weight="bold"), width=110, height=34,
+                command=comando,
+            ).pack(side="right", padx=(10, 0), pady=10)
+        visor.focus_force()
+        return visor
 
     def mostrar_anexo_b_ttr(self, padre):
         self._visor_guia_ttr(padre, "Anexo B: Operación", (
