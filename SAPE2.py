@@ -11819,6 +11819,24 @@ class AppSAPE(tk.Tk):
                 font=("Segoe UI", 10, "bold"), anchor="w",
             ).pack(fill="x", padx=15, pady=(12, 2))
 
+        marco_logo = tk.Frame(contenido, bg="#FFFFFF", height=100)
+        marco_logo.pack(fill="x", padx=15, pady=(14, 2))
+        marco_logo.pack_propagate(False)
+        # Verde oficial CFE: Pantone 136-16 C (#008E60), igual que en RA y FP.
+        tk.Label(
+            marco_logo, text=CFE_ASCII, bg="#FFFFFF", fg="#00573F",
+            font=("Consolas", 10, "bold"), anchor="nw", justify="left",
+        ).place(x=2, y=2)
+        tk.Label(
+            marco_logo, text=CFE_ASCII, bg="#FFFFFF", fg="#008E60",
+            font=("Consolas", 10, "bold"), anchor="nw", justify="left",
+        ).place(x=0, y=0)
+        foto_sape = _imagen_sape_ascii(tam=9, fondo="#FFFFFF", color="#1E293B")
+        etiqueta_sape = ctk.CTkLabel(
+            marco_logo, text="", image=foto_sape, fg_color="#FFFFFF",
+        )
+        etiqueta_sape._foto_sape = foto_sape
+        etiqueta_sape.place(relx=1.0, x=-2, y=0, anchor="ne")
         tk.Label(
             contenido, text=f"ST-CT-007  ·  {equipo or 'Equipo sin elegir'}",
             bg="#FFFFFF", fg=TTR_MORADO_OSCURO, font=("Consolas", 12, "bold"),
@@ -11877,6 +11895,14 @@ class AppSAPE(tk.Tk):
         )):
             grupo(rej, texto, var(clave), indice // 4, indice % 4)
 
+        mono = configuracion == "Monofásico"
+        subtitulo("DIBUJO DEL EQUIPO")
+        if "2 Devanados" in equipo:
+            _dibujar_diagrama_transformador_2d(contenido, monofasico=mono)
+        elif "3 Devanados" in equipo and not mono:
+            _dibujar_diagrama_transformador_3d(contenido)
+        elif "Autotransformadores" in equipo:
+            _dibujar_diagrama_autotransformador(contenido, monofasico=mono)
         clave_vector = _clave_vector_ttr(equipo, configuracion, conexion) if prueba else None
         if clave_vector:
             subtitulo("DIAGRAMA VECTORIAL")
@@ -11886,6 +11912,12 @@ class AppSAPE(tk.Tk):
             )
             lienzo_vec.pack(anchor="w", padx=15, pady=(2, 8))
             _dibujar_vector_ttr(lienzo_vec, clave_vector, prueba, "mide")
+            subtitulo("ESQUEMA DE CONEXIONES")
+            lienzo_cab = tk.Canvas(
+                contenido, width=ancho, height=280, bg="#FFFFFF", highlightthickness=0,
+            )
+            lienzo_cab.pack(anchor="w", padx=15, pady=(2, 8))
+            _dibujar_vector_ttr(lienzo_cab, clave_vector, prueba, "cables")
 
         subtitulo("TABLA POR TAP  ·  RELACIÓN TEÓRICA, PUESTA EN SERVICIO Y MEDIDA")
         if nominal is None:
