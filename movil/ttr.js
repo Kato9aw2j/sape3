@@ -527,10 +527,11 @@ function relacionNominalTtr(d, prueba) {
   return { rt: (vp / vs) * factor, par };
 }
 
-// Regulación CFE: 0.625 % por paso de tap, a partir del tap central.
-function relacionTeoricaTapTtr(nominal, tap, centro, usarRegulacion) {
+// Regulación CFE: 0.625 % por paso de tap, a partir del tap central. Los taps
+// a `mantener` pasos del central conservan la RT nominal (cambiador de 23 taps).
+function relacionTeoricaTapTtr(nominal, tap, centro, usarRegulacion, mantener = 0) {
   if (nominal == null) return null;
-  if (!usarRegulacion) return nominal;
+  if (!usarRegulacion || Math.abs(tap - centro) <= mantener) return nominal;
   return nominal * (1 + 0.00625 * (tap - centro));
 }
 

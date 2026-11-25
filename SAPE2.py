@@ -1529,6 +1529,12 @@ def _taps_ttr(tipo_cambiador):
     return TABS_TTR.get(tipo_cambiador, (5, 3))
 
 
+def _mantener_nominal_ttr(tipo_cambiador):
+    """Taps alrededor del central que conservan la RT nominal (sin paso de
+    regulación): en el cambiador de 23 taps (nominal triple), central ±1."""
+    return 1 if tipo_cambiador == "Bajo carga [ 23 TAPs ]" else 0
+
+
 def _par_mide_ttr(mide):
     """Qué par de devanados mide la prueba, para elegir los kV de placa."""
     t = (mide or "").replace("–", "-").replace("—", "-")
@@ -1572,11 +1578,12 @@ def _relacion_nominal_ttr(datos, prueba, equipo, conexion):
     return (vp / vs) * factor, par
 
 
-def _relacion_teorica_tap_ttr(nominal, tap, centro, usar_regulacion):
-    """Regulación CFE: 0.625 % por paso de tap, a partir del tap central."""
+def _relacion_teorica_tap_ttr(nominal, tap, centro, usar_regulacion, mantener=0):
+    """Regulación CFE: 0.625 % por paso de tap, a partir del tap central.
+    Los taps a `mantener` pasos del central conservan la RT nominal."""
     if nominal is None:
         return None
-    if not usar_regulacion:
+    if not usar_regulacion or abs(tap - centro) <= mantener:
         return nominal
     return nominal * (1 + 0.00625 * (tap - centro))
 
@@ -11972,7 +11979,7 @@ class AppSAPE(tk.Tk):
         tabla_taps = tk.Frame(caja, bg="#111827")
         tabla_taps.pack(fill="x", padx=10, pady=(0, 8))
 
-        def mostrar_taps(nominal, n_taps, centro, usar_reg):
+        def mostrar_taps(nominal, n_taps, centro, usar_reg, mantener=0):
             """Lista la relación teórica de cada tap; el tap elegido va resaltado."""
             for hijo in tabla_taps.winfo_children():
                 hijo.destroy()
@@ -11984,7 +11991,7 @@ class AppSAPE(tk.Tk):
                 fg=TTR_MORADO_CLARO, font=("Consolas", 9, "bold"),
             ).pack(anchor="w", pady=(2, 4))
             for t in range(1, n_taps + 1):
-                rt_t = _relacion_teorica_tap_ttr(nominal, t, centro, usar_reg)
+                rt_t = _relacion_teorica_tap_ttr(nominal, t, centro, usar_reg, mantener)
                 sel = t == tap_sel
                 color = "#FFFFFF" if sel else "#E5E7EB"
                 estilo = "bold" if sel else "normal"
@@ -12080,6 +12087,7 @@ class AppSAPE(tk.Tk):
             conexion = datos["conexion"].get()
             usar_reg = datos["regulacion_cfe"].get() == "Sí"
             n_taps, centro = _taps_ttr(datos["tipo_cambiador"].get())
+            mantener = _mantener_nominal_ttr(datos["tipo_cambiador"].get())
             ref_tap.configure(text=f"Ref: Tap {centro}")
             if not prueba:
                 valor_rt.configure(text="—")
@@ -12095,7 +12103,7 @@ class AppSAPE(tk.Tk):
                 datos["tap"].set(str(centro))
             tap = int(datos["tap"].get())
             if nominal is not None:
-                rt = _relacion_teorica_tap_ttr(nominal, tap, centro, usar_reg)
+                rt = _relacion_teorica_tap_ttr(nominal, tap, centro, usar_reg, mantener)
             else:
                 rt = _leer_ttr(datos["relacion_teorica_manual"].get())
             rm = _leer_ttr(datos["relacion_medida"].get())
@@ -12146,6 +12154,7 @@ class AppSAPE(tk.Tk):
         conexion = datos["conexion"].get()
         usar_reg = datos["regulacion_cfe"].get() == "Sí"
         n_taps, centro = _taps_ttr(datos["tipo_cambiador"].get())
+        mantener = _mantener_nominal_ttr(datos["tipo_cambiador"].get())
         if datos["tap"].get() not in [str(t) for t in range(1, n_taps + 1)]:
             datos["tap"].set(str(centro))
         nominal, _par = _relacion_nominal_ttr(datos, prueba, equipo, conexion)
@@ -12177,7 +12186,7 @@ class AppSAPE(tk.Tk):
             if nominal is None:
                 return None
             tap = int(datos["tap"].get())
-            return _relacion_teorica_tap_ttr(nominal, tap, centro, usar_reg)
+            return _relacion_teorica_tap_ttr(nominal, tap, centro, usar_reg, mantener)
 
         tk.Label(
             formulario, text="Relación teórica nominal (kV de placa):",
@@ -12209,7 +12218,7 @@ class AppSAPE(tk.Tk):
                 text="—" if rt is None else f"{rt:.4f}",
             )
             refrescar_rt()
-            refrescar_rt.mostrar_taps(nominal, n_taps, centro, usar_reg)
+            refrescar_rt.mostrar_taps(nominal, n_taps, centro, usar_reg, mantener)
 
         combo_tap.configure(command=lambda _v=None: obtener_rt())
         ctk.CTkButton(

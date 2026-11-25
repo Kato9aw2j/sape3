@@ -1,6 +1,6 @@
 // Guarda la app en el celular para que abra sin internet.
 // Al publicar cambios, suba el número de VERSION para que se actualice.
-const VERSION = "sape-movil-v7";
+const VERSION = "sape-movil-v8";
 const ARCHIVOS = [
   "./", "index.html", "estilos.css", "datos.js", "fp.js", "ttr.js", "diagramas.js", "diagramasFp.js",
   "diagramasAnexoA.js", "cfe3d.js", "app.js",

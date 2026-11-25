@@ -775,7 +775,9 @@ function pasoTtr4() {
   if (!estado.tapTtr) estado.tapTtr = centro;
   const { rt: nominal, par } = relacionNominalTtr(d, prueba);
   const usarReg = d.regulacionCfe === "Sí";
-  const rtTap = usarReg ? relacionTeoricaTapTtr(nominal, estado.tapTtr, centro, true) : null;
+  // En el cambiador de 23 taps (nominal triple) los 3 taps nominales (central ±1) dan la misma RT.
+  const mantener = d.tipoCambiador === "Bajo carga [ 23 TAPs ]" ? 1 : 0;
+  const rtTap = usarReg ? relacionTeoricaTapTtr(nominal, estado.tapTtr, centro, true, mantener) : null;
   const l = estado.lecturasTtr;
   const taps = Array.from({ length: n }, (_, i) => i + 1);
   return `
