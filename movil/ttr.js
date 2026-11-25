@@ -196,11 +196,23 @@ function _expandirCampoTtr(valor) {
   return [...new Set(tokens)];
 }
 
-// Colores de los bornes según la prueba elegida: CN/GN negro, CR/GR rojo.
-function coloresVectorTtr(prueba) {
+// Colores de la misma familia que SAPE2.py (TTR_ROSA_MEDICION, TTR_MORADO_NEON,
+// _COLOR_LINEA_TTR, _TTR_ROSA_PIE, TTR_LILA_FASE).
+const VEC_ROSA = "#FF0077";
+const VEC_MORADO = "#8E22BB";
+const VEC_LINEA = "#7F00B2";
+const VEC_LILA = "#AB49CC";
+const VEC_PIE = "#DB2777";
+const VEC_NEGRO = "#000000";
+const VEC_ROJO = "#FF0000";
+
+// Medición: los bornes medidos van en rosa. Conexiones: CN/GN negro y CR/GR rojo.
+function coloresVectorTtr(prueba, modo) {
   const colores = {};
   if (!prueba) return colores;
-  const campos = [["cn", "#000000"], ["gn", "#000000"], ["cr", "#FF0000"], ["gr", "#FF0000"]];
+  const campos = modo === "mide"
+    ? [["cn", VEC_ROSA], ["gn", VEC_ROSA], ["cr", VEC_ROSA], ["gr", VEC_ROSA]]
+    : [["cn", VEC_NEGRO], ["gn", VEC_NEGRO], ["cr", VEC_ROJO], ["gr", VEC_ROJO]];
   for (const [campo, color] of campos) {
     for (const tok of _expandirCampoTtr(prueba[campo])) colores[tok] = color;
   }
@@ -211,11 +223,36 @@ function coloresVectorTtr(prueba) {
   return colores;
 }
 
-function colorBorneTtr(texto, colores) {
+// Roles (CN, CR, GN, GR) de cada borne, igual que _estilos_vector_ttr en SAPE2.py.
+function rolesVectorTtr(prueba) {
+  const roles = {};
+  if (!prueba) return roles;
+  for (const [campo, rol] of [["cn", "CN"], ["cr", "CR"], ["gn", "GN"], ["gr", "GR"]]) {
+    for (const tok of _expandirCampoTtr(prueba[campo])) {
+      const lista = roles[tok] || (roles[tok] = []);
+      if (!lista.includes(rol)) lista.push(rol);
+    }
+  }
+  const union = [];
+  for (const tok of ["H0-X0", "H0/X0", "H0·X0", "H0", "X0"]) {
+    for (const rol of roles[tok] || []) if (!union.includes(rol)) union.push(rol);
+  }
+  if (union.length) {
+    for (const alias of ["H0-X0", "H0/X0", "H0·X0"]) roles[alias] = [...union];
+  }
+  return roles;
+}
+
+function tokensBorneVec(texto) {
+  const partes = (String(texto).match(/[HXY]\d+/gi) || []).map((t) => t.toUpperCase());
+  if (partes.includes("H0") && partes.includes("X0")) partes.push("H0-X0", "H0/X0", "H0·X0");
+  return partes;
+}
+
+function colorBorneTtr(texto, colores, libre = VEC_MORADO) {
   if (colores[texto]) return colores[texto];
-  const tokens = (texto.match(/[HXY]\d/gi) || []).map((t) => t.toUpperCase());
-  for (const tok of tokens) if (colores[tok]) return colores[tok];
-  return "#C724FF"; // morado neón libre (sin rol en esta prueba), igual que SAPE2
+  for (const tok of tokensBorneVec(texto)) if (colores[tok]) return colores[tok];
+  return libre;
 }
 
 // Ancho del lienzo según cuántos devanados (grupos) se dibujan. Igual que
@@ -227,35 +264,87 @@ function medidaVectorTtr(n) {
   return { margen, paso, ancho };
 }
 
-// Dibuja el diagrama vectorial (SVG) de la prueba elegida: un panel por
-// devanado (estrella, delta, vertical, cruz...), con los bornes CN/CR en
-// negro/rojo y GN/GR en negro/rojo, igual que en SAPE2.py (modo "cables").
-function svgVectorTtr(clave, prueba) {
+// Diagrama vectorial (SVG) de la prueba, un panel por devanado. Igual que
+// _dibujar_vector_ttr en SAPE2.py:
+//  - "mide": diagrama fasorial. Bornes medidos en rosa; la línea y los
+//    bornes medidos parpadean, y los ∅ de fase parpadean en contrafase.
+//  - "cables": esquema de conexiones. CN/GN negro, CR/GR rojo; primero
+//    parpadea la línea (negro/rojo) y luego los roles CN/CR/GN/GR.
+// Las animaciones van dentro del propio SVG (mismo ritmo de 450 ms).
+function svgVectorTtr(clave, prueba, modo) {
   const ficha = VECTORES_TTR[clave];
   if (!ficha) return "";
   const grupos = ficha[3];
   const n = grupos.length;
-  const colores = coloresVectorTtr(prueba);
+  const mide = modo === "mide";
+  const colores = coloresVectorTtr(prueba, modo);
+  const roles = mide ? {} : rolesVectorTtr(prueba);
   const { margen, paso, ancho } = medidaVectorTtr(n);
   const alto = 280;
-  const lineas = [];
-  const nodos = [];
-  const labels = [];
+  const segs = [];
+  const fases = [];
+  const nodos = new Map();
+  const textos = [];
+  const pies = [];
+  const RANGO = { [VEC_ROSA]: 4, [VEC_ROJO]: 3, [VEC_NEGRO]: 2, [VEC_LINEA]: 1 };
 
-  const colorBorne = (b) => colorBorneTtr(b, colores);
+  const colorDe = (t) => colorBorneTtr(t, colores);
+  const medido = (t) => mide && colorDe(t) === VEC_ROSA;
+  const puntoDe = (t) => {
+    if (mide) return null;
+    const c = colorBorneTtr(t, colores, "");
+    return c === VEC_NEGRO || c === VEC_ROJO ? c : null;
+  };
+  const lineaSvg = (x1, y1, x2, y2, color, clase = "", estilo = "") =>
+    `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${color}" stroke-width="4" stroke-linecap="round"` +
+    `${clase ? ` class="${clase}"` : ""}${estilo ? ` style="${estilo}"` : ""}/>`;
+  const nodo = (x, y, color) => {
+    const clave = `${x.toFixed(1)},${y.toFixed(1)}`;
+    const previo = nodos.get(clave);
+    if (!previo || (RANGO[color] || 1) >= (RANGO[previo.color] || 1)) nodos.set(clave, { x, y, color });
+  };
   function linea(x1, y1, x2, y2, a, b) {
-    const ca = colorBorne(a), cb = colorBorne(b);
-    lineas.push([x1, y1, x2, y2, ca, cb]);
-    nodos.push([x1, y1, ca], [x2, y2, cb]);
+    if (medido(a) && medido(b)) {
+      segs.push(lineaSvg(x1, y1, x2, y2, VEC_ROSA, "vpar"));
+      nodo(x1, y1, VEC_ROSA);
+      nodo(x2, y2, VEC_ROSA);
+      return;
+    }
+    const ca = puntoDe(a) || VEC_LINEA;
+    const cb = puntoDe(b) || VEC_LINEA;
+    if (ca !== cb && ca !== VEC_LINEA && cb !== VEC_LINEA) {
+      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
+      segs.push(lineaSvg(x1, y1, mx, my, ca, "vlin", `--c:${ca}`));
+      segs.push(lineaSvg(mx, my, x2, y2, cb, "vlin", `--c:${cb}`));
+    } else {
+      segs.push(lineaSvg(x1, y1, x2, y2, VEC_LINEA));
+    }
+    nodo(x1, y1, ca);
+    nodo(x2, y2, cb);
   }
-  function borne(x, y, texto, anchor) {
-    labels.push([x, y, texto, colorBorne(texto), anchor]);
+  function fase(x1, y1, x2, y2, borne, lado, delta, parpadeo) {
+    const nums = [...String(borne).matchAll(/[HXY](\d)/gi)].map((m) => m[1]);
+    if (!nums.length) return;
+    const tabla = delta ? { 1: "C", 2: "A", 3: "B" } : { 1: "A", 2: "B", 3: "C" };
+    const letra = tabla[nums[nums.length - 1]];
+    if (!letra) return;
+    const dx = x2 - x1, dy = y2 - y1;
+    const largo = Math.hypot(dx, dy) || 1;
+    const x = (x1 + x2) / 2 + (-dy / largo) * 16 * lado;
+    const y = (y1 + y2) / 2 + (dx / largo) * 16 * lado + 4;
+    fases.push(
+      `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="middle" fill="${parpadeo ? VEC_ROSA : VEC_LILA}"` +
+      `${parpadeo ? ' class="vfase"' : ""} font-family="Segoe UI, sans-serif" font-size="11" font-weight="bold">∅${letra}</text>`,
+    );
+  }
+  function borne(x, y, texto, anchor, rolArriba = false, rolDerecha = false) {
+    textos.push({ x, y, texto, anchor, rolArriba, rolDerecha });
   }
 
   grupos.forEach((grupo, i) => {
     const cx = margen + i * paso;
     const kind = grupo[0];
-    const pie = `${grupo[1]} · ${grupo[2]}`;
+    pies.push([cx, mide ? grupo[1] : grupo[2]]);
     const bornes = grupo.slice(3);
     const brazo = n === 1 ? 108 : 58;
     if (kind === "estrella") {
@@ -267,27 +356,33 @@ function svgVectorTtr(clave, prueba) {
       const xDer = cx + largo * 0.5, yDer = cy + largo * 0.866;
       linea(xIzq, yIzq, cx, cy, izq, centro);
       linea(xArr, yArr, cx, cy, arriba, centro);
-      linea(xDer, yDer, cx, cy, der, centro);
+      if (der) linea(xDer, yDer, cx, cy, der, centro);
       borne(xIzq - 12, yIzq, izq, "end");
       borne(xArr + 8, yArr - 6, arriba, "start");
-      borne(xDer + 8, yDer + 6, der, "start");
-      borne(cx + 28, cy, centro, "start");
+      if (der) borne(xDer + 8, yDer + 6, der, "start");
+      borne(cx + 28, cy, centro, "start", false, true);
+      fase(xIzq, yIzq, cx, cy, izq, 1, false, medido(izq) && medido(centro));
+      fase(cx, cy, xArr, yArr, arriba, -1, false, medido(arriba) && medido(centro));
+      if (der) fase(cx, cy, xDer, yDer, der, -1, false, medido(der) && medido(centro));
     } else if (kind === "delta") {
       const [apex, izq, der] = bornes;
       const medio = n === 1 ? 46 : 40;
       linea(cx, 96, cx - medio, 176, apex, izq);
       linea(cx, 96, cx + medio, 176, apex, der);
       linea(cx - medio, 176, cx + medio, 176, izq, der);
-      borne(cx, 80, apex, "middle");
+      borne(cx, 80, apex, "middle", true);
       borne(cx - medio, 190, izq, "middle");
       borne(cx + medio, 190, der, "middle");
+      fase(cx, 96, cx - medio, 176, apex, 1, true, medido(apex) && medido(izq));
+      fase(cx, 96, cx + medio, 176, der, -1, true, medido(apex) && medido(der));
+      fase(cx - medio, 176, cx + medio, 176, izq, 1, true, medido(izq) && medido(der));
     } else if (kind === "cruz") {
       const [arriba, izq, der, abajo] = bornes;
       linea(cx, 56, cx, 124, arriba, arriba);
       linea(cx, 124, cx, 196, abajo, abajo);
       linea(cx - brazo, 124, cx, 124, izq, izq);
       linea(cx, 124, cx + brazo, 124, der, der);
-      borne(cx, 40, arriba, "middle");
+      borne(cx, 40, arriba, "middle", true);
       borne(cx - brazo - 16, 124, izq, "end");
       borne(cx + brazo + 16, 124, der, "start");
       borne(cx, 212, abajo, "middle");
@@ -295,7 +390,7 @@ function svgVectorTtr(clave, prueba) {
       const [arriba, medioB, abajo] = bornes;
       linea(cx, 64, cx, 128, arriba, medioB);
       linea(cx, 128, cx, 196, medioB, abajo);
-      borne(cx, 46, arriba, "middle");
+      borne(cx, 46, arriba, "middle", true);
       borne(cx + 14, 128, medioB, "start");
       borne(cx, 214, abajo, "middle");
     } else if (kind === "horizontal") {
@@ -306,29 +401,51 @@ function svgVectorTtr(clave, prueba) {
     } else {
       const [arriba, abajo] = bornes;
       linea(cx, 78, cx, 186, arriba, abajo);
-      borne(cx, 60, arriba, "middle");
+      borne(cx, 60, arriba, "middle", true);
       borne(cx, 204, abajo, "middle");
     }
-    labels.push([cx, 262, pie, "#DB2777", "middle"]);
   });
 
-  let svg = `<svg viewBox="0 0 ${ancho} ${alto}" xmlns="http://www.w3.org/2000/svg">`;
-  for (const [x1, y1, x2, y2, ca, cb] of lineas) {
-    if (ca === cb) {
-      svg += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${ca}" stroke-width="4" stroke-linecap="round"/>`;
+  const esc = (t) => String(t).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const estilo = `<style>` +
+    `@keyframes vpar{0%,49.9%{fill:${VEC_ROSA};stroke:${VEC_ROSA}}50%,100%{fill:#FFFFFF;stroke:#FFFFFF}}` +
+    `@keyframes vlin{0%,49.9%{fill:var(--c);stroke:var(--c)}50%,100%{fill:#FFFFFF;stroke:#FFFFFF}}` +
+    `@keyframes vrol{0%,49.9%{fill:#FFFFFF}50%,100%{fill:var(--c)}}` +
+    `@keyframes vfase{0%,49.9%{opacity:0}50%,100%{opacity:1}}` +
+    `.vpar,.vlin,.vrol,.vfase{animation-duration:.9s;animation-iteration-count:infinite;animation-timing-function:linear}` +
+    `.vpar{animation-name:vpar}.vlin{animation-name:vlin}.vrol{animation-name:vrol}.vfase{animation-name:vfase}` +
+    `</style>`;
+  let svg = `<svg viewBox="0 0 ${ancho} ${alto}" xmlns="http://www.w3.org/2000/svg">${estilo}`;
+  svg += segs.join("") + fases.join("");
+  for (const { x, y, color } of nodos.values()) {
+    const clase = color === VEC_ROSA ? "vpar" : (color === VEC_NEGRO || color === VEC_ROJO ? "vlin" : "");
+    const extra = clase === "vlin" ? ` style="--c:${color}"` : "";
+    svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5" fill="${color}" stroke="${color}"` +
+      `${clase ? ` class="${clase}"` : ""}${extra}/>`;
+  }
+  for (const t of textos) {
+    const color = colorDe(t.texto);
+    svg += `<text x="${t.x.toFixed(1)}" y="${(t.y + 4).toFixed(1)}" text-anchor="${t.anchor}" fill="${color}"` +
+      ` font-family="Consolas, monospace" font-size="13" font-weight="bold" stroke="#FFFFFF" stroke-width="4" paint-order="stroke">${esc(t.texto)}</text>`;
+    const rol = ["CN", "CR", "GN", "GR"].filter((r) => {
+      const lista = [...(roles[t.texto] || []), ...tokensBorneVec(t.texto).flatMap((tk) => roles[tk] || [])];
+      return lista.includes(r);
+    });
+    if (!rol.length) continue;
+    const rojo = rol.includes("CR") || rol.includes("GR");
+    const ancho_b = t.texto.length * 8;
+    const x0 = t.anchor === "end" ? t.x - ancho_b : t.anchor === "start" ? t.x : t.x - ancho_b / 2;
+    let rx, ry, anc;
+    if (t.rolDerecha) {
+      rx = x0 + ancho_b + 8; ry = t.y + 4; anc = "start";
     } else {
-      const mx = (x1 + x2) / 2, my = (y1 + y2) / 2;
-      svg += `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${mx.toFixed(1)}" y2="${my.toFixed(1)}" stroke="${ca}" stroke-width="4" stroke-linecap="round"/>`;
-      svg += `<line x1="${mx.toFixed(1)}" y1="${my.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${cb}" stroke-width="4" stroke-linecap="round"/>`;
+      rx = x0 + ancho_b / 2; ry = t.rolArriba ? t.y - 17 : t.y + 19; anc = "middle";
     }
+    svg += `<text x="${rx.toFixed(1)}" y="${ry.toFixed(1)}" text-anchor="${anc}" class="vrol" style="--c:${rojo ? VEC_ROJO : VEC_NEGRO}"` +
+      ` font-family="Segoe UI, sans-serif" font-size="${rojo ? 12 : 11}" font-weight="bold" fill="#FFFFFF" stroke="#FFFFFF" stroke-width="3" paint-order="stroke">${rol.join("/")}</text>`;
   }
-  for (const [x, y, color] of nodos) {
-    svg += `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="4.5" fill="${color}"/>`;
-  }
-  for (const [x, y, texto, color, anchor] of labels) {
-    const esc_ = String(texto).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    const tamano = color === "#DB2777" ? 12 : 13;
-    svg += `<text x="${x.toFixed(1)}" y="${(y + 4).toFixed(1)}" text-anchor="${anchor}" fill="${color}" font-family="Consolas, monospace" font-size="${tamano}" font-weight="bold">${esc_}</text>`;
+  for (const [cx, texto] of pies) {
+    svg += `<text x="${cx.toFixed(1)}" y="266" text-anchor="middle" fill="${VEC_PIE}" font-family="Segoe UI, sans-serif" font-size="12" font-weight="bold">${esc(texto)}</text>`;
   }
   svg += `</svg>`;
   return svg;

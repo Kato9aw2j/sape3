@@ -698,7 +698,10 @@ function pasoTtr3() {
   return `
     <h2>03. Diagrama vectorial</h2>
     <p class="nota">${esc(ficha[0])} · ${esc(ficha[1])} · Desplazamiento ${esc(ficha[2])} · Prueba ${esc(prueba.prueba)} (${esc(prueba.mide)})</p>
-    <div class="diagrama">${svgVectorTtr(clave, prueba)}</div>
+    <h3 style="color:#FF4A80;font-family:Consolas,monospace;font-size:19px;margin:14px 0 6px">DIAGRAMA FASORIAL</h3>
+    <div class="diagrama">${svgVectorTtr(clave, prueba, "mide")}</div>
+    <h3 style="color:#FF4A80;font-family:Consolas,monospace;font-size:19px;margin:14px 0 6px">ESQUEMA DE CONEXIONES</h3>
+    <div class="diagrama">${svgVectorTtr(clave, prueba, "cables")}</div>
     <h3>Conexiones de esta prueba</h3>
     <ul class="leyenda">
       <li><span class="badge CN">CN</span>${esc(prueba.cn)}</li>
@@ -806,7 +809,7 @@ function pasoTtrProximamente(titulo) {
     <div class="aviso">Próximamente en una actualización de la app.</div>`;
 }
 
-const PASOS_TTR = ["Datos del equipo", "Selección de pruebas", "Diagrama vectorial", "Captura de lecturas"];
+const PASOS_TTR =["Datos del equipo", "Selección de pruebas", "Diagrama vectorial", "Captura de lecturas"];
 
 function vistaTtr() {
   const pasos = { 1: pasoTtr1, 2: pasoTtr2, 3: pasoTtr3, 4: pasoTtr4 };
