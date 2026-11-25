@@ -9855,13 +9855,11 @@ class AppSAPE(tk.Tk):
         def seccion_datos_reactor():
             subtitulo_seccion("DATOS DEL REACTOR")
             rej_re = rejilla(contenido, 4)
-            grupo(rej_re, "Gerencia Regional de Transmisión", var_scratch("gerencia"), 0, 0)
-            grupo(rej_re, "Zona", var_scratch("subarea"), 0, 1)
-            grupo(rej_re, "Potencia reactiva (MVAr)", var_scratch("mvar"), 0, 2)
-            grupo(rej_re, "Tensión nominal (kV)", var_scratch("v_nominal"), 0, 3)
-            grupo(rej_re, "Corriente nominal (A)", var_scratch("i_nominal"), 1, 0)
-            grupo(rej_re, "Reactancia (%)", var_scratch("reactancia"), 1, 1)
-            grupo(rej_re, "Clase de enfriamiento", var_scratch("clase_enf"), 1, 2)
+            grupo(rej_re, "Potencia reactiva (MVAr)", var_scratch("mvar"), 0, 0)
+            grupo(rej_re, "Tensión nominal (kV)", var_scratch("v_nominal"), 0, 1)
+            grupo(rej_re, "Corriente nominal (A)", var_scratch("i_nominal"), 0, 2)
+            grupo(rej_re, "Reactancia (%)", var_scratch("reactancia"), 0, 3)
+            grupo(rej_re, "Clase de enfriamiento", var_scratch("clase_enf"), 1, 0)
 
         def seccion_datos_transformador(con_terciario=True):
             # Bloque «Tipo de transformador» del formato oficial
@@ -11889,7 +11887,7 @@ class AppSAPE(tk.Tk):
         rej = rejilla(4)
         for indice, (clave, texto) in enumerate((
             ("gerencia", "Gerencia Regional de Transmisión"), ("subarea", "Zona"),
-            ("subestacion", "Subestación"), ("nomenclatura", "Nomenclatura"),
+            ("nomenclatura", "Nomenclatura"), ("subestacion", "Subestación"),
             ("marca", "Marca"), ("modelo", "Modelo / Tipo"),
             ("serie", "No. de Serie"), ("fabricacion", "Año de Fabricación"),
             ("servicio", "Año Puesta en Servicio"),
@@ -11920,20 +11918,13 @@ class AppSAPE(tk.Tk):
             rej, "Clima", var("clima"),
             ("Soleado", "Nublado", "1/2 nublado", "Brisa", "Lluvia"), 1, 0,
         )
-        grupo_combo(
-            rej, "Motivo de la prueba", var("motivo"),
-            ("Programado", "Puesta en servicio (P.S.)", "Falla"), 1, 1,
-        )
-        grupo(rej, "Orden de Trabajo (O.T.)", var("ot"), 1, 2)
-        grupo(rej, "Fecha", var("fecha"), 1, 3)
 
         subtitulo("EQUIPO DE MEDICIÓN UTILIZADO")
         rej = rejilla(4)
         for indice, (clave, texto) in enumerate((
             ("inst_marca", "Marca"), ("inst_modelo", "Modelo"),
             ("inst_serie", "Núm. Serie"), ("inst_eimp", "No. Inv. EIMP"),
-            ("inst_cal", "Fecha de Calibración"), ("inst_venc", "Fecha Vencimiento"),
-            ("ultima_prueba", "Fecha última prueba"),
+            ("inst_cal", "Fecha de Calibración"),
         )):
             grupo(rej, texto, var(clave), indice // 4, indice % 4)
 
@@ -16173,12 +16164,6 @@ class AppSAPE(tk.Tk):
                 ("Soleado", "Nublado", "1/2 nublado", "Brisa", "Lluvia"),
                 1, 0,
             )
-            grupo_combo(
-                rej, "Motivo de la prueba", var_scratch("motivo"),
-                ("Programado", "Puesta en servicio (P.S.)", "Falla"), 1, 1,
-            )
-            grupo(rej, "Orden de Trabajo (O.T.)", var_scratch("ot"), 1, 2)
-            grupo(rej, "Fecha", var_scratch("fecha"), 1, 3)
 
         def seccion_equipo_medicion():
             subtitulo_seccion("EQUIPO DE MEDICIÓN UTILIZADO")
@@ -16188,8 +16173,6 @@ class AppSAPE(tk.Tk):
             grupo(rej, "Núm. Serie", var_scratch("inst_serie"), 0, 2)
             grupo(rej, "No. Inv. EIMP", var_scratch("inst_eimp"), 0, 3)
             grupo(rej, "Fecha de Calibración", var_scratch("inst_cal"), 1, 0)
-            grupo(rej, "Fecha Vencimiento", var_scratch("inst_venc"), 1, 1)
-            grupo(rej, "Fecha última prueba", var_scratch("ultima_prueba"), 1, 2)
 
         def seccion_firmas():
             subtitulo_seccion("OBSERVACIONES Y FIRMAS")
