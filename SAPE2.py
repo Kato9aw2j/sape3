@@ -16196,7 +16196,16 @@ class AppSAPE(tk.Tk):
             grupo(rej, "Núm. Serie", var_scratch("inst_serie"), 0, 2)
             grupo(rej, "No. Inv. EIMP", var_scratch("inst_eimp"), 0, 3)
             grupo(rej, "Fecha de Calibración", var_scratch("inst_cal"), 1, 0)
-            grupo(rej, "Número de registro", var_scratch("registro"), 1, 1)
+
+        def seccion_orden_trabajo_fp():
+            subtitulo_seccion("ORDEN DE TRABAJO")
+            rej = rejilla(4)
+            for indice, (clave, texto) in enumerate((
+                ("ot", "O.T."), ("fecha", "Fecha"), ("programado", "Programado"),
+                ("falla", "Falla"), ("rim", "RIM"), ("rig", "RIG"),
+                ("licencia", "No. Licencia"), ("registro", "Número de registro"),
+            )):
+                grupo(rej, texto, var_scratch(clave), indice // 4, indice % 4)
 
         def seccion_firmas():
             subtitulo_seccion("OBSERVACIONES Y FIRMAS")
@@ -16443,6 +16452,7 @@ class AppSAPE(tk.Tk):
             )
             seccion_identificacion(equipo)
             seccion_condiciones()
+            seccion_orden_trabajo_fp()
             seccion_equipo_medicion()
             tabla_pruebas(equipo)
             if self._es_potencia_fp(equipo) or "Aceite" in equipo:

@@ -955,10 +955,11 @@ const CAMPOS_ANEXO_FP = {
   condiciones: [
     ["tempDevanado", "Temp. Devanado (°C)"], ["clima", "Clima"],
   ],
+  orden: CAMPOS_ANEXO_RA.orden,
   medicion: [
     ["instMarca", "Marca"], ["instModelo", "Modelo"],
     ["instSerie", "Núm. Serie"], ["instEimp", "No. Inv. EIMP"],
-    ["instCal", "Fecha de Calibración"], ["registro", "Número de registro"],
+    ["instCal", "Fecha de Calibración"],
   ],
   firmas: [
     ["observaciones", "Observaciones"],
@@ -973,8 +974,7 @@ const CAMPOS_ANEXO_TTR = {
   identificacion: CAMPOS_ANEXO_FP.identificacion,
   potencia: CAMPOS_ANEXO_FP.potencia,
   condiciones: CAMPOS_ANEXO_FP.condiciones,
-  // El registro de calidad va en la orden de trabajo, no en el equipo de medición.
-  medicion: CAMPOS_ANEXO_FP.medicion.filter(([clave]) => clave !== "registro"),
+  medicion: CAMPOS_ANEXO_FP.medicion,
   orden: CAMPOS_ANEXO_RA.orden,
   firmas: CAMPOS_ANEXO_FP.firmas,
 };
@@ -1121,6 +1121,7 @@ function vistaAnexoAFp() {
         <div class="dato"><small>Temp. del aceite</small><b>${esc(d.tempAceite) || "—"} °C</b></div>
         ${CAMPOS_ANEXO_FP.condiciones.map(([clave, etiqueta]) => campoAnexo(clave, etiqueta, v, true)).join("")}
       </div>
+      ${seccionAnexo("Orden de trabajo", CAMPOS_ANEXO_FP.orden, v)}
       ${seccionAnexo("Equipo de medición utilizado", CAMPOS_ANEXO_FP.medicion, v)}
       ${diagramaAnexoFp(d.equipo, d) ? `<h3>Diagrama del equipo</h3><div class="diagrama">${diagramaAnexoFp(d.equipo, d)}</div>` : ""}
       <h3>Lecturas — todas las pruebas de este equipo</h3>
