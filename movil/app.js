@@ -855,11 +855,11 @@ function vistaTtr() {
 
 const CAMPOS_ANEXO_RA = {
   identificacion: [
+    ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "Zona"],
     ["nomenclatura", "Nomenclatura"], ["subestacion", "Subestación (S.E.)"],
     ["marca", "Marca"], ["modelo", "Modelo"], ["serie", "No. de Serie"],
     ["mva", "MVA"], ["fabricacion", "Año de Fabricación"],
     ["nivel", "Nivel de Tensión (kV)"],
-    ["gerencia", "Gerencia Regional de Transmisión"], ["subarea", "Zona"],
   ],
   condiciones: [
     ["voltajeCd", "Voltaje de prueba CD (kV)"],
