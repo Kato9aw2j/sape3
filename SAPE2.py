@@ -11659,7 +11659,7 @@ class AppSAPE(tk.Tk):
         ctk.CTkLabel(
             panel_lateral, text="RELACIÓN DE TRANSFORMACIÓN (TTR)",
             font=ctk.CTkFont(family="Segoe UI", size=11, weight="bold"),
-            text_color=TTR_MORADO_CLARO, wraplength=280, justify="center",
+            text_color="#A78BFA", wraplength=280, justify="center",
         ).pack(pady=(8, 14))
 
         pie_lateral = tk.Frame(
