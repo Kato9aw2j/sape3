@@ -6482,9 +6482,6 @@ def _boton_menu_ra(
                 ]
 
             placa = Image.new("RGBA", (ancho_img, alto_img), (0, 0, 0, 0))
-            ImageDraw.Draw(placa).polygon(
-                _cortado(0, 4, lw - 1, lh + 3), fill=(0, 58, 64, 255),
-            )
             # Cuerpo de cristal oscuro con degradado, como la referencia.
             cuerpo_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             grad = Image.new("RGBA", placa.size, (0, 0, 0, 255))
@@ -6516,22 +6513,16 @@ def _boton_menu_ra(
                 puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 255), width=3,
             )
             placa = Image.alpha_composite(placa, borde_img)
-            if cara == "hover":
-                luz = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-                ImageDraw.Draw(luz).polygon(
-                    [(lw * 0.30, 0), (lw * 0.42, 0), (lw * 0.24, lh), (lw * 0.12, lh)],
-                    fill=(0, 255, 255, 70),
-                )
-                luz = luz.filter(ImageFilter.GaussianBlur(2))
-                placa = Image.alpha_composite(placa, luz)
             fuente_brillo_letra = _orbitron(36, "Bold")
             brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(brillo).text(
                 (lw / 2, lh / 2 - 12), marca, font=fuente_brillo_letra,
                 fill=_rgb(color_letra) + (230,), anchor="mm",
             )
-            brillo = brillo.filter(ImageFilter.GaussianBlur(2))
+            brillo = brillo.filter(ImageFilter.GaussianBlur(3))
             placa = Image.alpha_composite(placa, brillo)
+            halo = brillo.filter(ImageFilter.GaussianBlur(9))
+            placa = Image.alpha_composite(placa, halo)
             # Letra y nombre van dentro de la imagen, para que se inclinen con la tecla.
             # Texto en capas transparentes para que no deje cuadros de color detrás.
             capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
@@ -6545,21 +6536,6 @@ def _boton_menu_ra(
                 fill=(160, 255, 255, 255), anchor="mm",
             )
             placa = Image.alpha_composite(placa, capa_texto)
-            # Inclinación en perspectiva según dónde está el mouse.
-            tilt_x, tilt_y = estado.get("tilt", (0.0, 0.0))
-            if tilt_x or tilt_y:
-                w_p, h_p = placa.size
-                k = 0.08
-                # Lado cercano más grande, lejano más chico (perspectiva).
-                esquinas = (
-                    -k * tilt_y * w_p, -k * tilt_x * h_p,              # arriba-izq
-                    k * tilt_y * w_p, h_p + k * tilt_x * h_p,          # abajo-izq
-                    w_p - k * tilt_y * w_p, h_p - k * tilt_x * h_p,    # abajo-der
-                    w_p + k * tilt_y * w_p, k * tilt_x * h_p,          # arriba-der
-                )
-                placa = placa.transform(
-                    placa.size, Image.QUAD, esquinas, resample=Image.BICUBIC,
-                )
             foto_letra = ImageTk.PhotoImage(placa)
             estado["foto_letra"] = foto_letra
             x_placa = 14
@@ -6614,7 +6590,6 @@ def _boton_menu_ra(
         dibujar()
 
     lienzo.bind("<Configure>", dibujar)
-    lienzo.bind("<Motion>", al_mover)
     lienzo.bind("<Enter>", al_entrar)
     lienzo.bind("<Leave>", al_salir)
     lienzo.bind("<ButtonPress-1>", al_presionar)
