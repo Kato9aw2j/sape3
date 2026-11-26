@@ -6567,9 +6567,12 @@ def _boton_menu_ra(
                 fill=(255, 255, 255, 255) if (es_paso and cara == "hover") else ((255, 140, 0, 255) if es_paso else cor_nucleo + (255,)), anchor="mm",
             )
             # Nombre con letras espaciadas, en monoespaciada como la referencia.
-            fuente_nombre_tecla = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 10 if es_paso else 12)
+            fuente_nombre_tecla = (
+                ImageFont.truetype(str(Path(__file__).with_name("fonts") / "ShareTechMono-Regular.ttf"), 11)
+                if es_paso else ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 12)
+            )
             texto_tecla = texto.upper()
-            separacion = 1 if es_paso else 2
+            separacion = 1.5 if es_paso else 2
             ancho_nombre = sum(fuente_nombre_tecla.getlength(ch) for ch in texto_tecla) + separacion * (len(texto_tecla) - 1)
             x_nombre = x_nombre_ini if es_paso else lw / 2 - ancho_nombre / 2
             for ch in texto_tecla:
