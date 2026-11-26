@@ -6460,7 +6460,7 @@ def _boton_menu_ra(
             # Misma caja y el mismo resplandor cian que el chip de número,
             # nada más que con una letra en vez de un dígito.
             from PIL import ImageFont, ImageFilter
-            lw, lh = 88, 76
+            lw, lh = 190, 76
             color_letra = "#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF"
             # Tecla 3D neón: esquinas cortadas, borde cian con resplandor y base de profundidad.
             ancho_img, alto_img = lw + 4, lh + 4
