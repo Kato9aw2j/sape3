@@ -12051,6 +12051,15 @@ class AppSAPE(tk.Tk):
         )):
             grupo(rej, texto, var(clave), indice // 4, indice % 4)
 
+        mono = configuracion == "Monofásico"
+        subtitulo("DIBUJO DEL EQUIPO")
+        roles_ttr = _estilos_vector_ttr(prueba, "cables")[1] if prueba else None
+        if "2 Devanados" in equipo:
+            _dibujar_diagrama_transformador_2d(contenido, monofasico=mono, roles=roles_ttr)
+        elif "3 Devanados" in equipo and not mono:
+            _dibujar_diagrama_transformador_3d(contenido, roles=roles_ttr)
+        elif "Autotransformadores" in equipo:
+            _dibujar_diagrama_autotransformador(contenido, monofasico=mono)
         clave_vector = _clave_vector_ttr(equipo, configuracion, conexion) if prueba else None
         if clave_vector:
             subtitulo("DIAGRAMA VECTORIAL")
