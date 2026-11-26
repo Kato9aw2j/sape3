@@ -6462,20 +6462,43 @@ def _boton_menu_ra(
             from PIL import ImageFont, ImageFilter
             lw, lh = 88, 76
             color_letra = "#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF"
-            placa = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
-            trazo = ImageDraw.Draw(placa)
-            trazo.rounded_rectangle(
-                (0, 0, lw - 1, lh - 1), radius=6, fill=(26, 26, 26, 255),
+            # Tecla 3D neón: esquinas cortadas, borde cian con resplandor y base de profundidad.
+            ancho_img, alto_img = lw + 4, lh + 4
+            corte = 12
+
+            def _cortado(x0, y0, x1, y1, c=corte):
+                return [
+                    (x0 + c, y0), (x1 - c, y0), (x1, y0 + c), (x1, y1 - c),
+                    (x1 - c, y1), (x0 + c, y1), (x0, y1 - c), (x0, y0 + c),
+                ]
+
+            placa = Image.new("RGBA", (ancho_img, alto_img), (0, 0, 0, 0))
+            ImageDraw.Draw(placa).polygon(
+                _cortado(3, 3, lw + 2, lh + 2), fill=(0, 90, 90, 255),
             )
-            trazo.rounded_rectangle(
-                (4, 5, lw - 5, lh - 6), radius=5, fill=(5, 5, 5, 255),
+            cuerpo_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+            ImageDraw.Draw(cuerpo_img).polygon(
+                _cortado(0, 0, lw - 1, lh - 1), fill=(0, 16, 18, 255),
             )
+            placa = Image.alpha_composite(placa, cuerpo_img)
+            resplandor = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+            puntos_borde = _cortado(0, 0, lw - 1, lh - 1)
+            ImageDraw.Draw(resplandor).line(
+                puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 200), width=3,
+            )
+            resplandor = resplandor.filter(ImageFilter.GaussianBlur(3))
+            placa = Image.alpha_composite(placa, resplandor)
+            borde_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+            ImageDraw.Draw(borde_img).line(
+                puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 255), width=2,
+            )
+            placa = Image.alpha_composite(placa, borde_img)
             fuente_brillo_letra = ImageFont.truetype(
                 r"C:\Windows\Fonts\consolab.ttf", 32,
             )
-            brillo = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
+            brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(brillo).text(
-                (lw / 2, lh / 2), marca, font=fuente_brillo_letra,
+                (lw / 2, lh / 2 - 12), marca, font=fuente_brillo_letra,
                 fill=_rgb(color_letra) + (230,), anchor="mm",
             )
             brillo = brillo.filter(ImageFilter.GaussianBlur(2))
