@@ -6482,36 +6482,40 @@ def _boton_menu_ra(
                 ]
 
             placa = Image.new("RGBA", (ancho_img, alto_img), (0, 0, 0, 0))
-            # Cuerpo de cristal oscuro con degradado, como la referencia.
-            cuerpo_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+            # Base de profundidad, cuerpo oscuro con degradado y líneas de escaneo.
+            ImageDraw.Draw(placa).polygon(_cortado(0, 4, lw - 1, lh + 3), fill=(0, 40, 44, 255))
             grad = Image.new("RGBA", placa.size, (0, 0, 0, 255))
             gd = ImageDraw.Draw(grad)
             for yy in range(placa.size[1]):
                 f = yy / max(placa.size[1] - 1, 1)
-                gd.line(
-                    [(0, yy), (placa.size[0], yy)],
-                    fill=(int(18 - 12 * f), int(44 - 34 * f), int(50 - 40 * f), 255),
-                )
-            mascara_cuerpo = Image.new("L", placa.size, 0)
-            ImageDraw.Draw(mascara_cuerpo).polygon(
-                _cortado(0, 0, lw - 1, lh - 1), fill=255,
-            )
-            cuerpo_img = Image.composite(grad, cuerpo_img, mascara_cuerpo)
-            placa = Image.alpha_composite(placa, cuerpo_img)
-            resplandor = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+                gd.line([(0, yy), (placa.size[0], yy)],
+                        fill=(int(4 + 10 * (1 - f)), int(22 + 16 * (1 - f)), int(24 + 16 * (1 - f)), 255))
+            mascara = Image.new("L", placa.size, 0)
+            ImageDraw.Draw(mascara).polygon(_cortado(0, 0, lw - 1, lh - 1), fill=255)
+            cuerpo = Image.composite(grad, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara)
+            placa = Image.alpha_composite(placa, cuerpo)
+            lineas = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+            ld = ImageDraw.Draw(lineas)
+            for yy in range(0, placa.size[1], 4):
+                ld.line([(0, yy), (placa.size[0], yy)], fill=(0, 255, 255, 16))
+            placa = Image.alpha_composite(placa, Image.composite(lineas, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
+            # Luz diagonal en la esquina superior derecha y líneas verticales internas.
+            luz = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+            ImageDraw.Draw(luz).polygon([(lw - 44, 0), (lw, 0), (lw, 30)], fill=(0, 255, 255, 60))
+            placa = Image.alpha_composite(placa, Image.composite(luz, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
+            verticales = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+            vd = ImageDraw.Draw(verticales)
+            vd.line([(7, 14), (7, lh - 14)], fill=(0, 255, 255, 190), width=1)
+            vd.line([(lw - 8, 14), (lw - 8, lh - 14)], fill=(0, 255, 255, 190), width=1)
+            placa = Image.alpha_composite(placa, verticales)
+            # Resplandor y borde cian.
             puntos_borde = _cortado(0, 0, lw - 1, lh - 1)
-            # Al pasar el mouse (o activa la tecla) el resplandor sube y pasa una luz de escaneo.
-            encendida = cara in ("hover", "activo")
-            ImageDraw.Draw(resplandor).line(
-                puntos_borde + [puntos_borde[0]],
-                fill=(0, 255, 255, 255), width=5,
-            )
-            resplandor = resplandor.filter(ImageFilter.GaussianBlur(5))
+            resplandor = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+            ImageDraw.Draw(resplandor).line(puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 255), width=4)
+            resplandor = resplandor.filter(ImageFilter.GaussianBlur(4))
             placa = Image.alpha_composite(placa, resplandor)
             borde_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-            ImageDraw.Draw(borde_img).line(
-                puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 255), width=3,
-            )
+            ImageDraw.Draw(borde_img).line(puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 255), width=2)
             placa = Image.alpha_composite(placa, borde_img)
             fuente_brillo_letra = _orbitron(36, "Bold")
             brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
@@ -6536,11 +6540,18 @@ def _boton_menu_ra(
                 (lw / 2, lh / 2 - 12), marca, font=fuente_brillo_letra,
                 fill=(90, 245, 255, 255), anchor="mm",
             )
-            ImageDraw.Draw(capa_texto).text(
-                (lw / 2, lh / 2 + 22), texto.upper(),
-                font=_orbitron(12, "Medium"),
-                fill=(160, 255, 255, 255), anchor="mm",
-            )
+            # Nombre con letras espaciadas, en monoespaciada como la referencia.
+            fuente_nombre_tecla = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 12)
+            texto_tecla = texto.upper()
+            separacion = 2
+            ancho_nombre = sum(fuente_nombre_tecla.getlength(ch) for ch in texto_tecla) + separacion * (len(texto_tecla) - 1)
+            x_nombre = lw / 2 - ancho_nombre / 2
+            for ch in texto_tecla:
+                ImageDraw.Draw(capa_texto).text(
+                    (x_nombre, lh / 2 + 22), ch, font=fuente_nombre_tecla,
+                    fill=(160, 255, 255, 255), anchor="lm",
+                )
+                x_nombre += fuente_nombre_tecla.getlength(ch) + separacion
             placa = Image.alpha_composite(placa, capa_texto)
             foto_letra = ImageTk.PhotoImage(placa)
             estado["foto_letra"] = foto_letra
