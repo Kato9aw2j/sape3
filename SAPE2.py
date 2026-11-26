@@ -2315,7 +2315,7 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None, anexo=False):
     for i, grupo in enumerate(grupos):
         cx = margen + i * paso
         kind = grupo[0]
-        pie = f"{grupo[1]} · {grupo[2]}" if anexo else (grupo[1] if modo == "mide" else grupo[2])
+        pie = grupo[2] if anexo else (grupo[1] if modo == "mide" else grupo[2])
         bornes = grupo[3:]
         brazo = 108 if n == 1 else 58
         if kind == "estrella":
