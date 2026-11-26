@@ -12702,10 +12702,11 @@ class AppSAPE(tk.Tk):
             formulario, text="Relación medida (TTR):", bg=RA_VISTA_FONDO,
             fg="#334155", font=fuente,
         ).grid(row=4, column=0, sticky="e", padx=(0, 20), pady=10)
-        ctk.CTkEntry(
+        entrada_rm = ctk.CTkEntry(
             formulario, textvariable=datos["relacion_medida"],
             width=140, font=fuente_opcion,
-        ).grid(row=4, column=1, sticky="w", pady=10)
+        )
+        entrada_rm.grid(row=4, column=1, sticky="w", pady=10)
         if nominal is None:
             tk.Label(
                 formulario,
@@ -12725,15 +12726,15 @@ class AppSAPE(tk.Tk):
             justify="left",
         ).pack(anchor="w", pady=(4, 14))
 
-        panel_resultado = tk.Frame(frame, bg=RA_VISTA_FONDO)
-        panel_resultado.pack(anchor="w", fill="x")
+        tabla_taps_frame = tk.Frame(frame, bg=RA_VISTA_FONDO)
+        tabla_taps_frame.pack(anchor="w", fill="x")
 
-        def calcular():
-            for hijo in panel_resultado.winfo_children():
+        def dibujar_tabla_taps(_evento=None):
+            """RELACIÓN POR TAP: se llena al capturar cada RM (Enter) y al calcular."""
+            for hijo in tabla_taps_frame.winfo_children():
                 hijo.destroy()
-            refrescar_rt()
             tabla_c = tk.Frame(
-                panel_resultado, bg="#FFFFFF",
+                tabla_taps_frame, bg="#FFFFFF",
                 highlightbackground="#E2E8F0", highlightthickness=1,
             )
             tabla_c.pack(anchor="w", fill="x", pady=(0, 10))
@@ -12764,6 +12765,18 @@ class AppSAPE(tk.Tk):
                         tabla_c, text=texto_t, bg="#FFFFFF", fg="#1E293B",
                         font=("Consolas", 10), anchor="w", padx=10, pady=5,
                     ).grid(row=t + 1, column=columna, sticky="ew")
+
+        entrada_rm.bind("<Return>", dibujar_tabla_taps, add="+")
+        dibujar_tabla_taps()
+
+        panel_resultado = tk.Frame(frame, bg=RA_VISTA_FONDO)
+        panel_resultado.pack(anchor="w", fill="x")
+
+        def calcular():
+            for hijo in panel_resultado.winfo_children():
+                hijo.destroy()
+            refrescar_rt()
+            dibujar_tabla_taps()
             if nominal is not None:
                 rt = rt_del_tap()
             else:
