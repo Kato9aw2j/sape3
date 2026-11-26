@@ -6241,8 +6241,8 @@ def _boton_menu_ra(
     from PIL import Image, ImageDraw, ImageTk
 
     # Las teclas con letra (A, B, C) son el doble de grandes.
-    alto_tecla = 84 if (marca and not str(marca).isdigit()) else 58
-    if marca and not str(marca).isdigit():
+    alto_tecla = 84 if marca else 58
+    if marca:
         fondo = "#000000"  # Fondo negro detrás de las teclas A, B y C.
     fondo_rgb = _rgb(fondo)
     lienzo = tk.Canvas(
@@ -6395,8 +6395,8 @@ def _boton_menu_ra(
         ancho = max(lienzo.winfo_width(), 40)
         cara = cara_actual()
         imagen, centro = render(ancho, cara)
-        if marca and not str(marca).isdigit():
-            # Teclas A, B, C: sin botón de fondo, solo el cuadro negro con la letra.
+        if marca:
+            # Teclas con marca (letras o números): sin botón de fondo, solo el cuadro negro con la letra.
             imagen = Image.new("RGBA", (ancho, alto_tecla), fondo_rgb + (255,))
         foto = ImageTk.PhotoImage(imagen)
         estado["foto"] = foto
@@ -6408,7 +6408,7 @@ def _boton_menu_ra(
         if texto_naranja and not estado["activo"]:
             color_txt = color_resaltado
         x_texto = 22
-        if marca and str(marca).isdigit():
+        if False:  # Los números usan ahora el mismo estilo que A, B y C.
             margen_x, margen_y = 6, 5
             ancho_num = int(fuente_chip_numero.measure(marca)) + 16
             alto_num = 32
@@ -6563,7 +6563,7 @@ def _boton_menu_ra(
                 image=foto_letra, anchor="nw",
             )
             x_texto = x_placa + lw + 12
-        if not (marca and not str(marca).isdigit()):
+        if not marca:
             lienzo.create_text(
                 x_texto, centro, text=texto.upper(), anchor="w",
                 fill=color_txt, font=fuente_txt,
