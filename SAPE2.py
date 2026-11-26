@@ -12354,7 +12354,7 @@ class AppSAPE(tk.Tk):
         fondo = RA_VISTA_FONDO
         gris = "#596573"
         tk.Frame(padre, bg=RA_VISTA_BORDE, height=1).pack(
-            fill="x", pady=(16, 10),
+            fill="x", pady=(4, 6),
         )
         # El botón va justo debajo del contenido, para que quede a la vista al maximizar.
         fila_acciones = tk.Frame(padre, bg=fondo)
@@ -12850,7 +12850,7 @@ class AppSAPE(tk.Tk):
             ctk.CTkLabel(
                 formulario, text=texto, font=fuente,
                 text_color="#334155", fg_color="transparent",
-            ).grid(row=fila, column=0, sticky="e", padx=(0, 20), pady=12)
+            ).grid(row=fila, column=0, sticky="e", padx=(0, 20), pady=6)
 
         campo("Tipo de equipo:", 0)
         combo_equipo = ctk.CTkComboBox(
@@ -12866,11 +12866,11 @@ class AppSAPE(tk.Tk):
             button_color=TTR_MORADO_OSCURO,
             button_hover_color=TTR_MORADO_HOVER,
         )
-        combo_equipo.grid(row=0, column=1, sticky="w", pady=12)
+        combo_equipo.grid(row=0, column=1, sticky="w", pady=6)
 
         campo("Configuración:", 1)
         marco_config = ctk.CTkFrame(formulario, fg_color="transparent")
-        marco_config.grid(row=1, column=1, sticky="w", pady=12)
+        marco_config.grid(row=1, column=1, sticky="w", pady=6)
         for texto_cfg in ("Trifásico", "Monofásico"):
             ctk.CTkRadioButton(
                 marco_config, text=texto_cfg, variable=datos["configuracion"],
@@ -12976,8 +12976,8 @@ class AppSAPE(tk.Tk):
                 value=opcion, font=fuente_opcion,
                 fg_color=TTR_MORADO, hover_color=TTR_MORADO_HOVER,
             ).pack(side="left", padx=(0, 18))
-        etiqueta_med.grid(row=7, column=0, sticky="e", padx=(0, 20), pady=12)
-        marco_med.grid(row=7, column=1, sticky="w", pady=12)
+        etiqueta_med.grid(row=7, column=0, sticky="e", padx=(0, 20), pady=6)
+        marco_med.grid(row=7, column=1, sticky="w", pady=6)
 
         etiqueta_pol = ctk.CTkLabel(
             formulario, text="Polaridad del transformador:", font=fuente,
@@ -13001,34 +13001,34 @@ class AppSAPE(tk.Tk):
             text="Nota: transmisión CFE → casi siempre opción 2.",
             font=fuente_opcion, text_color=TTR_ROSA_PASTEL, fg_color="transparent",
         ).pack(anchor="w", pady=(6, 0))
-        etiqueta_pol.grid(row=8, column=0, sticky="ne", padx=(0, 20), pady=12)
-        marco_pol.grid(row=8, column=1, sticky="w", pady=12)
+        etiqueta_pol.grid(row=8, column=0, sticky="ne", padx=(0, 20), pady=6)
+        marco_pol.grid(row=8, column=1, sticky="w", pady=6)
 
         campo("Temp. ambiente (°C):", 9)
         entrada_temp = ctk.CTkEntry(
             formulario, textvariable=datos["temp_ambiente"],
             width=80, font=fuente_opcion,
         )
-        entrada_temp.grid(row=9, column=1, sticky="w", pady=12)
+        entrada_temp.grid(row=9, column=1, sticky="w", pady=6)
         campo("Humedad relativa (%):", 10)
         entrada_hum = ctk.CTkEntry(
             formulario, textvariable=datos["humedad"],
             width=80, font=fuente_opcion,
         )
-        entrada_hum.grid(row=10, column=1, sticky="w", pady=12)
+        entrada_hum.grid(row=10, column=1, sticky="w", pady=6)
         campo("Temp. devanado (°C):", 11)
         entrada_dev = ctk.CTkEntry(
             formulario, textvariable=datos["temp_devanado"],
             width=80, font=fuente_opcion,
         )
-        entrada_dev.grid(row=11, column=1, sticky="w", pady=12)
+        entrada_dev.grid(row=11, column=1, sticky="w", pady=6)
 
         def mostrar(etiqueta_w, control_w, fila, visible):
             if visible:
                 etiqueta_w.grid(
-                    row=fila, column=0, sticky="e", padx=(0, 20), pady=12,
+                    row=fila, column=0, sticky="e", padx=(0, 20), pady=6,
                 )
-                control_w.grid(row=fila, column=1, sticky="w", pady=12)
+                control_w.grid(row=fila, column=1, sticky="w", pady=6)
             else:
                 etiqueta_w.grid_remove()
                 control_w.grid_remove()
