@@ -12578,12 +12578,12 @@ class AppSAPE(tk.Tk):
             elif rm is None:
                 aviso.configure(
                     bg="#451A03", fg="#FDE68A",
-                    text="Falta la relación medida. Captúrela y pulse CALCULAR DICTAMEN.",
+                    text="Falta la relación medida. Captúrela y pulse CALCULAR.",
                 )
             else:
                 aviso.configure(
                     bg="#052E16", fg="#BBF7D0",
-                    text="Datos listos. Pulse CALCULAR DICTAMEN.",
+                    text="Datos listos. Pulse CALCULAR.",
                 )
 
         refrescar()
@@ -12638,6 +12638,15 @@ class AppSAPE(tk.Tk):
             fg="#94A3B8", font=fuente_opcion,
         ).grid(row=0, column=2, sticky="w", padx=(10, 0))
 
+        # Relación medida de cada tap: se captura en todos los taps y luego se calcula.
+        rm_taps = {str(datos["tap"].get()): datos["relacion_medida"].get()}
+        datos["relacion_medida"].trace_add(
+            "write",
+            lambda *_a: rm_taps.__setitem__(
+                str(datos["tap"].get()), datos["relacion_medida"].get(),
+            ),
+        )
+
         def rt_del_tap():
             """RT del tap elegido, calculada con los kV de placa del paso 01."""
             if nominal is None:
@@ -12670,6 +12679,7 @@ class AppSAPE(tk.Tk):
         etiqueta_rt_valor.grid(row=2, column=1, sticky="w", pady=10)
 
         def obtener_rt(*_a):
+            datos["relacion_medida"].set(rm_taps.get(str(datos["tap"].get()), ""))
             rt = rt_del_tap()
             etiqueta_rt_valor.configure(
                 text="—" if rt is None else f"{rt:.4f}",
@@ -12729,6 +12739,38 @@ class AppSAPE(tk.Tk):
             for hijo in panel_resultado.winfo_children():
                 hijo.destroy()
             refrescar_rt()
+            tabla_c = tk.Frame(
+                panel_resultado, bg="#FFFFFF",
+                highlightbackground="#E2E8F0", highlightthickness=1,
+            )
+            tabla_c.pack(anchor="w", fill="x", pady=(0, 10))
+            tk.Label(
+                tabla_c, text="RELACIÓN POR TAP", bg="#FFFFFF", fg=TTR_MORADO_OSCURO,
+                font=("Segoe UI", 10, "bold"), anchor="w", padx=14, pady=8,
+            ).grid(row=0, column=0, columnspan=5, sticky="ew")
+            for columna, encabezado in enumerate(("Tap", "RT teórica", "RM", "%DIF", "Dictamen")):
+                tk.Label(
+                    tabla_c, text=encabezado, bg="#F1F5F9", fg="#475569",
+                    font=("Segoe UI", 9, "bold"), anchor="w", padx=10, pady=6,
+                ).grid(row=1, column=columna, sticky="ew")
+            for t in range(1, n_taps + 1):
+                rt_t = None if nominal is None else _relacion_teorica_tap_ttr(
+                    nominal, t, centro, usar_reg, mantener,
+                )
+                rm_t = _leer_ttr(rm_taps.get(str(t), ""))
+                res_t = _evaluar_ttr(rt_t, rm_t)
+                valores = (
+                    f"{t}" + (" (central)" if t == centro else ""),
+                    "—" if rt_t is None else f"{rt_t:.4f}",
+                    "—" if rm_t is None else f"{rm_t:.4f}",
+                    "—" if res_t is None else f"{res_t['dif']:.3f} %",
+                    "—" if res_t is None else res_t["estado"],
+                )
+                for columna, texto_t in enumerate(valores):
+                    tk.Label(
+                        tabla_c, text=texto_t, bg="#FFFFFF", fg="#1E293B",
+                        font=("Consolas", 10), anchor="w", padx=10, pady=5,
+                    ).grid(row=t + 1, column=columna, sticky="ew")
             if nominal is not None:
                 rt = rt_del_tap()
             else:
@@ -12790,7 +12832,7 @@ class AppSAPE(tk.Tk):
             self._publicar_foco_ieee(nivel, resumen, resultado["estado"])
 
         ctk.CTkButton(
-            frame, text="CALCULAR DICTAMEN", fg_color=TTR_MORADO,
+            frame, text="CALCULAR", fg_color=TTR_MORADO,
             hover_color=TTR_MORADO_OSCURO, text_color="white",
             font=ctk.CTkFont(size=14, weight="bold"), width=200, height=38,
             command=calcular,
