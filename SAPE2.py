@@ -10595,10 +10595,10 @@ class AppSAPE(tk.Tk):
                 "Anexo C Resumen de procedimiento para la medición de resistencia "
                 "de aislamiento en equipo eléctrico primario"
             ),
-            bg="#FFFFFF", fg="#000000", font=("Arial", 11, "bold"),
+            bg="#FFFFFF", fg="#1E293B", font=("Segoe UI", 12, "bold"),
             anchor="w", justify="left", wraplength=780,
-        ).pack(fill="x", pady=(0, 8))
-        tabla = tk.Frame(cuerpo, bg="#000000")
+        ).pack(fill="x", pady=(0, 12))
+        tabla = tk.Frame(cuerpo, bg="#CBD5E1")
         tabla.pack(fill="x")
         tk.Label(
             tabla,
@@ -10606,8 +10606,8 @@ class AppSAPE(tk.Tk):
                 "Procedimiento para la medición de resistencia de aislamiento en "
                 "equipo eléctrico primario ST-CT-001"
             ),
-            bg="#FFFFFF", fg="#000000", font=("Arial", 10, "bold"),
-            anchor="center", justify="center", wraplength=780, padx=8, pady=6,
+            bg="#1E293B", fg="#FFFFFF", font=("Segoe UI", 10, "bold"),
+            anchor="center", justify="center", wraplength=780, padx=10, pady=10,
         ).grid(row=0, column=0, columnspan=2, sticky="nsew", padx=1, pady=1)
         filas_c = (
             ("En que consiste la medición", (
@@ -10656,17 +10656,17 @@ class AppSAPE(tk.Tk):
         )
         for fila, (rotulo, textos) in enumerate(filas_c, start=1):
             tk.Label(
-                tabla, text=rotulo, bg="#FFFFFF", fg="#000000",
-                font=("Arial", 10, "bold italic"), anchor="w", justify="left",
-                wraplength=190, padx=8, pady=6,
+                tabla, text=rotulo, bg="#F1F5F9", fg="#1E3A8A",
+                font=("Segoe UI", 10, "bold italic"), anchor="w", justify="left",
+                wraplength=180, padx=12, pady=10,
             ).grid(row=fila, column=0, sticky="nsew", padx=1, pady=1)
             celda = tk.Frame(tabla, bg="#FFFFFF")
             celda.grid(row=fila, column=1, sticky="nsew", padx=1, pady=1)
             for texto_c in textos:
                 tk.Label(
-                    celda, text=texto_c, bg="#FFFFFF", fg="#000000",
-                    font=("Arial", 10), anchor="w", justify="left",
-                    wraplength=560, padx=8, pady=3,
+                    celda, text=texto_c, bg="#FFFFFF", fg="#0F172A",
+                    font=("Segoe UI", 10), anchor="w", justify="left",
+                    wraplength=540, padx=12, pady=5,
                 ).pack(fill="x")
         tabla.columnconfigure(0, minsize=190)
         tabla.columnconfigure(1, weight=1)
