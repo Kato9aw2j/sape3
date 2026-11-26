@@ -6505,7 +6505,7 @@ def _boton_menu_ra(
             for yy in range(placa.size[1]):
                 f = yy / max(placa.size[1] - 1, 1)
                 gd.line([(0, yy), (placa.size[0], yy)],
-                        fill=(int(4 + 10 * (1 - f)), int(22 + 16 * (1 - f)), int(24 + 16 * (1 - f)), 255))
+                        fill=((int(2 + 8 * (1 - f)), int(6 + 18 * (1 - f)), int(6 + 18 * (1 - f)), 255) if es_paso else (int(4 + 10 * (1 - f)), int(22 + 16 * (1 - f)), int(24 + 16 * (1 - f)), 255)))
             mascara = Image.new("L", placa.size, 0)
             ImageDraw.Draw(mascara).polygon(_cortado(0, 0, lw - 1, lh - 1), fill=255)
             cuerpo = Image.composite(grad, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara)
@@ -6564,7 +6564,7 @@ def _boton_menu_ra(
             capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(capa_texto).text(
                 (x_marca, y_marca), marca, font=fuente_brillo_letra,
-                fill=(255, 255, 255, 255) if (es_paso and cara == "hover") else cor_nucleo + (255,), anchor="mm",
+                fill=(255, 255, 255, 255) if (es_paso and cara == "hover") else ((255, 140, 0, 255) if es_paso else cor_nucleo + (255,)), anchor="mm",
             )
             # Nombre con letras espaciadas, en monoespaciada como la referencia.
             fuente_nombre_tecla = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 10 if es_paso else 12)
@@ -6575,7 +6575,7 @@ def _boton_menu_ra(
             for ch in texto_tecla:
                 ImageDraw.Draw(capa_texto).text(
                     (x_nombre, y_nombre), ch, font=fuente_nombre_tecla,
-                    fill=(255, 200, 120, 255) if es_paso else cor_texto + (255,), anchor="lm",
+                    fill=(255, 218, 168, 255) if es_paso else cor_texto + (255,), anchor="lm",
                 )
                 x_nombre += fuente_nombre_tecla.getlength(ch) + separacion
             placa = Image.alpha_composite(placa, capa_texto)
