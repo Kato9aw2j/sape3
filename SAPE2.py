@@ -7139,7 +7139,7 @@ class AppSAPE(tk.Tk):
 
         marcar_reloj()
 
-        panel_lateral = tk.Frame(ventana, bg="#1C2128", width=320)
+        panel_lateral = tk.Frame(ventana, bg="#000000", width=320)
         panel_lateral.pack(side=tk.LEFT, fill=tk.Y)
         panel_lateral.pack_propagate(False)
 
@@ -7188,7 +7188,7 @@ class AppSAPE(tk.Tk):
             fg=RA_VISTA_NARANJA, font=("Consolas", 9, "bold"),
         ).pack(side="right")
 
-        menu_lateral = tk.Frame(panel_lateral, bg="#1C2128")
+        menu_lateral = tk.Frame(panel_lateral, bg="#000000")
         menu_lateral.pack(fill="both", expand=True)
 
         area_principal = tk.Frame(ventana, bg=RA_VISTA_FONDO)
@@ -11731,7 +11731,7 @@ class AppSAPE(tk.Tk):
         marcar_reloj_ttr()
 
         panel_lateral = ctk.CTkFrame(
-            ventana, width=320, corner_radius=0, fg_color="#1C2128",
+            ventana, width=320, corner_radius=0, fg_color="#000000",
         )
         panel_lateral.pack(side=tk.LEFT, fill=tk.Y)
         panel_lateral.pack_propagate(False)
@@ -11870,7 +11870,7 @@ class AppSAPE(tk.Tk):
 
         paso_actual = tk.IntVar(ventana, value=1)
         botones_paso = []
-        fondo_lateral = "#1C2128"
+        fondo_lateral = "#000000"
 
         def titulo_seccion(texto):
             fila = tk.Frame(panel_lateral, bg=fondo_lateral)
@@ -13652,7 +13652,7 @@ class AppSAPE(tk.Tk):
 
         marcar_reloj()
 
-        panel_lateral = tk.Frame(ventana, bg="#1C2128", width=320)
+        panel_lateral = tk.Frame(ventana, bg="#000000", width=320)
         panel_lateral.pack(side=tk.LEFT, fill=tk.Y)
         panel_lateral.pack_propagate(False)
         logo = tk.Frame(
@@ -13693,7 +13693,7 @@ class AppSAPE(tk.Tk):
                 fg=color, font=("Consolas", 9, "bold"),
             ).pack(side="right")
 
-        menu_lateral = tk.Frame(panel_lateral, bg="#1C2128")
+        menu_lateral = tk.Frame(panel_lateral, bg="#000000")
         menu_lateral.pack(fill="both", expand=True)
 
         area_principal = tk.Frame(ventana, bg=RA_VISTA_FONDO)
