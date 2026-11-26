@@ -6466,7 +6466,12 @@ def _boton_menu_ra(
             # Misma caja y el mismo resplandor cian que el chip de número,
             # nada más que con una letra en vez de un dígito.
             from PIL import ImageFont, ImageFilter
-            lw, lh = (110 if str(marca).isdigit() else 190), 76
+            lw, lh = (262 if str(marca).isdigit() else 190), 76
+            es_paso = str(marca).isdigit()
+            x_marca = lw * 0.2 if es_paso else lw / 2
+            y_marca = lh / 2 if es_paso else lh / 2 - 12
+            x_nombre_ini = lw * 0.36 if es_paso else None
+            y_nombre = lh / 2 if es_paso else lh / 2 + 22
             color_letra = "#FF8C00" if (tema == "naranja" and str(marca).isdigit()) else ("#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF")
             # Fuente Orbitron (la de la referencia), incluida en la carpeta fonts.
             def _orbitron(tam, estilo):
@@ -6530,7 +6535,7 @@ def _boton_menu_ra(
             fuente_brillo_letra = _orbitron(36, "Bold")
             brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(brillo).text(
-                (lw / 2, lh / 2 - 12), marca, font=fuente_brillo_letra,
+                (x_marca, y_marca), marca, font=fuente_brillo_letra,
                 fill=_rgb(color_letra) + (230,), anchor="mm",
             )
             # Aura de neón alrededor de la letra: tres capas de resplandor.
@@ -6547,19 +6552,19 @@ def _boton_menu_ra(
             # Texto en capas transparentes para que no deje cuadros de color detrás.
             capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(capa_texto).text(
-                (lw / 2, lh / 2 - 12), marca, font=fuente_brillo_letra,
+                (x_marca, y_marca), marca, font=fuente_brillo_letra,
                 fill=cor_nucleo + (255,), anchor="mm",
             )
             # Nombre con letras espaciadas, en monoespaciada como la referencia.
-            fuente_nombre_tecla = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 12)
+            fuente_nombre_tecla = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 10 if es_paso else 12)
             texto_tecla = texto.upper()
-            separacion = 2
+            separacion = 1 if es_paso else 2
             ancho_nombre = sum(fuente_nombre_tecla.getlength(ch) for ch in texto_tecla) + separacion * (len(texto_tecla) - 1)
-            x_nombre = lw / 2 - ancho_nombre / 2
-            for ch in ([] if str(marca).isdigit() else texto_tecla):
+            x_nombre = x_nombre_ini if es_paso else lw / 2 - ancho_nombre / 2
+            for ch in texto_tecla:
                 ImageDraw.Draw(capa_texto).text(
-                    (x_nombre, lh / 2 + 22), ch, font=fuente_nombre_tecla,
-                    fill=cor_texto + (255,), anchor="lm",
+                    (x_nombre, y_nombre), ch, font=fuente_nombre_tecla,
+                    fill=(255, 255, 255, 255) if es_paso else cor_texto + (255,), anchor="lm",
                 )
                 x_nombre += fuente_nombre_tecla.getlength(ch) + separacion
             placa = Image.alpha_composite(placa, capa_texto)
@@ -6571,10 +6576,10 @@ def _boton_menu_ra(
                 image=foto_letra, anchor="nw",
             )
             x_texto = x_placa + lw + 12
-        if not marca or str(marca).isdigit():
+        if not marca:
             lienzo.create_text(
                 x_texto, centro, text=texto.upper(), anchor="w",
-                fill="#FFFFFF" if marca else color_txt, font=fuente_txt,
+                fill=color_txt, font=fuente_txt,
             )
         if estado["activo"] and not str(marca).isdigit():
             lienzo.create_text(
