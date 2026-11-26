@@ -6553,7 +6553,7 @@ def _boton_menu_ra(
             borde_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(borde_img).line(puntos_borde + [puntos_borde[0]], fill=cor_borde_tecla + (255,), width=2)
             placa = Image.alpha_composite(placa, borde_img)
-            fuente_brillo_letra = _orbitron(46 if es_paso else 36, "Bold")
+            fuente_brillo_letra = _orbitron(43 if es_paso else 36, "Bold")
             brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(brillo).text(
                 (x_marca, y_marca), marca, font=fuente_brillo_letra,
