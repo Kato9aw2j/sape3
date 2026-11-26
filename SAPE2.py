@@ -6482,6 +6482,11 @@ def _boton_menu_ra(
                     return fuente
                 except Exception:
                     return ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", tam)
+            # Al pasar el mouse el paso se enciende: borde blanco, resplandor cian y número blanco.
+            cor_borde_tecla, cor_resplandor_tecla = cor_neon, cor_neon
+            if es_paso and cara == "hover":
+                cor_borde_tecla, cor_resplandor_tecla = (255, 255, 255), (0, 229, 255)
+                color_letra = "#FFFFFF"
             # Tecla 3D neón: esquinas cortadas, borde cian con resplandor y base de profundidad.
             ancho_img, alto_img = lw + 4, lh + 4
             corte = 22 if es_paso else 14
@@ -6532,11 +6537,11 @@ def _boton_menu_ra(
             # Resplandor y borde cian.
             puntos_borde = _cortado(0, 0, lw - 1, lh - 1)
             resplandor = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-            ImageDraw.Draw(resplandor).line(puntos_borde + [puntos_borde[0]], fill=cor_neon + (255,), width=4)
+            ImageDraw.Draw(resplandor).line(puntos_borde + [puntos_borde[0]], fill=cor_resplandor_tecla + (255,), width=4)
             resplandor = resplandor.filter(ImageFilter.GaussianBlur(4))
             placa = Image.alpha_composite(placa, resplandor)
             borde_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-            ImageDraw.Draw(borde_img).line(puntos_borde + [puntos_borde[0]], fill=cor_neon + (255,), width=2)
+            ImageDraw.Draw(borde_img).line(puntos_borde + [puntos_borde[0]], fill=cor_borde_tecla + (255,), width=2)
             placa = Image.alpha_composite(placa, borde_img)
             fuente_brillo_letra = _orbitron(36, "Bold")
             brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
@@ -6559,7 +6564,7 @@ def _boton_menu_ra(
             capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(capa_texto).text(
                 (x_marca, y_marca), marca, font=fuente_brillo_letra,
-                fill=cor_nucleo + (255,), anchor="mm",
+                fill=(255, 255, 255, 255) if (es_paso and cara == "hover") else cor_nucleo + (255,), anchor="mm",
             )
             # Nombre con letras espaciadas, en monoespaciada como la referencia.
             fuente_nombre_tecla = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 10 if es_paso else 12)
