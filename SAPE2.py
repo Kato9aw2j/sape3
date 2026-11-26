@@ -6243,7 +6243,7 @@ def _boton_menu_ra(
     # Las teclas con letra (A, B, C) son el doble de grandes.
     alto_tecla = 84 if marca else 58
     cor_neon, cor_nucleo, cor_texto = (
-        ((255, 122, 26), (255, 200, 120), (255, 190, 120)) if tema == "naranja"
+        ((255, 122, 26), (255, 200, 120), (255, 190, 120)) if (tema == "naranja" and str(marca).isdigit())
         else ((0, 255, 255), (90, 245, 255), (160, 255, 255))
     )
     if marca:
@@ -6467,7 +6467,7 @@ def _boton_menu_ra(
             # nada más que con una letra en vez de un dígito.
             from PIL import ImageFont, ImageFilter
             lw, lh = 190, 76
-            color_letra = "#FF8C00" if tema == "naranja" else ("#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF")
+            color_letra = "#FF8C00" if (tema == "naranja" and str(marca).isdigit()) else ("#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF")
             # Fuente Orbitron (la de la referencia), incluida en la carpeta fonts.
             def _orbitron(tam, estilo):
                 ruta = Path(__file__).with_name("fonts") / "Orbitron.ttf"
