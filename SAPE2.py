@@ -6466,7 +6466,7 @@ def _boton_menu_ra(
             # Misma caja y el mismo resplandor cian que el chip de número,
             # nada más que con una letra en vez de un dígito.
             from PIL import ImageFont, ImageFilter
-            lw, lh = 190, 76
+            lw, lh = (110 if str(marca).isdigit() else 190), 76
             color_letra = "#FF8C00" if (tema == "naranja" and str(marca).isdigit()) else ("#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF")
             # Fuente Orbitron (la de la referencia), incluida en la carpeta fonts.
             def _orbitron(tam, estilo):
@@ -6500,6 +6500,10 @@ def _boton_menu_ra(
             ImageDraw.Draw(mascara).polygon(_cortado(0, 0, lw - 1, lh - 1), fill=255)
             cuerpo = Image.composite(grad, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara)
             placa = Image.alpha_composite(placa, cuerpo)
+            if cara == "activo":
+                iluminada = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+                ImageDraw.Draw(iluminada).polygon(_cortado(0, 0, lw - 1, lh - 1), fill=cor_neon + (150,))
+                placa = Image.alpha_composite(placa, iluminada)
             lineas = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ld = ImageDraw.Draw(lineas)
             for yy in range(0, placa.size[1], 4):
@@ -6552,7 +6556,7 @@ def _boton_menu_ra(
             separacion = 2
             ancho_nombre = sum(fuente_nombre_tecla.getlength(ch) for ch in texto_tecla) + separacion * (len(texto_tecla) - 1)
             x_nombre = lw / 2 - ancho_nombre / 2
-            for ch in texto_tecla:
+            for ch in ([] if str(marca).isdigit() else texto_tecla):
                 ImageDraw.Draw(capa_texto).text(
                     (x_nombre, lh / 2 + 22), ch, font=fuente_nombre_tecla,
                     fill=cor_texto + (255,), anchor="lm",
@@ -6567,12 +6571,12 @@ def _boton_menu_ra(
                 image=foto_letra, anchor="nw",
             )
             x_texto = x_placa + lw + 12
-        if not marca:
+        if not marca or str(marca).isdigit():
             lienzo.create_text(
                 x_texto, centro, text=texto.upper(), anchor="w",
-                fill=color_txt, font=fuente_txt,
+                fill="#FFFFFF" if marca else color_txt, font=fuente_txt,
             )
-        if estado["activo"]:
+        if estado["activo"] and not str(marca).isdigit():
             lienzo.create_text(
                 ancho - 22, centro, text="➔", anchor="e",
                 fill="#FFFFFF", font=fuente_flecha,
@@ -7296,7 +7300,7 @@ class AppSAPE(tk.Tk):
             fila = tk.Frame(menu_lateral, bg="#1C2128")
             fila.pack(fill="x", padx=16, pady=(8, 4))
             tk.Label(
-                fila, text=texto, bg="#1C2128", fg="#5C6979",
+                fila, text=texto, bg="#1C2128", fg="#FFFFFF",
                 font=("Consolas", 9, "bold"),
             ).pack(side="left")
             tk.Frame(fila, bg="#374151", height=1).pack(
@@ -13802,7 +13806,7 @@ class AppSAPE(tk.Tk):
             fila = tk.Frame(menu_lateral, bg="#1C2128")
             fila.pack(fill="x", padx=16, pady=(8, 4))
             tk.Label(
-                fila, text=texto, bg="#1C2128", fg="#5C6979",
+                fila, text=texto, bg="#1C2128", fg="#FFFFFF",
                 font=("Consolas", 9, "bold"),
             ).pack(side="left")
             tk.Frame(fila, bg="#374151", height=1).pack(
