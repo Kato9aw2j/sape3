@@ -12689,11 +12689,12 @@ class AppSAPE(tk.Tk):
             refrescar_rt.mostrar_taps(nominal, n_taps, centro, usar_reg, mantener)
 
         combo_tap.configure(command=lambda _v=None: obtener_rt())
+        fila_botones_ttr = tk.Frame(frame, bg=RA_VISTA_FONDO)
         _boton_relieve_ra(
-            formulario, "OBTENER RELACIÓN TEÓRICA", obtener_rt,
-            ancho=270, modo="morado", fondo=RA_VISTA_FONDO,
+            fila_botones_ttr, "OBTENER RELACIÓN TEÓRICA", obtener_rt,
+            ancho=270, modo="diagnostico_morado", fondo=RA_VISTA_FONDO,
             alto_caja=28, alto_lienzo=40, fuente_nombre="Consolas",
-        ).grid(row=2, column=2, sticky="w", padx=(14, 0), pady=10)
+        ).pack(side="left", padx=(0, 12))
 
         if nominal is None:
             tk.Label(
@@ -12832,10 +12833,11 @@ class AppSAPE(tk.Tk):
             self._publicar_foco_ieee(nivel, resumen, resultado["estado"])
 
         _boton_relieve_ra(
-            frame, "CALCULAR", calcular,
-            ancho=150, modo="morado", fondo=RA_VISTA_FONDO,
+            fila_botones_ttr, "CALCULAR", calcular,
+            ancho=150, modo="diagnostico_morado", fondo=RA_VISTA_FONDO,
             alto_caja=28, alto_lienzo=40, fuente_nombre="Consolas",
-        ).pack(anchor="w", pady=(0, 10))
+        ).pack(side="left")
+        fila_botones_ttr.pack(anchor="w", pady=(0, 10))
 
     def _formulario_ttr(self, frame, cargar_paso):
         datos = self.datos_ttr
