@@ -12054,7 +12054,11 @@ class AppSAPE(tk.Tk):
         )):
             grupo(rej, texto, var(clave), indice // 4, indice % 4)
 
-        clave_vector = _clave_vector_ttr(equipo, configuracion, conexion) if prueba else None
+        # El diagrama no depende de que se haya elegido una prueba: si no hay, usa la primera.
+        clave_vector = _clave_vector_ttr(equipo, configuracion, conexion) if equipo else None
+        lista_vector = _filas_ttr(equipo, configuracion, conexion)[0] if clave_vector else []
+        prueba_vector = prueba or (lista_vector[0] if lista_vector else None)
+        clave_vector = clave_vector if prueba_vector else None
         if clave_vector:
             subtitulo("DIAGRAMA VECTORIAL")
             _margen, _paso, ancho = _medida_vector_ttr(len(_VECTORES_TTR[clave_vector][3]))
@@ -12062,7 +12066,7 @@ class AppSAPE(tk.Tk):
                 contenido, width=ancho, height=280, bg="#FFFFFF", highlightthickness=0,
             )
             lienzo_vec.pack(anchor="w", padx=15, pady=(2, 8))
-            _dibujar_vector_ttr(lienzo_vec, clave_vector, prueba, "mide", anexo=True)
+            _dibujar_vector_ttr(lienzo_vec, clave_vector, prueba_vector, "mide", anexo=True)
 
         subtitulo("TABLA POR TAP  ·  RELACIÓN TEÓRICA, PUESTA EN SERVICIO Y MEDIDA")
         if nominal is None:
