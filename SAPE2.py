@@ -12356,22 +12356,22 @@ class AppSAPE(tk.Tk):
         tk.Frame(padre, bg=RA_VISTA_BORDE, height=1).pack(
             fill="x", pady=(16, 10),
         )
-        # Pie primero: así su espacio queda reservado y el botón no se corta.
-        tk.Label(
-            padre, text=f"Módulo {numero:02d} / 04",
-            bg=fondo, fg="#4A5568", font=("Consolas", 9, "bold"),
-        ).pack(side="bottom", anchor="e", padx=(0, 4), pady=(0, 6))
-        tk.Label(
-            padre,
-            text="Ingeniería de pruebas de alta tensión  ·  Subestaciones eléctricas",
-            bg=fondo, fg=gris, font=("Consolas", 9),
-        ).pack(side="bottom", anchor="w", pady=(4, 0))
+        # El botón va justo debajo del contenido, para que quede a la vista al maximizar.
         fila_acciones = tk.Frame(padre, bg=fondo)
-        fila_acciones.pack(side="bottom", fill="x", pady=(14, 36))
+        fila_acciones.pack(fill="x", pady=(10, 6))
         boton = _boton_relieve_ra(
             fila_acciones, "SIGUIENTE  →", comando, modo="morado",
         )
         boton.pack(side="right")
+        tk.Label(
+            padre,
+            text="Ingeniería de pruebas de alta tensión  ·  Subestaciones eléctricas",
+            bg=fondo, fg=gris, font=("Consolas", 9),
+        ).pack(anchor="w", pady=(4, 0))
+        tk.Label(
+            padre, text=f"Módulo {numero:02d} / 04",
+            bg=fondo, fg="#4A5568", font=("Consolas", 9, "bold"),
+        ).pack(anchor="e", padx=(0, 4), pady=(0, 6))
 
         def activar(_evento=None):
             boton.invoke()
