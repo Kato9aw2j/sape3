@@ -12194,7 +12194,7 @@ class AppSAPE(tk.Tk):
                 hover_color=TTR_MORADO_OSCURO, text_color="white",
                 font=ctk.CTkFont(weight="bold"), width=110, height=34,
                 command=comando,
-            ).pack(side="right", padx=(10, 0), pady=10)
+            ).pack(side="right", padx=(12, 24), pady=10)
         visor.focus_force()
         return visor
 
