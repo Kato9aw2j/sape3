@@ -6579,6 +6579,18 @@ def _boton_menu_ra(
                 )
                 x_nombre += fuente_nombre_tecla.getlength(ch) + separacion
             placa = Image.alpha_composite(placa, capa_texto)
+            # Inclinación 3D que sigue al mouse (solo en los pasos 01 a 04).
+            tilt_x, tilt_y = estado.get("tilt", (0.0, 0.0)) if es_paso else (0.0, 0.0)
+            if tilt_x or tilt_y:
+                w_p, h_p = placa.size
+                k = 0.08
+                esquinas = (
+                    -k * tilt_y * w_p, -k * tilt_x * h_p,
+                    k * tilt_y * w_p, h_p + k * tilt_x * h_p,
+                    w_p - k * tilt_y * w_p, h_p - k * tilt_x * h_p,
+                    w_p + k * tilt_y * w_p, k * tilt_x * h_p,
+                )
+                placa = placa.transform(placa.size, Image.QUAD, esquinas, resample=Image.BICUBIC)
             foto_letra = ImageTk.PhotoImage(placa)
             estado["foto_letra"] = foto_letra
             x_placa = 14
@@ -6633,6 +6645,7 @@ def _boton_menu_ra(
         dibujar()
 
     lienzo.bind("<Configure>", dibujar)
+    lienzo.bind("<Motion>", al_mover)
     lienzo.bind("<Enter>", al_entrar)
     lienzo.bind("<Leave>", al_salir)
     lienzo.bind("<ButtonPress-1>", al_presionar)
