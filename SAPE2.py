@@ -6240,9 +6240,11 @@ def _boton_menu_ra(
     """Tecla en relieve: naranja en RA, verde en FP y neón en TTR."""
     from PIL import Image, ImageDraw, ImageTk
 
+    # Las teclas con letra (A, B, C) son el doble de grandes.
+    alto_tecla = 84 if (marca and not str(marca).isdigit()) else 58
     fondo_rgb = _rgb(fondo)
     lienzo = tk.Canvas(
-        panel, height=58, bg=fondo,
+        panel, height=alto_tecla, bg=fondo,
         highlightthickness=0, bd=0, cursor="hand2",
     )
     if ancho is None:
@@ -6251,7 +6253,7 @@ def _boton_menu_ra(
         lienzo.configure(width=ancho)
         lienzo.pack(anchor="w", padx=(16, 8), pady=(0, 2))
     fuente_num = tkfont.Font(family="Segoe UI", size=16, weight="bold")
-    fuente_chip = tkfont.Font(family="Consolas", size=15, weight="bold")
+    fuente_chip = tkfont.Font(family="Consolas", size=30, weight="bold")
     fuente_chip_numero = tkfont.Font(family="Consolas", size=18, weight="bold")
     fuente_txt = tkfont.Font(family="Segoe UI", size=9, weight="bold")
     fuente_flecha = tkfont.Font(family="Segoe UI", size=14, weight="bold")
@@ -6340,8 +6342,8 @@ def _boton_menu_ra(
 
     def render(ancho, cara):
         estilo = caras[cara]
-        alto_lienzo = 58
-        alto_caja = 52
+        alto_lienzo = alto_tecla
+        alto_caja = alto_tecla - 6
         imagen = Image.new("RGBA", (ancho, alto_lienzo), fondo_rgb + (255,))
         radio = 8
         margen = 2
@@ -6455,7 +6457,7 @@ def _boton_menu_ra(
             # Misma caja y el mismo resplandor cian que el chip de número,
             # nada más que con una letra en vez de un dígito.
             from PIL import ImageFont, ImageFilter
-            lw, lh = 44, 38
+            lw, lh = 88, 76
             color_letra = "#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF"
             placa = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
             trazo = ImageDraw.Draw(placa)
@@ -6466,7 +6468,7 @@ def _boton_menu_ra(
                 (4, 5, lw - 5, lh - 6), radius=5, fill=(5, 5, 5, 255),
             )
             fuente_brillo_letra = ImageFont.truetype(
-                r"C:\Windows\Fonts\consolab.ttf", 16,
+                r"C:\Windows\Fonts\consolab.ttf", 32,
             )
             brillo = Image.new("RGBA", (lw, lh), (0, 0, 0, 0))
             ImageDraw.Draw(brillo).text(
