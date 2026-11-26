@@ -12833,8 +12833,8 @@ class AppSAPE(tk.Tk):
             self._publicar_foco_ieee(nivel, resumen, resultado["estado"])
 
         _boton_relieve_ra(
-            fila_botones_ttr, "CALCULAR", calcular,
-            ancho=150, modo="diagnostico_morado", fondo=RA_VISTA_FONDO,
+            fila_botones_ttr, "CALCULAR RELACIÓN MEDIDA", calcular,
+            ancho=280, modo="diagnostico_morado", fondo=RA_VISTA_FONDO,
             alto_caja=28, alto_lienzo=40, fuente_nombre="Consolas",
         ).pack(side="left")
         fila_botones_ttr.pack(anchor="w", pady=(0, 10))
