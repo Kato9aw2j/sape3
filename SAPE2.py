@@ -12999,7 +12999,7 @@ class AppSAPE(tk.Tk):
         ctk.CTkLabel(
             marco_pol,
             text="Nota: transmisión CFE → casi siempre opción 2.",
-            font=fuente_opcion, text_color=TTR_ROSA_PASTEL, fg_color="transparent",
+            font=fuente_opcion, text_color=TTR_MORADO_OSCURO, fg_color="transparent",
         ).pack(anchor="w", pady=(6, 0))
         etiqueta_pol.grid(row=8, column=0, sticky="ne", padx=(0, 20), pady=6)
         marco_pol.grid(row=8, column=1, sticky="w", pady=6)
