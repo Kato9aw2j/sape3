@@ -12689,11 +12689,10 @@ class AppSAPE(tk.Tk):
             refrescar_rt.mostrar_taps(nominal, n_taps, centro, usar_reg, mantener)
 
         combo_tap.configure(command=lambda _v=None: obtener_rt())
-        ctk.CTkButton(
-            formulario, text="OBTENER RELACIÓN TEÓRICA",
-            fg_color=TTR_MORADO, hover_color=TTR_MORADO_OSCURO,
-            text_color="white", font=ctk.CTkFont(size=13, weight="bold"),
-            height=34, command=obtener_rt,
+        _boton_relieve_ra(
+            formulario, "OBTENER RELACIÓN TEÓRICA", obtener_rt,
+            ancho=270, modo="morado", fondo=RA_VISTA_FONDO,
+            alto_caja=28, alto_lienzo=40, fuente_nombre="Consolas",
         ).grid(row=2, column=2, sticky="w", padx=(14, 0), pady=10)
 
         if nominal is None:
@@ -12832,11 +12831,10 @@ class AppSAPE(tk.Tk):
             )
             self._publicar_foco_ieee(nivel, resumen, resultado["estado"])
 
-        ctk.CTkButton(
-            frame, text="CALCULAR", fg_color=TTR_MORADO,
-            hover_color=TTR_MORADO_OSCURO, text_color="white",
-            font=ctk.CTkFont(size=14, weight="bold"), width=200, height=38,
-            command=calcular,
+        _boton_relieve_ra(
+            frame, "CALCULAR", calcular,
+            ancho=150, modo="morado", fondo=RA_VISTA_FONDO,
+            alto_caja=28, alto_lienzo=40, fuente_nombre="Consolas",
         ).pack(anchor="w", pady=(0, 10))
 
     def _formulario_ttr(self, frame, cargar_paso):
