@@ -10581,6 +10581,99 @@ class AppSAPE(tk.Tk):
         visor.focus_force()
         return visor
     def mostrar_anexo_c_resumen(self, padre):
+        """Anexo C de RA: resumen del procedimiento ST-CT-001, tal como viene en el documento."""
+        visor = tk.Toplevel(padre)
+        visor.title("ANEXO C  Resumen de procedimiento — ST-CT-001")
+        visor.configure(bg="#FFFFFF")
+        visor.geometry("860x900")
+        visor.transient(padre)
+        cuerpo = ctk.CTkScrollableFrame(visor, fg_color="#FFFFFF")
+        cuerpo.pack(fill="both", expand=True, padx=12, pady=12)
+        tk.Label(
+            cuerpo,
+            text=(
+                "Anexo C Resumen de procedimiento para la medición de resistencia "
+                "de aislamiento en equipo eléctrico primario"
+            ),
+            bg="#FFFFFF", fg="#000000", font=("Arial", 11, "bold"),
+            anchor="w", justify="left", wraplength=780,
+        ).pack(fill="x", pady=(0, 8))
+        tabla = tk.Frame(cuerpo, bg="#000000")
+        tabla.pack(fill="x")
+        tk.Label(
+            tabla,
+            text=(
+                "Procedimiento para la medición de resistencia de aislamiento en "
+                "equipo eléctrico primario ST-CT-001"
+            ),
+            bg="#FFFFFF", fg="#000000", font=("Arial", 10, "bold"),
+            anchor="center", justify="center", wraplength=780, padx=8, pady=6,
+        ).grid(row=0, column=0, columnspan=2, sticky="nsew", padx=1, pady=1)
+        filas_c = (
+            ("En que consiste la medición", (
+                "La resistencia de aislamiento se define como la oposición del "
+                "aislamiento al paso de la corriente eléctrica al aplicar un voltaje "
+                "de corriente directa (CD).",
+                "La resistencia del aislamiento está función del tiempo y de la "
+                "magnitud del voltaje aplicado y se mide en Megaohms (MΩ). La "
+                "resistencia de aislamiento varía directamente con el espesor del "
+                "aislamiento e inversamente al área del mismo.",
+            )),
+            ("Que detecta la medición", (
+                "La presencia de humedad con suciedad puede ocasionar una reducción "
+                "en los valores de resistencia de aislamiento.",
+            )),
+            ("Equipo de medición", ("Megóhmetro (Megger).",)),
+            ("Valores o límites recomendados", (
+                "Índice de polarización mayor o igual a 1.5.",
+            )),
+            ("Comparación de valores", (
+                "Un cambio del 25% en el valor de la resistencia de aislamiento para "
+                "esta relación de voltajes, generalmente se debe a la presencia "
+                "excesiva de humedad u otros contaminantes.",
+                "Analizar la tendencia de los valores obtenidos en las pruebas "
+                "periódicas a que se somete el aislamiento (se sugiere realizar "
+                "gráficas de tendencias).",
+            )),
+            ("Correcciones", (
+                "Rc = Kt × Ri",
+                "Rc = Resistencia de aislamiento corregida a la temperatura base (MΩ).",
+                "Kt = Coeficiente de corrección por temperatura.",
+                "Ri = Resistencia de aislamiento a la temperatura que efectuó la prueba (MΩ).",
+                "20 °C para transformadores, ver tabla 1 Coeficientes de corrección por temperatura",
+            )),
+            ("Ecuaciones para cálculo", (
+                "Cálculo del índice de polarización:  IP = R(AISL) 10 min / R(AISL) 1 min     IP ≥ 1.5",
+                "Cálculo índice de absorción:  IA = R(AISL) 1 min / R(AISL) 30 seg     IA = 1.45 ± 25%",
+            )),
+            ("Recomendaciones", (
+                "No es recomendable hacer mediciones del IA en transformadores "
+                "inmersos en aceite. Esto se debe a que el concepto del IA se basa en "
+                "el comportamiento de las estructuras rígidas de materiales sólidos en "
+                "presencia de un campo producido por un voltaje aplicado. Por lo tanto, "
+                "este índice no es aplicable en aislamientos líquidos.",
+            )),
+        )
+        for fila, (rotulo, textos) in enumerate(filas_c, start=1):
+            tk.Label(
+                tabla, text=rotulo, bg="#FFFFFF", fg="#000000",
+                font=("Arial", 10, "bold italic"), anchor="w", justify="left",
+                wraplength=190, padx=8, pady=6,
+            ).grid(row=fila, column=0, sticky="nsew", padx=1, pady=1)
+            celda = tk.Frame(tabla, bg="#FFFFFF")
+            celda.grid(row=fila, column=1, sticky="nsew", padx=1, pady=1)
+            for texto_c in textos:
+                tk.Label(
+                    celda, text=texto_c, bg="#FFFFFF", fg="#000000",
+                    font=("Arial", 10), anchor="w", justify="left",
+                    wraplength=560, padx=8, pady=3,
+                ).pack(fill="x")
+        tabla.columnconfigure(0, minsize=190)
+        tabla.columnconfigure(1, weight=1)
+        visor.focus_force()
+        return visor
+
+    def _visor_anexo_c_anterior(self, padre):
         visor = tk.Toplevel(padre)
         visor.title("ANEXO C  Resumen del Procedimiento")
         visor.configure(bg="#F8FAFC")
