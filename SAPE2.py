@@ -6515,16 +6515,18 @@ def _boton_menu_ra(
             brillo = brillo.filter(ImageFilter.GaussianBlur(2))
             placa = Image.alpha_composite(placa, brillo)
             # Letra y nombre van dentro de la imagen, para que se inclinen con la tecla.
-            dibujo_tecla = ImageDraw.Draw(placa)
-            dibujo_tecla.text(
+            # Texto en capas transparentes para que no deje cuadros de color detrás.
+            capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+            ImageDraw.Draw(capa_texto).text(
                 (lw / 2, lh / 2 - 12), marca, font=fuente_brillo_letra,
                 fill=_rgb(color_letra) + (255,), anchor="mm",
             )
-            dibujo_tecla.text(
+            ImageDraw.Draw(capa_texto).text(
                 (lw / 2, lh / 2 + 22), texto.upper(),
                 font=ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 11),
                 fill=(0, 229, 255, 255), anchor="mm",
             )
+            placa = Image.alpha_composite(placa, capa_texto)
             # Inclinación en perspectiva según dónde está el mouse.
             tilt_x, tilt_y = estado.get("tilt", (0.0, 0.0))
             if tilt_x or tilt_y:
