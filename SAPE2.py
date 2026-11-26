@@ -12742,7 +12742,7 @@ class AppSAPE(tk.Tk):
                 tabla_c, text="RELACIÓN POR TAP", bg="#FFFFFF", fg=TTR_MORADO_OSCURO,
                 font=("Segoe UI", 10, "bold"), anchor="w", padx=14, pady=8,
             ).grid(row=0, column=0, columnspan=5, sticky="ew")
-            for columna, encabezado in enumerate(("Tap", "RT teórica", "RM", "%DIF", "Dictamen")):
+            for columna, encabezado in enumerate(("Tap", "RT teórica", "RM medida", "%DIF", "Dictamen")):
                 tk.Label(
                     tabla_c, text=encabezado, bg="#F1F5F9", fg="#475569",
                     font=("Segoe UI", 9, "bold"), anchor="w", padx=10, pady=6,
@@ -12760,10 +12760,17 @@ class AppSAPE(tk.Tk):
                     "—" if res_t is None else f"{res_t['dif']:.3f} %",
                     "—" if res_t is None else res_t["estado"],
                 )
+                color_dictamen = {
+                    "ACEPTADO": "#15803D", "INVESTIGAR": "#CA8A04", "RECHAZADO": "#DC2626",
+                }
                 for columna, texto_t in enumerate(valores):
+                    color_t = "#1E293B"
+                    if columna == 4 and res_t is not None:
+                        color_t = color_dictamen.get(res_t["estado"], "#1E293B")
                     tk.Label(
-                        tabla_c, text=texto_t, bg="#FFFFFF", fg="#1E293B",
-                        font=("Consolas", 10), anchor="w", padx=10, pady=5,
+                        tabla_c, text=texto_t, bg="#FFFFFF", fg=color_t,
+                        font=("Consolas", 10, "bold" if columna == 4 else "normal"),
+                        anchor="w", padx=10, pady=5,
                     ).grid(row=t + 1, column=columna, sticky="ew")
 
         def al_capturar_rm(_evento=None):
