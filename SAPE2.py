@@ -6507,7 +6507,7 @@ def _boton_menu_ra(
             placa = Image.alpha_composite(placa, cuerpo)
             if cara == "activo":
                 iluminada = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-                ImageDraw.Draw(iluminada).polygon(_cortado(0, 0, lw - 1, lh - 1), fill=cor_neon + (150,))
+                ImageDraw.Draw(iluminada).polygon(_cortado(0, 0, lw - 1, lh - 1), fill=(255, 200, 120, 170))
                 placa = Image.alpha_composite(placa, iluminada)
             lineas = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ld = ImageDraw.Draw(lineas)
@@ -6564,7 +6564,7 @@ def _boton_menu_ra(
             for ch in texto_tecla:
                 ImageDraw.Draw(capa_texto).text(
                     (x_nombre, y_nombre), ch, font=fuente_nombre_tecla,
-                    fill=(255, 255, 255, 255) if es_paso else cor_texto + (255,), anchor="lm",
+                    fill=(255, 200, 120, 255) if es_paso else cor_texto + (255,), anchor="lm",
                 )
                 x_nombre += fuente_nombre_tecla.getlength(ch) + separacion
             placa = Image.alpha_composite(placa, capa_texto)
