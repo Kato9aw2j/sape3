@@ -6242,6 +6242,8 @@ def _boton_menu_ra(
 
     # Las teclas con letra (A, B, C) son el doble de grandes.
     alto_tecla = 84 if (marca and not str(marca).isdigit()) else 58
+    if marca and not str(marca).isdigit():
+        fondo = "#000000"  # Fondo negro detrás de las teclas A, B y C.
     fondo_rgb = _rgb(fondo)
     lienzo = tk.Canvas(
         panel, height=alto_tecla, bg=fondo,
