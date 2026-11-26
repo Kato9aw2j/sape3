@@ -2261,7 +2261,7 @@ def _pintar_guia_conexiones_ttr(marco, prueba, clave, medicion):
             _texto_guia(marco, f"{pinza} ({color}) → {borne or '—'}", tinta)
 
 
-def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
+def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None, anexo=False):
     """Dibuja el vector de medición o el de conexiones. Con `solo`, solo el
     devanado con ese índice (para un diagrama por devanado)."""
     lienzo.delete("all")
@@ -2271,12 +2271,15 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
         return
     grupos = ficha[3] if solo is None else (ficha[3][solo],)
     colores, roles = _estilos_vector_ttr(prueba, modo)
+    if anexo:
+        # Anexo A: bornes en morado oscuro y líneas moradas, sin rosa.
+        colores = {}
     if modo != "cables":
         roles = {}
         for tok, tinta in list(colores.items()):
             if tinta == "#F76707":
                 colores[tok] = TTR_ROSA_MEDICION
-    lienzo._tono_libre_ttr = TTR_MORADO_NEON
+    lienzo._tono_libre_ttr = "#6D28D9" if anexo else TTR_MORADO_NEON
     lienzo._colores_borne_ttr = None
     n = len(grupos)
     margen, paso, _ancho = _medida_vector_ttr(n)
@@ -2312,7 +2315,7 @@ def _dibujar_vector_ttr(lienzo, clave, prueba, modo, solo=None):
     for i, grupo in enumerate(grupos):
         cx = margen + i * paso
         kind = grupo[0]
-        pie = grupo[1] if modo == "mide" else grupo[2]
+        pie = f"{grupo[1]} · {grupo[2]}" if anexo else (grupo[1] if modo == "mide" else grupo[2])
         bornes = grupo[3:]
         brazo = 108 if n == 1 else 58
         if kind == "estrella":
@@ -12059,7 +12062,7 @@ class AppSAPE(tk.Tk):
                 contenido, width=ancho, height=280, bg="#FFFFFF", highlightthickness=0,
             )
             lienzo_vec.pack(anchor="w", padx=15, pady=(2, 8))
-            _dibujar_vector_ttr(lienzo_vec, clave_vector, prueba, "mide")
+            _dibujar_vector_ttr(lienzo_vec, clave_vector, prueba, "mide", anexo=True)
 
         subtitulo("TABLA POR TAP  ·  RELACIÓN TEÓRICA, PUESTA EN SERVICIO Y MEDIDA")
         if nominal is None:
