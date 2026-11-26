@@ -6483,16 +6483,27 @@ def _boton_menu_ra(
             placa = Image.alpha_composite(placa, cuerpo_img)
             resplandor = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             puntos_borde = _cortado(0, 0, lw - 1, lh - 1)
+            # Al pasar el mouse (o activa la tecla) el resplandor sube y pasa una luz de escaneo.
+            encendida = cara in ("hover", "activo")
             ImageDraw.Draw(resplandor).line(
-                puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 200), width=3,
+                puntos_borde + [puntos_borde[0]],
+                fill=(0, 255, 255, 255 if encendida else 200), width=4 if encendida else 3,
             )
-            resplandor = resplandor.filter(ImageFilter.GaussianBlur(3))
+            resplandor = resplandor.filter(ImageFilter.GaussianBlur(4 if encendida else 3))
             placa = Image.alpha_composite(placa, resplandor)
             borde_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(borde_img).line(
                 puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 255), width=2,
             )
             placa = Image.alpha_composite(placa, borde_img)
+            if cara == "hover":
+                luz = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+                ImageDraw.Draw(luz).polygon(
+                    [(lw * 0.30, 0), (lw * 0.42, 0), (lw * 0.24, lh), (lw * 0.12, lh)],
+                    fill=(0, 255, 255, 70),
+                )
+                luz = luz.filter(ImageFilter.GaussianBlur(2))
+                placa = Image.alpha_composite(placa, luz)
             fuente_brillo_letra = ImageFont.truetype(
                 r"C:\Windows\Fonts\consolab.ttf", 32,
             )
