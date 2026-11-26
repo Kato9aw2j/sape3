@@ -7088,7 +7088,7 @@ class AppSAPE(tk.Tk):
         barra_superior.pack_propagate(False)
 
         def logo_neon(
-            texto="[ S.A.P.E. ]", fondo=(5, 5, 5), marco=True, tam=16,
+            texto="[ S.A.P.E. ]", fondo=(0, 0, 0), marco=True, tam=16,
         ):
             from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageTk
             fuente = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", tam)
@@ -7114,7 +7114,7 @@ class AppSAPE(tk.Tk):
         foto_logo = logo_neon("ST-CT-001")
         ventana._logo_sape = foto_logo
         tk.Label(
-            barra_superior, image=foto_logo, bg="#12161A", bd=0,
+            barra_superior, image=foto_logo, bg="#000000", bd=0,
         ).pack(side="left", padx=(16, 8))
         tk.Label(
             barra_superior,
@@ -7157,17 +7157,17 @@ class AppSAPE(tk.Tk):
         panel_lateral.pack_propagate(False)
 
         logo = tk.Frame(
-            panel_lateral, bg="#12161A",
+            panel_lateral, bg="#000000",
             highlightbackground="#3B4553", highlightthickness=1,
         )
         logo.pack(fill="x", padx=16, pady=(16, 0))
         # Menú lateral: [ S.A.P.E. ] también en neón, sobre el fondo del marco.
         foto_sape_lateral = logo_neon(
-            fondo=(18, 22, 26), marco=False, tam=32,
+            fondo=(0, 0, 0), marco=False, tam=32,
         )
         ventana._logo_sape_lateral = foto_sape_lateral
         tk.Label(
-            logo, image=foto_sape_lateral, bg="#12161A", bd=0,
+            logo, image=foto_sape_lateral, bg="#000000", bd=0,
         ).pack(pady=8)
         tk.Label(
             panel_lateral, text="RESISTENCIA DE AISLAMIENTO",
@@ -11680,7 +11680,7 @@ class AppSAPE(tk.Tk):
         barra_superior.pack_propagate(False)
 
         def logo_neon(
-            texto="[ S.A.P.E. ]", fondo=(5, 5, 5), marco=True, tam=16,
+            texto="[ S.A.P.E. ]", fondo=(0, 0, 0), marco=True, tam=16,
         ):
             from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageTk
             fuente = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", tam)
@@ -11705,7 +11705,7 @@ class AppSAPE(tk.Tk):
         foto_logo = logo_neon("ST-CT-007")
         ventana._logo_sape = foto_logo
         tk.Label(
-            barra_superior, image=foto_logo, bg="#12161A", bd=0,
+            barra_superior, image=foto_logo, bg="#000000", bd=0,
         ).pack(side="left", padx=(16, 8))
         tk.Label(
             barra_superior,
@@ -11749,16 +11749,16 @@ class AppSAPE(tk.Tk):
         panel_lateral.pack(side=tk.LEFT, fill=tk.Y)
         panel_lateral.pack_propagate(False)
         logo_caja = tk.Frame(
-            panel_lateral, bg="#12161A",
+            panel_lateral, bg="#000000",
             highlightbackground="#3B4553", highlightthickness=1,
         )
         logo_caja.pack(fill="x", padx=16, pady=(16, 0))
         foto_sape_lateral = logo_neon(
-            fondo=(18, 22, 26), marco=False, tam=32,
+            fondo=(0, 0, 0), marco=False, tam=32,
         )
         ventana._logo_sape_lateral = foto_sape_lateral
         tk.Label(
-            logo_caja, image=foto_sape_lateral, bg="#12161A", bd=0,
+            logo_caja, image=foto_sape_lateral, bg="#000000", bd=0,
         ).pack(pady=8)
         ctk.CTkLabel(
             panel_lateral, text="RELACIÓN DE TRANSFORMACIÓN (TTR)",
@@ -13602,7 +13602,7 @@ class AppSAPE(tk.Tk):
         barra_superior.pack_propagate(False)
 
         def logo_neon(
-            texto="[ S.A.P.E. ]", fondo=(5, 5, 5), marco=True, tam=16,
+            texto="[ S.A.P.E. ]", fondo=(0, 0, 0), marco=True, tam=16,
         ):
             from PIL import Image, ImageDraw, ImageFont, ImageFilter, ImageTk
             fuente = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", tam)
@@ -13627,7 +13627,7 @@ class AppSAPE(tk.Tk):
         foto_logo = logo_neon("ST-CT-002")
         ventana._logo_sape = foto_logo
         tk.Label(
-            barra_superior, image=foto_logo, bg="#12161A", bd=0,
+            barra_superior, image=foto_logo, bg="#000000", bd=0,
         ).pack(side="left", padx=(16, 8))
         tk.Label(
             barra_superior,
@@ -13669,16 +13669,16 @@ class AppSAPE(tk.Tk):
         panel_lateral.pack(side=tk.LEFT, fill=tk.Y)
         panel_lateral.pack_propagate(False)
         logo = tk.Frame(
-            panel_lateral, bg="#12161A",
+            panel_lateral, bg="#000000",
             highlightbackground="#3B4553", highlightthickness=1,
         )
         logo.pack(fill="x", padx=16, pady=(16, 0))
         foto_sape_lateral = logo_neon(
-            fondo=(18, 22, 26), marco=False, tam=32,
+            fondo=(0, 0, 0), marco=False, tam=32,
         )
         ventana._logo_sape_lateral = foto_sape_lateral
         tk.Label(
-            logo, image=foto_sape_lateral, bg="#12161A", bd=0,
+            logo, image=foto_sape_lateral, bg="#000000", bd=0,
         ).pack(pady=8)
         tk.Label(
             panel_lateral, text="FACTOR DE POTENCIA AL AISLAMIENTO",
