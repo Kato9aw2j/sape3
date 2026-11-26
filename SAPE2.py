@@ -6474,12 +6474,23 @@ def _boton_menu_ra(
 
             placa = Image.new("RGBA", (ancho_img, alto_img), (0, 0, 0, 0))
             ImageDraw.Draw(placa).polygon(
-                _cortado(3, 3, lw + 2, lh + 2), fill=(0, 90, 90, 255),
+                _cortado(0, 4, lw - 1, lh + 3), fill=(0, 58, 64, 255),
             )
+            # Cuerpo de cristal oscuro con degradado, como la referencia.
             cuerpo_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-            ImageDraw.Draw(cuerpo_img).polygon(
-                _cortado(0, 0, lw - 1, lh - 1), fill=(0, 16, 18, 255),
+            grad = Image.new("RGBA", placa.size, (0, 0, 0, 255))
+            gd = ImageDraw.Draw(grad)
+            for yy in range(placa.size[1]):
+                f = yy / max(placa.size[1] - 1, 1)
+                gd.line(
+                    [(0, yy), (placa.size[0], yy)],
+                    fill=(int(18 - 12 * f), int(44 - 34 * f), int(50 - 40 * f), 255),
+                )
+            mascara_cuerpo = Image.new("L", placa.size, 0)
+            ImageDraw.Draw(mascara_cuerpo).polygon(
+                _cortado(0, 0, lw - 1, lh - 1), fill=255,
             )
+            cuerpo_img = Image.composite(grad, cuerpo_img, mascara_cuerpo)
             placa = Image.alpha_composite(placa, cuerpo_img)
             resplandor = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             puntos_borde = _cortado(0, 0, lw - 1, lh - 1)
@@ -6524,7 +6535,7 @@ def _boton_menu_ra(
             ImageDraw.Draw(capa_texto).text(
                 (lw / 2, lh / 2 + 22), texto.upper(),
                 font=ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 11),
-                fill=(0, 229, 255, 255), anchor="mm",
+                fill=(160, 255, 255, 255), anchor="mm",
             )
             placa = Image.alpha_composite(placa, capa_texto)
             # Inclinación en perspectiva según dónde está el mouse.
