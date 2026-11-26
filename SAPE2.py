@@ -10611,7 +10611,7 @@ class AppSAPE(tk.Tk):
                 "equipo eléctrico primario"
             ),
             bg="#0F172A", fg="#FFFFFF", font=("Segoe UI", 11, "bold"),
-            anchor="w", justify="left", wraplength=760, padx=16, pady=(0, 12),
+            anchor="w", justify="left", wraplength=760, padx=16, pady=12,
         ).pack(fill="x")
         filas_c = (
             ("En que consiste la medición", (
