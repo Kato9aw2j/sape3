@@ -15908,6 +15908,112 @@ class AppSAPE(tk.Tk):
         return visor
 
     def mostrar_anexo_c_fp(self, padre):
+        """Anexo C de FP: resumen del procedimiento ST-CT-002, tal como viene en el documento."""
+        visor = tk.Toplevel(padre)
+        visor.title("ANEXO C  Resumen de procedimiento — ST-CT-002")
+        visor.configure(bg="#FFFFFF")
+        visor.geometry("860x900")
+        visor.transient(padre)
+        cuerpo = ctk.CTkScrollableFrame(visor, fg_color="#FFFFFF")
+        cuerpo.pack(fill="both", expand=True, padx=12, pady=12)
+        tk.Label(
+            cuerpo,
+            text=(
+                "Anexo C Resumen del procedimiento para la medición de factor de "
+                "potencia en aislamiento de equipo eléctrico ST-CT-002"
+            ),
+            bg="#FFFFFF", fg="#1E293B", font=("Segoe UI", 12, "bold"),
+            anchor="w", justify="left", wraplength=780,
+        ).pack(fill="x", pady=(0, 12))
+        cabecera_c = tk.Frame(cuerpo, bg="#052E26")
+        cabecera_c.pack(fill="x", pady=(0, 10))
+        tk.Label(
+            cabecera_c, text="PROCEDIMIENTO ST-CT-002", bg="#052E26", fg="#6EE7B7",
+            font=("Segoe UI", 9, "bold"), anchor="w", padx=16, pady=10,
+        ).pack(fill="x")
+        tk.Label(
+            cabecera_c,
+            text=(
+                "Procedimiento para medición de factor de potencia en aislamiento "
+                "de equipo eléctrico"
+            ),
+            bg="#052E26", fg="#FFFFFF", font=("Segoe UI", 11, "bold"),
+            anchor="w", justify="left", wraplength=760, padx=16, pady=12,
+        ).pack(fill="x")
+        filas_fp = (
+            ("En que consiste la medición", (
+                "La finalidad de esta medición es la detección de los parámetros "
+                "eléctricos de los aislamientos tales como la capacitancia, factor de "
+                "potencia y pérdidas dieléctricas. Un incremento apreciable de las "
+                "pérdidas dieléctricas en C.A., (mVA) o factor de potencia de un "
+                "aislamiento indica deterioro.",
+            )),
+            ("Que detecta la medición", (
+                "Cambios en la capacitancia C del equipo indica cambios en las "
+                "propiedades físicas del aislamiento y desplazamientos en los "
+                "devanados. El factor de potencia de un dieléctrico es una indicación "
+                "de sus pérdidas por unidad de volumen. Este factor se incrementa "
+                "debido a las siguientes condiciones: envejecimiento, contaminación, "
+                "fallas, esfuerzos eléctricos, degradación, etc.",
+            )),
+            ("Equipo de medición", ("Equipo de medición de factor de potencia.",)),
+            ("Valores o límites recomendados", (
+                "Valor límite de FP para transformadores de potencia nuevos es de "
+                "0.5%, para transformadores en operación el límite de FP es 1%. Para "
+                "valores superiores a 1%, el aislamiento debe investigarse.",
+            )),
+            ("Comparación de valores", (
+                "Cualquier incremento en los valores de capacitancia y FP, indica "
+                "deterioro del aislamiento.",
+            )),
+            ("Correcciones", (
+                "Para corregir el FP a 20 °C, el FP medido debe multiplicarse por el "
+                "factor de corrección mostrado en la tabla 4 de este procedimiento.",
+            )),
+            ("Ecuaciones para cálculo", (
+                "Factor de potencia:  FP = (pérdidas en Watts)(100) / "
+                "(voltaje de prueba)(corriente total)",
+                "Factor de disipación:  FD = tan δ = I(R) / I(C)",
+                "I(R) = Corriente resistiva (mA)",
+                "I(C) = Corriente capacitiva (mA)",
+            )),
+            ("Recomendaciones", (
+                "Para realizar la comparación con mediciones anteriores, los valores de "
+                "factor de potencia deben ser corregidos a 20 °C.",
+                "En transformadores de potencia, el devanado de bajo voltaje normalmente "
+                "no se prueba.",
+                "Para realizar la medición en transformadores de potencial, se deben "
+                "poner en corto circuito las dos boquillas del devanado de alta tensión "
+                "y se aterriza solo una terminal del devanado de baja tensión para evitar "
+                "cortos circuitos durante las pruebas cruzadas de comprobación.",
+                "Para pruebas de factor de potencia en aceite aislante, se debe tener "
+                "especial cuidado de que la muestra sea efectivamente representativa. "
+                "Para muestreo, vea el procedimiento ST-CT-006.",
+            )),
+        )
+        for rotulo, textos in filas_fp:
+            tarjeta_c = tk.Frame(
+                cuerpo, bg="#FFFFFF",
+                highlightbackground="#E2E8F0", highlightthickness=1,
+            )
+            tarjeta_c.pack(fill="x", pady=5)
+            tk.Frame(tarjeta_c, bg="#059669", width=5).pack(side="left", fill="y")
+            contenido_c = tk.Frame(tarjeta_c, bg="#FFFFFF")
+            contenido_c.pack(side="left", fill="x", expand=True, padx=16, pady=12)
+            tk.Label(
+                contenido_c, text=rotulo.upper(), bg="#FFFFFF", fg="#065F46",
+                font=("Segoe UI", 9, "bold"), anchor="w",
+            ).pack(fill="x", pady=(0, 4))
+            for texto_c in textos:
+                tk.Label(
+                    contenido_c, text=texto_c, bg="#FFFFFF", fg="#0F172A",
+                    font=("Segoe UI", 10), anchor="w", justify="left",
+                    wraplength=720,
+                ).pack(fill="x", pady=2)
+        visor.focus_force()
+        return visor
+
+    def _visor_anexo_c_fp_anterior(self, padre):
         visor, cuerpo = self._visor_recurso_fp(
             padre, "ANEXO C", "Resumen del Procedimiento", "860x800",
             fondo="#F8FAFC",
