@@ -6464,7 +6464,7 @@ def _boton_menu_ra(
             color_letra = "#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF"
             # Tecla 3D neón: esquinas cortadas, borde cian con resplandor y base de profundidad.
             ancho_img, alto_img = lw + 4, lh + 4
-            corte = 12
+            corte = 14
 
             def _cortado(x0, y0, x1, y1, c=corte):
                 return [
@@ -6498,13 +6498,13 @@ def _boton_menu_ra(
             encendida = cara in ("hover", "activo")
             ImageDraw.Draw(resplandor).line(
                 puntos_borde + [puntos_borde[0]],
-                fill=(0, 255, 255, 255 if encendida else 200), width=4 if encendida else 3,
+                fill=(0, 255, 255, 255), width=5,
             )
-            resplandor = resplandor.filter(ImageFilter.GaussianBlur(4 if encendida else 3))
+            resplandor = resplandor.filter(ImageFilter.GaussianBlur(5))
             placa = Image.alpha_composite(placa, resplandor)
             borde_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(borde_img).line(
-                puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 255), width=2,
+                puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 255), width=3,
             )
             placa = Image.alpha_composite(placa, borde_img)
             if cara == "hover":
@@ -6534,7 +6534,7 @@ def _boton_menu_ra(
             )
             ImageDraw.Draw(capa_texto).text(
                 (lw / 2, lh / 2 + 22), texto.upper(),
-                font=ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 11),
+                font=ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 13),
                 fill=(160, 255, 255, 255), anchor="mm",
             )
             placa = Image.alpha_composite(placa, capa_texto)
