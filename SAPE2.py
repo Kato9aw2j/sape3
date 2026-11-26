@@ -6241,7 +6241,7 @@ def _boton_menu_ra(
     from PIL import Image, ImageDraw, ImageTk
 
     # Las teclas con letra (A, B, C) son el doble de grandes.
-    alto_tecla = 84 if marca else 58
+    alto_tecla = (104 if str(marca).isdigit() else 84) if marca else 58
     cor_neon, cor_nucleo, cor_texto = (
         ((255, 122, 26), (255, 200, 120), (255, 190, 120)) if (tema == "naranja" and str(marca).isdigit())
         else ((0, 255, 255), (90, 245, 255), (160, 255, 255))
@@ -6466,7 +6466,7 @@ def _boton_menu_ra(
             # Misma caja y el mismo resplandor cian que el chip de número,
             # nada más que con una letra en vez de un dígito.
             from PIL import ImageFont, ImageFilter
-            lw, lh = (262 if str(marca).isdigit() else 190), 76
+            lw, lh = (262 if str(marca).isdigit() else 190), (80 if str(marca).isdigit() else 76)
             es_paso = str(marca).isdigit()
             x_marca = lw * 0.2 if es_paso else lw / 2
             y_marca = lh / 2 if es_paso else lh / 2 - 12
@@ -6488,7 +6488,9 @@ def _boton_menu_ra(
                 cor_borde_tecla, cor_resplandor_tecla = (255, 255, 255), (0, 229, 255)
                 color_letra = "#FFFFFF"
             # Tecla 3D neón: esquinas cortadas, borde cian con resplandor y base de profundidad.
-            ancho_img, alto_img = lw + 4, lh + 4
+            pres_paso = es_paso and cara in ("hundido", "activo_hundido")
+            y_extra = 3 if pres_paso else 0
+            ancho_img, alto_img = lw + 4, lh + (14 if es_paso else 4)
             corte = 22 if es_paso else 14
 
             def _cortado(x0, y0, x1, y1, c=corte):
@@ -6499,7 +6501,8 @@ def _boton_menu_ra(
 
             placa = Image.new("RGBA", (ancho_img, alto_img), (0, 0, 0, 0))
             # Base de profundidad, cuerpo oscuro con degradado y líneas de escaneo.
-            ImageDraw.Draw(placa).polygon(_cortado(0, 4, lw - 1, lh + 3), fill=(128, 48, 0, 255) if es_paso else (0, 40, 44, 255))
+            off_pared = (2 if pres_paso else 12) if es_paso else 4
+            ImageDraw.Draw(placa).polygon(_cortado(0, off_pared, lw - 1, lh - 1 + off_pared), fill=(128, 48, 0, 255) if es_paso else (0, 40, 44, 255))
             grad = Image.new("RGBA", placa.size, (0, 0, 0, 255))
             gd = ImageDraw.Draw(grad)
             for yy in range(placa.size[1]):
@@ -6598,7 +6601,7 @@ def _boton_menu_ra(
             estado["foto_letra"] = foto_letra
             x_placa = 14
             lienzo.create_image(
-                x_placa, centro - lh / 2,
+                x_placa, centro - lh / 2 + y_extra,
                 image=foto_letra, anchor="nw",
             )
             x_texto = x_placa + lw + 12
