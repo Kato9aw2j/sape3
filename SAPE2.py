@@ -6520,16 +6520,21 @@ def _boton_menu_ra(
                 fill=_rgb(color_letra) + (230,), anchor="mm",
             )
             # Aura de neón alrededor de la letra: tres capas de resplandor.
-            for radio in (3, 7, 14, 22):
-                aura = brillo.filter(ImageFilter.GaussianBlur(radio))
-                for _ in range(3):
-                    placa = Image.alpha_composite(placa, aura)
+            # Aura de neón: el resplandor se hace más denso para que se vea como luz.
+            def _densa(capa, factor):
+                r_, g_, b_, a_ = capa.split()
+                a_ = a_.point(lambda v: min(255, int(v * factor)))
+                return Image.merge("RGBA", (r_, g_, b_, a_))
+            brillo_ancho = brillo.filter(ImageFilter.MaxFilter(5))
+            for radio, factor in ((2, 2.5), (6, 4.0), (12, 5.0), (20, 6.0)):
+                aura = _densa(brillo_ancho.filter(ImageFilter.GaussianBlur(radio)), factor)
+                placa = Image.alpha_composite(placa, aura)
             # Letra y nombre van dentro de la imagen, para que se inclinen con la tecla.
             # Texto en capas transparentes para que no deje cuadros de color detrás.
             capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(capa_texto).text(
                 (lw / 2, lh / 2 - 12), marca, font=fuente_brillo_letra,
-                fill=_rgb(color_letra) + (255,), anchor="mm",
+                fill=(90, 245, 255, 255), anchor="mm",
             )
             ImageDraw.Draw(capa_texto).text(
                 (lw / 2, lh / 2 + 22), texto.upper(),
