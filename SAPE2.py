@@ -12766,7 +12766,16 @@ class AppSAPE(tk.Tk):
                         font=("Consolas", 10), anchor="w", padx=10, pady=5,
                     ).grid(row=t + 1, column=columna, sticky="ew")
 
-        entrada_rm.bind("<Return>", dibujar_tabla_taps, add="+")
+        def al_capturar_rm(_evento=None):
+            """Enter: guarda la RM de este tap, limpia el campo y pasa al siguiente tap."""
+            dibujar_tabla_taps()
+            siguiente = int(datos["tap"].get()) + 1
+            if siguiente <= n_taps:
+                datos["tap"].set(str(siguiente))
+                obtener_rt()
+            dibujar_tabla_taps()
+
+        entrada_rm.bind("<Return>", al_capturar_rm, add="+")
         dibujar_tabla_taps()
 
         panel_resultado = tk.Frame(frame, bg=RA_VISTA_FONDO)
