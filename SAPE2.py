@@ -6462,6 +6462,15 @@ def _boton_menu_ra(
             from PIL import ImageFont, ImageFilter
             lw, lh = 190, 76
             color_letra = "#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF"
+            # Fuente Orbitron (la de la referencia), incluida en la carpeta fonts.
+            def _orbitron(tam, estilo):
+                ruta = Path(__file__).with_name("fonts") / "Orbitron.ttf"
+                try:
+                    fuente = ImageFont.truetype(str(ruta), tam)
+                    fuente.set_variation_by_name(estilo)
+                    return fuente
+                except Exception:
+                    return ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", tam)
             # Tecla 3D neón: esquinas cortadas, borde cian con resplandor y base de profundidad.
             ancho_img, alto_img = lw + 4, lh + 4
             corte = 14
@@ -6515,9 +6524,7 @@ def _boton_menu_ra(
                 )
                 luz = luz.filter(ImageFilter.GaussianBlur(2))
                 placa = Image.alpha_composite(placa, luz)
-            fuente_brillo_letra = ImageFont.truetype(
-                r"C:\Windows\Fonts\consolab.ttf", 32,
-            )
+            fuente_brillo_letra = _orbitron(36, "Bold")
             brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(brillo).text(
                 (lw / 2, lh / 2 - 12), marca, font=fuente_brillo_letra,
@@ -6534,7 +6541,7 @@ def _boton_menu_ra(
             )
             ImageDraw.Draw(capa_texto).text(
                 (lw / 2, lh / 2 + 22), texto.upper(),
-                font=ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 13),
+                font=_orbitron(12, "Medium"),
                 fill=(160, 255, 255, 255), anchor="mm",
             )
             placa = Image.alpha_composite(placa, capa_texto)
