@@ -6484,7 +6484,7 @@ def _boton_menu_ra(
                     return ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", tam)
             # Al pasar el mouse el paso se enciende: borde blanco, resplandor cian y número blanco.
             cor_borde_tecla, cor_resplandor_tecla = cor_neon, cor_neon
-            if es_paso and cara == "hover":
+            if False:
                 cor_borde_tecla, cor_resplandor_tecla = (255, 255, 255), (0, 229, 255)
                 color_letra = "#FFFFFF"
             # Tecla 3D neón: esquinas cortadas, borde cian con resplandor y base de profundidad.
@@ -6493,7 +6493,7 @@ def _boton_menu_ra(
             if activa_paso:
                 cor_borde_tecla, cor_resplandor_tecla = (0, 229, 255), (0, 229, 255)
                 color_letra = "#00E5FF"
-            y_extra = 3 if pres_paso else 0
+            y_extra = 0
             ancho_img, alto_img = lw + 4, lh + (14 if es_paso else 4)
             corte = 22 if es_paso else 14
 
@@ -6505,7 +6505,7 @@ def _boton_menu_ra(
 
             placa = Image.new("RGBA", (ancho_img, alto_img), (0, 0, 0, 0))
             # Base de profundidad, cuerpo oscuro con degradado y líneas de escaneo.
-            off_pared = (2 if pres_paso else 12) if es_paso else 4
+            off_pared = 12 if es_paso else 4
             ImageDraw.Draw(placa).polygon(_cortado(0, off_pared, lw - 1, lh - 1 + off_pared), fill=((0, 77, 85, 255) if activa_paso else (128, 48, 0, 255)) if es_paso else (0, 40, 44, 255))
             grad = Image.new("RGBA", placa.size, (0, 0, 0, 255))
             gd = ImageDraw.Draw(grad)
@@ -6525,11 +6525,13 @@ def _boton_menu_ra(
             ld = ImageDraw.Draw(lineas)
             for yy in range(0, placa.size[1], 4):
                 ld.line([(0, yy), (placa.size[0], yy)], fill=cor_neon + (16,))
-            placa = Image.alpha_composite(placa, Image.composite(lineas, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
+            if not es_paso:
+                placa = Image.alpha_composite(placa, Image.composite(lineas, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
             # Luz diagonal en la esquina superior derecha y líneas verticales internas.
             luz = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(luz).polygon([(lw - 44, 0), (lw, 0), (lw, 30)], fill=cor_neon + (60,))
-            placa = Image.alpha_composite(placa, Image.composite(luz, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
+            if not es_paso:
+                placa = Image.alpha_composite(placa, Image.composite(luz, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
             verticales = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             vd = ImageDraw.Draw(verticales)
             vd.line([(7, 14), (7, lh - 14)], fill=cor_neon + (190,), width=1)
@@ -6539,14 +6541,15 @@ def _boton_menu_ra(
                 interior = Image.new("RGBA", placa.size, (0, 0, 0, 0))
                 marco_int = _cortado(6, 6, lw - 7, lh - 7, 16)
                 ImageDraw.Draw(interior).line(marco_int + [marco_int[0]], fill=(0, 229, 255, 150), width=1)
-                ImageDraw.Draw(interior).polygon([(lw - 56, 0), (lw, 0), (lw, 56)], fill=(0, 229, 255, 35))
+                ImageDraw.Draw(interior).polygon([(lw - 56, 0), (lw, 0), (lw, 56)], fill=(0, 0, 0, 0))
                 placa = Image.alpha_composite(placa, Image.composite(interior, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
             # Resplandor y borde cian.
             puntos_borde = _cortado(0, 0, lw - 1, lh - 1)
             resplandor = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(resplandor).line(puntos_borde + [puntos_borde[0]], fill=cor_resplandor_tecla + (255,), width=4)
             resplandor = resplandor.filter(ImageFilter.GaussianBlur(4))
-            placa = Image.alpha_composite(placa, resplandor)
+            if not es_paso:
+                placa = Image.alpha_composite(placa, resplandor)
             borde_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(borde_img).line(puntos_borde + [puntos_borde[0]], fill=cor_borde_tecla + (255,), width=2)
             placa = Image.alpha_composite(placa, borde_img)
@@ -6563,7 +6566,7 @@ def _boton_menu_ra(
                 a_ = a_.point(lambda v: min(255, int(v * factor)))
                 return Image.merge("RGBA", (r_, g_, b_, a_))
             brillo_ancho = brillo.filter(ImageFilter.MaxFilter(5))
-            for radio, factor in (((2, 2.5), (6, 4.0), (12, 5.0), (20, 6.0)) if not es_paso else ((2, 1.6), (4, 2.0), (7, 2.4))):
+            for radio, factor in (((2, 2.5), (6, 4.0), (12, 5.0), (20, 6.0)) if not es_paso else ()):
                 aura = _densa(brillo_ancho.filter(ImageFilter.GaussianBlur(radio)), factor)
                 placa = Image.alpha_composite(placa, aura)
             # Letra y nombre van dentro de la imagen, para que se inclinen con la tecla.
@@ -6571,7 +6574,7 @@ def _boton_menu_ra(
             capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(capa_texto).text(
                 (x_marca, y_marca), marca, font=fuente_brillo_letra,
-                fill=(255, 255, 255, 255) if (es_paso and cara == "hover") else ((0, 229, 255, 255) if activa_paso else ((255, 140, 0, 255) if es_paso else cor_nucleo + (255,))), anchor="mm",
+                fill=(255, 255, 255, 255) if False else ((0, 229, 255, 255) if activa_paso else ((255, 140, 0, 255) if es_paso else cor_nucleo + (255,))), anchor="mm",
             )
             # Nombre con letras espaciadas, en monoespaciada como la referencia.
             fuente_nombre_tecla = (
@@ -6590,7 +6593,7 @@ def _boton_menu_ra(
                 x_nombre += fuente_nombre_tecla.getlength(ch) + separacion
             placa = Image.alpha_composite(placa, capa_texto)
             # Inclinación 3D que sigue al mouse (solo en los pasos 01 a 04).
-            tilt_x, tilt_y = estado.get("tilt", (0.0, 0.0)) if es_paso else (0.0, 0.0)
+            tilt_x, tilt_y = (0.0, 0.0)
             if tilt_x or tilt_y:
                 w_p, h_p = placa.size
                 k = 0.08
