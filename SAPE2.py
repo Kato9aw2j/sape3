@@ -6242,6 +6242,10 @@ def _boton_menu_ra(
 
     # Las teclas con letra (A, B, C) son el doble de grandes.
     alto_tecla = 84 if marca else 58
+    cor_neon, cor_nucleo, cor_texto = (
+        ((255, 122, 26), (255, 200, 120), (255, 190, 120)) if tema == "naranja"
+        else ((0, 255, 255), (90, 245, 255), (160, 255, 255))
+    )
     if marca:
         fondo = "#000000"  # Fondo negro detrás de las teclas A, B y C.
     fondo_rgb = _rgb(fondo)
@@ -6463,7 +6467,7 @@ def _boton_menu_ra(
             # nada más que con una letra en vez de un dígito.
             from PIL import ImageFont, ImageFilter
             lw, lh = 190, 76
-            color_letra = "#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF"
+            color_letra = "#FF8C00" if tema == "naranja" else ("#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF")
             # Fuente Orbitron (la de la referencia), incluida en la carpeta fonts.
             def _orbitron(tam, estilo):
                 ruta = Path(__file__).with_name("fonts") / "Orbitron.ttf"
@@ -6499,25 +6503,25 @@ def _boton_menu_ra(
             lineas = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ld = ImageDraw.Draw(lineas)
             for yy in range(0, placa.size[1], 4):
-                ld.line([(0, yy), (placa.size[0], yy)], fill=(0, 255, 255, 16))
+                ld.line([(0, yy), (placa.size[0], yy)], fill=cor_neon + (16,))
             placa = Image.alpha_composite(placa, Image.composite(lineas, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
             # Luz diagonal en la esquina superior derecha y líneas verticales internas.
             luz = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-            ImageDraw.Draw(luz).polygon([(lw - 44, 0), (lw, 0), (lw, 30)], fill=(0, 255, 255, 60))
+            ImageDraw.Draw(luz).polygon([(lw - 44, 0), (lw, 0), (lw, 30)], fill=cor_neon + (60,))
             placa = Image.alpha_composite(placa, Image.composite(luz, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
             verticales = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             vd = ImageDraw.Draw(verticales)
-            vd.line([(7, 14), (7, lh - 14)], fill=(0, 255, 255, 190), width=1)
-            vd.line([(lw - 8, 14), (lw - 8, lh - 14)], fill=(0, 255, 255, 190), width=1)
+            vd.line([(7, 14), (7, lh - 14)], fill=cor_neon + (190,), width=1)
+            vd.line([(lw - 8, 14), (lw - 8, lh - 14)], fill=cor_neon + (190,), width=1)
             placa = Image.alpha_composite(placa, verticales)
             # Resplandor y borde cian.
             puntos_borde = _cortado(0, 0, lw - 1, lh - 1)
             resplandor = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-            ImageDraw.Draw(resplandor).line(puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 255), width=4)
+            ImageDraw.Draw(resplandor).line(puntos_borde + [puntos_borde[0]], fill=cor_neon + (255,), width=4)
             resplandor = resplandor.filter(ImageFilter.GaussianBlur(4))
             placa = Image.alpha_composite(placa, resplandor)
             borde_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-            ImageDraw.Draw(borde_img).line(puntos_borde + [puntos_borde[0]], fill=(0, 255, 255, 255), width=2)
+            ImageDraw.Draw(borde_img).line(puntos_borde + [puntos_borde[0]], fill=cor_neon + (255,), width=2)
             placa = Image.alpha_composite(placa, borde_img)
             fuente_brillo_letra = _orbitron(36, "Bold")
             brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
@@ -6540,7 +6544,7 @@ def _boton_menu_ra(
             capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(capa_texto).text(
                 (lw / 2, lh / 2 - 12), marca, font=fuente_brillo_letra,
-                fill=(90, 245, 255, 255), anchor="mm",
+                fill=cor_nucleo + (255,), anchor="mm",
             )
             # Nombre con letras espaciadas, en monoespaciada como la referencia.
             fuente_nombre_tecla = ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 12)
@@ -6551,7 +6555,7 @@ def _boton_menu_ra(
             for ch in texto_tecla:
                 ImageDraw.Draw(capa_texto).text(
                     (x_nombre, lh / 2 + 22), ch, font=fuente_nombre_tecla,
-                    fill=(160, 255, 255, 255), anchor="lm",
+                    fill=cor_texto + (255,), anchor="lm",
                 )
                 x_nombre += fuente_nombre_tecla.getlength(ch) + separacion
             placa = Image.alpha_composite(placa, capa_texto)
