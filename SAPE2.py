@@ -6484,7 +6484,7 @@ def _boton_menu_ra(
                     return ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", tam)
             # Tecla 3D neón: esquinas cortadas, borde cian con resplandor y base de profundidad.
             ancho_img, alto_img = lw + 4, lh + 4
-            corte = 14
+            corte = 22 if es_paso else 14
 
             def _cortado(x0, y0, x1, y1, c=corte):
                 return [
@@ -6494,7 +6494,7 @@ def _boton_menu_ra(
 
             placa = Image.new("RGBA", (ancho_img, alto_img), (0, 0, 0, 0))
             # Base de profundidad, cuerpo oscuro con degradado y líneas de escaneo.
-            ImageDraw.Draw(placa).polygon(_cortado(0, 4, lw - 1, lh + 3), fill=(0, 40, 44, 255))
+            ImageDraw.Draw(placa).polygon(_cortado(0, 4, lw - 1, lh + 3), fill=(128, 48, 0, 255) if es_paso else (0, 40, 44, 255))
             grad = Image.new("RGBA", placa.size, (0, 0, 0, 255))
             gd = ImageDraw.Draw(grad)
             for yy in range(placa.size[1]):
@@ -6523,6 +6523,12 @@ def _boton_menu_ra(
             vd.line([(7, 14), (7, lh - 14)], fill=cor_neon + (190,), width=1)
             vd.line([(lw - 8, 14), (lw - 8, lh - 14)], fill=cor_neon + (190,), width=1)
             placa = Image.alpha_composite(placa, verticales)
+            if es_paso:
+                interior = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+                marco_int = _cortado(6, 6, lw - 7, lh - 7, 16)
+                ImageDraw.Draw(interior).line(marco_int + [marco_int[0]], fill=(0, 229, 255, 150), width=1)
+                ImageDraw.Draw(interior).polygon([(lw - 56, 0), (lw, 0), (lw, 56)], fill=(0, 229, 255, 35))
+                placa = Image.alpha_composite(placa, Image.composite(interior, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
             # Resplandor y borde cian.
             puntos_borde = _cortado(0, 0, lw - 1, lh - 1)
             resplandor = Image.new("RGBA", placa.size, (0, 0, 0, 0))
