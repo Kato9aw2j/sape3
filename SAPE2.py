@@ -6543,7 +6543,7 @@ def _boton_menu_ra(
             borde_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(borde_img).line(puntos_borde + [puntos_borde[0]], fill=cor_borde_tecla + (255,), width=2)
             placa = Image.alpha_composite(placa, borde_img)
-            fuente_brillo_letra = _orbitron(36, "Bold")
+            fuente_brillo_letra = _orbitron(46 if es_paso else 36, "Bold")
             brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(brillo).text(
                 (x_marca, y_marca), marca, font=fuente_brillo_letra,
@@ -6556,7 +6556,7 @@ def _boton_menu_ra(
                 a_ = a_.point(lambda v: min(255, int(v * factor)))
                 return Image.merge("RGBA", (r_, g_, b_, a_))
             brillo_ancho = brillo.filter(ImageFilter.MaxFilter(5))
-            for radio, factor in ((2, 2.5), (6, 4.0), (12, 5.0), (20, 6.0)):
+            for radio, factor in (((2, 2.5), (6, 4.0), (12, 5.0), (20, 6.0)) if not es_paso else ((2, 1.6), (4, 2.0), (7, 2.4))):
                 aura = _densa(brillo_ancho.filter(ImageFilter.GaussianBlur(radio)), factor)
                 placa = Image.alpha_composite(placa, aura)
             # Letra y nombre van dentro de la imagen, para que se inclinen con la tecla.
