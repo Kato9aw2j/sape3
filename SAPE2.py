@@ -6489,6 +6489,10 @@ def _boton_menu_ra(
                 color_letra = "#FFFFFF"
             # Tecla 3D neón: esquinas cortadas, borde cian con resplandor y base de profundidad.
             pres_paso = es_paso and cara in ("hundido", "activo_hundido")
+            activa_paso = es_paso and cara in ("activo", "activo_hundido")
+            if activa_paso:
+                cor_borde_tecla, cor_resplandor_tecla = (0, 229, 255), (0, 229, 255)
+                color_letra = "#00E5FF"
             y_extra = 3 if pres_paso else 0
             ancho_img, alto_img = lw + 4, lh + (14 if es_paso else 4)
             corte = 22 if es_paso else 14
@@ -6502,7 +6506,7 @@ def _boton_menu_ra(
             placa = Image.new("RGBA", (ancho_img, alto_img), (0, 0, 0, 0))
             # Base de profundidad, cuerpo oscuro con degradado y líneas de escaneo.
             off_pared = (2 if pres_paso else 12) if es_paso else 4
-            ImageDraw.Draw(placa).polygon(_cortado(0, off_pared, lw - 1, lh - 1 + off_pared), fill=(128, 48, 0, 255) if es_paso else (0, 40, 44, 255))
+            ImageDraw.Draw(placa).polygon(_cortado(0, off_pared, lw - 1, lh - 1 + off_pared), fill=((0, 77, 85, 255) if activa_paso else (128, 48, 0, 255)) if es_paso else (0, 40, 44, 255))
             grad = Image.new("RGBA", placa.size, (0, 0, 0, 255))
             gd = ImageDraw.Draw(grad)
             for yy in range(placa.size[1]):
@@ -6515,7 +6519,7 @@ def _boton_menu_ra(
             placa = Image.alpha_composite(placa, cuerpo)
             if cara == "activo":
                 iluminada = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-                ImageDraw.Draw(iluminada).polygon(_cortado(0, 0, lw - 1, lh - 1), fill=(255, 200, 120, 170))
+                ImageDraw.Draw(iluminada).polygon(_cortado(0, 0, lw - 1, lh - 1), fill=((0, 229, 255, 30) if es_paso else (255, 200, 120, 170)))
                 placa = Image.alpha_composite(placa, iluminada)
             lineas = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ld = ImageDraw.Draw(lineas)
@@ -6567,7 +6571,7 @@ def _boton_menu_ra(
             capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(capa_texto).text(
                 (x_marca, y_marca), marca, font=fuente_brillo_letra,
-                fill=(255, 255, 255, 255) if (es_paso and cara == "hover") else ((255, 140, 0, 255) if es_paso else cor_nucleo + (255,)), anchor="mm",
+                fill=(255, 255, 255, 255) if (es_paso and cara == "hover") else ((0, 229, 255, 255) if activa_paso else ((255, 140, 0, 255) if es_paso else cor_nucleo + (255,))), anchor="mm",
             )
             # Nombre con letras espaciadas, en monoespaciada como la referencia.
             fuente_nombre_tecla = (
@@ -6581,7 +6585,7 @@ def _boton_menu_ra(
             for ch in texto_tecla:
                 ImageDraw.Draw(capa_texto).text(
                     (x_nombre, y_nombre), ch, font=fuente_nombre_tecla,
-                    fill=(255, 218, 168, 255) if es_paso else cor_texto + (255,), anchor="lm",
+                    fill=((255, 255, 255, 255) if activa_paso else (255, 218, 168, 255)) if es_paso else cor_texto + (255,), anchor="lm",
                 )
                 x_nombre += fuente_nombre_tecla.getlength(ch) + separacion
             placa = Image.alpha_composite(placa, capa_texto)
