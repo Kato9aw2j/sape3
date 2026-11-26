@@ -6485,14 +6485,20 @@ def _boton_menu_ra(
                 image=foto_letra, anchor="nw",
             )
             lienzo.create_text(
-                x_placa + lw / 2, centro - 1, text=marca,
+                x_placa + lw / 2, centro - 12, text=marca,
                 fill=color_letra, font=fuente_chip,
             )
+            # El nombre de la sección va dentro del cuadro negro, en neón.
+            lienzo.create_text(
+                x_placa + lw / 2, centro + 22, text=texto.upper(),
+                fill="#00E5FF", font=tkfont.Font(family="Consolas", size=9, weight="bold"),
+            )
             x_texto = x_placa + lw + 12
-        lienzo.create_text(
-            x_texto, centro, text=texto.upper(), anchor="w",
-            fill=color_txt, font=fuente_txt,
-        )
+        if not (marca and not str(marca).isdigit()):
+            lienzo.create_text(
+                x_texto, centro, text=texto.upper(), anchor="w",
+                fill=color_txt, font=fuente_txt,
+            )
         if estado["activo"]:
             lienzo.create_text(
                 ancho - 22, centro, text="➔", anchor="e",
