@@ -12367,7 +12367,7 @@ class AppSAPE(tk.Tk):
             bg=fondo, fg=gris, font=("Consolas", 9),
         ).pack(side="bottom", anchor="w", pady=(4, 0))
         fila_acciones = tk.Frame(padre, bg=fondo)
-        fila_acciones.pack(side="bottom", fill="x", pady=(8, 8))
+        fila_acciones.pack(side="bottom", fill="x", pady=(14, 36))
         boton = _boton_relieve_ra(
             fila_acciones, "SIGUIENTE  →", comando, modo="morado",
         )
