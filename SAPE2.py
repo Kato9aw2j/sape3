@@ -6393,6 +6393,9 @@ def _boton_menu_ra(
         ancho = max(lienzo.winfo_width(), 40)
         cara = cara_actual()
         imagen, centro = render(ancho, cara)
+        if marca and not str(marca).isdigit():
+            # Teclas A, B, C: sin botón de fondo, solo el cuadro negro con la letra.
+            imagen = Image.new("RGBA", (ancho, alto_tecla), fondo_rgb + (255,))
         foto = ImageTk.PhotoImage(imagen)
         estado["foto"] = foto
         lienzo.delete("all")
