@@ -6514,21 +6514,38 @@ def _boton_menu_ra(
             )
             brillo = brillo.filter(ImageFilter.GaussianBlur(2))
             placa = Image.alpha_composite(placa, brillo)
+            # Letra y nombre van dentro de la imagen, para que se inclinen con la tecla.
+            dibujo_tecla = ImageDraw.Draw(placa)
+            dibujo_tecla.text(
+                (lw / 2, lh / 2 - 12), marca, font=fuente_brillo_letra,
+                fill=_rgb(color_letra) + (255,), anchor="mm",
+            )
+            dibujo_tecla.text(
+                (lw / 2, lh / 2 + 22), texto.upper(),
+                font=ImageFont.truetype(r"C:\Windows\Fonts\consolab.ttf", 11),
+                fill=(0, 229, 255, 255), anchor="mm",
+            )
+            # Inclinación en perspectiva según dónde está el mouse.
+            tilt_x, tilt_y = estado.get("tilt", (0.0, 0.0))
+            if tilt_x or tilt_y:
+                w_p, h_p = placa.size
+                k = 0.08
+                # Lado cercano más grande, lejano más chico (perspectiva).
+                esquinas = (
+                    -k * tilt_y * w_p, -k * tilt_x * h_p,              # arriba-izq
+                    k * tilt_y * w_p, h_p + k * tilt_x * h_p,          # abajo-izq
+                    w_p - k * tilt_y * w_p, h_p - k * tilt_x * h_p,    # abajo-der
+                    w_p + k * tilt_y * w_p, k * tilt_x * h_p,          # arriba-der
+                )
+                placa = placa.transform(
+                    placa.size, Image.QUAD, esquinas, resample=Image.BICUBIC,
+                )
             foto_letra = ImageTk.PhotoImage(placa)
             estado["foto_letra"] = foto_letra
             x_placa = 14
             lienzo.create_image(
                 x_placa, centro - lh / 2,
                 image=foto_letra, anchor="nw",
-            )
-            lienzo.create_text(
-                x_placa + lw / 2, centro - 12, text=marca,
-                fill=color_letra, font=fuente_chip,
-            )
-            # El nombre de la sección va dentro del cuadro negro, en neón.
-            lienzo.create_text(
-                x_placa + lw / 2, centro + 22, text=texto.upper(),
-                fill="#00E5FF", font=tkfont.Font(family="Consolas", size=9, weight="bold"),
             )
             x_texto = x_placa + lw + 12
         if not (marca and not str(marca).isdigit()):
@@ -6554,6 +6571,17 @@ def _boton_menu_ra(
     def al_salir(_evento=None):
         estado["hover"] = False
         estado["presionado"] = False
+        estado["tilt"] = (0.0, 0.0)
+        dibujar()
+
+    def al_mover(evento):
+        """El mouse inclina la tecla hacia donde está."""
+        ancho_l = max(lienzo.winfo_width(), 1)
+        alto_l = max(lienzo.winfo_height(), 1)
+        estado["tilt"] = (
+            max(-1.0, min(1.0, evento.x / ancho_l * 2 - 1)),
+            max(-1.0, min(1.0, evento.y / alto_l * 2 - 1)),
+        )
         dibujar()
 
     def al_presionar(_evento=None):
@@ -6566,6 +6594,7 @@ def _boton_menu_ra(
         dibujar()
 
     lienzo.bind("<Configure>", dibujar)
+    lienzo.bind("<Motion>", al_mover)
     lienzo.bind("<Enter>", al_entrar)
     lienzo.bind("<Leave>", al_salir)
     lienzo.bind("<ButtonPress-1>", al_presionar)
