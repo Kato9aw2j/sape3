@@ -10598,17 +10598,21 @@ class AppSAPE(tk.Tk):
             bg="#FFFFFF", fg="#1E293B", font=("Segoe UI", 12, "bold"),
             anchor="w", justify="left", wraplength=780,
         ).pack(fill="x", pady=(0, 12))
-        tabla = tk.Frame(cuerpo, bg="#CBD5E1")
-        tabla.pack(fill="x")
+        cabecera_c = tk.Frame(cuerpo, bg="#0F172A")
+        cabecera_c.pack(fill="x", pady=(0, 10))
         tk.Label(
-            tabla,
+            cabecera_c, text="PROCEDIMIENTO ST-CT-001", bg="#0F172A", fg="#FB923C",
+            font=("Segoe UI", 9, "bold"), anchor="w", padx=16, pady=10,
+        ).pack(fill="x")
+        tk.Label(
+            cabecera_c,
             text=(
                 "Procedimiento para la medición de resistencia de aislamiento en "
-                "equipo eléctrico primario ST-CT-001"
+                "equipo eléctrico primario"
             ),
-            bg="#1E293B", fg="#FFFFFF", font=("Segoe UI", 10, "bold"),
-            anchor="center", justify="center", wraplength=780, padx=10, pady=10,
-        ).grid(row=0, column=0, columnspan=2, sticky="nsew", padx=1, pady=1)
+            bg="#0F172A", fg="#FFFFFF", font=("Segoe UI", 11, "bold"),
+            anchor="w", justify="left", wraplength=760, padx=16, pady=(0, 12),
+        ).pack(fill="x")
         filas_c = (
             ("En que consiste la medición", (
                 "La resistencia de aislamiento se define como la oposición del "
@@ -10654,22 +10658,25 @@ class AppSAPE(tk.Tk):
                 "este índice no es aplicable en aislamientos líquidos.",
             )),
         )
-        for fila, (rotulo, textos) in enumerate(filas_c, start=1):
+        for rotulo, textos in filas_c:
+            tarjeta_c = tk.Frame(
+                cuerpo, bg="#FFFFFF",
+                highlightbackground="#E2E8F0", highlightthickness=1,
+            )
+            tarjeta_c.pack(fill="x", pady=5)
+            tk.Frame(tarjeta_c, bg="#EA580C", width=5).pack(side="left", fill="y")
+            contenido_c = tk.Frame(tarjeta_c, bg="#FFFFFF")
+            contenido_c.pack(side="left", fill="x", expand=True, padx=16, pady=12)
             tk.Label(
-                tabla, text=rotulo, bg="#F1F5F9", fg="#1E3A8A",
-                font=("Segoe UI", 10, "bold italic"), anchor="w", justify="left",
-                wraplength=180, padx=12, pady=10,
-            ).grid(row=fila, column=0, sticky="nsew", padx=1, pady=1)
-            celda = tk.Frame(tabla, bg="#FFFFFF")
-            celda.grid(row=fila, column=1, sticky="nsew", padx=1, pady=1)
+                contenido_c, text=rotulo.upper(), bg="#FFFFFF", fg="#9A3412",
+                font=("Segoe UI", 9, "bold"), anchor="w",
+            ).pack(fill="x", pady=(0, 4))
             for texto_c in textos:
                 tk.Label(
-                    celda, text=texto_c, bg="#FFFFFF", fg="#0F172A",
+                    contenido_c, text=texto_c, bg="#FFFFFF", fg="#0F172A",
                     font=("Segoe UI", 10), anchor="w", justify="left",
-                    wraplength=540, padx=12, pady=5,
-                ).pack(fill="x")
-        tabla.columnconfigure(0, minsize=190)
-        tabla.columnconfigure(1, weight=1)
+                    wraplength=720,
+                ).pack(fill="x", pady=2)
         visor.focus_force()
         return visor
 
