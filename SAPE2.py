@@ -6564,8 +6564,9 @@ def _boton_menu_ra(
                 # Pulso cian: el resplandor del paso seleccionado sube y baja.
                 pulso = (math.sin(estado.get("fase", 0.0)) + 1) / 2
                 halo_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-                ImageDraw.Draw(halo_img).line(puntos_borde + [puntos_borde[0]], fill=(0, 229, 255, int(90 + 150 * pulso)), width=6)
-                halo_img = halo_img.filter(ImageFilter.GaussianBlur(6))
+                ImageDraw.Draw(halo_img).line(puntos_borde + [puntos_borde[0]], fill=(0, 229, 255, int(150 + 105 * pulso)), width=9)
+                halo_img = halo_img.filter(ImageFilter.GaussianBlur(9))
+                halo_img = Image.alpha_composite(halo_img, halo_img)
                 placa = Image.alpha_composite(placa, halo_img)
             fuente_brillo_letra = _orbitron(30 if es_paso else 36, "Bold")
             brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
