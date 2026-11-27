@@ -6466,11 +6466,17 @@ def _boton_menu_ra(
             # Misma caja y el mismo resplandor cian que el chip de número,
             # nada más que con una letra en vez de un dígito.
             from PIL import ImageFont, ImageFilter
-            lw, lh = (262 if str(marca).isdigit() else 190), (80 if str(marca).isdigit() else 76)
             es_paso = str(marca).isdigit()
-            x_marca = lw * 0.2 if es_paso else lw / 2
+            if es_paso:
+                fuente_medida = ImageFont.truetype(str(Path(__file__).with_name("fonts") / "ShareTechMono-Regular.ttf"), 11)
+                ancho_texto_paso = sum(fuente_medida.getlength(ch) for ch in texto.upper()) + 1.5 * (len(texto) - 1)
+                lw = int(100 + ancho_texto_paso + 22)
+            else:
+                lw = 190
+            lh = 80 if es_paso else 76
+            x_marca = 52 if es_paso else lw / 2
             y_marca = lh / 2 if es_paso else lh / 2 - 12
-            x_nombre_ini = lw * 0.36 if es_paso else None
+            x_nombre_ini = 100 if es_paso else None
             y_nombre = lh / 2 if es_paso else lh / 2 + 22
             color_letra = "#FF8C00" if (tema == "naranja" and str(marca).isdigit()) else ("#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF")
             # Fuente Orbitron (la de la referencia), incluida en la carpeta fonts.
