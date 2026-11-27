@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel HUD 3D - Naranja y Cyan</title>
+<style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap');
+
+    :root {
+        --naranja: #ff8c00;
+        --naranja-oscuro: #6b2800;
+        --cyan: #00e5ff;
+        --cyan-oscuro: #004d55;
+        --texto: #ffdaa8;
+        --fondo: #050a0a;
+    }
+
+    body {
+        background-color: var(--fondo);
+        background-image:
+            linear-gradient(rgba(255, 140, 0, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(0, 229, 255, 0.03) 1px, transparent 1px);
+        background-size: 40px 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 100vh;
+        margin: 0;
+        font-family: 'Orbitron', sans-serif;
+        perspective: 1000px;
+    }
+
+    /* --- ESTRUCTURA 3D --- */
+    .btn-modulo {
+        position: relative;
+        width: 480px;
+        height: 85px;
+        margin: 15px 0;
+        cursor: pointer;
+        transform-style: preserve-3d;
+    }
+
+    /* --- CARA FRONTAL --- */
+    .btn-cara {
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background: #081414;
+        border: 2px solid var(--naranja);
+        box-sizing: border-box;
+        clip-path: polygon(
+            25px 0, calc(100% - 25px) 0, 100% 25px, 100% calc(100% - 25px),
+            calc(100% - 25px) 100%, 25px 100%, 0 calc(100% - 25px), 0 25px
+        );
+        display: flex;
+        align-items: center;
+        padding-left: 30px;
+        padding-right: 30px;
+        transform: translateZ(15px);
+        box-shadow:
+            0 12px 0px var(--naranja-oscuro),
+            0 20px 30px rgba(0, 0, 0, 0.8),
+            inset 0 0 15px rgba(255, 140, 0, 0.1);
+        transition: all 0.3s ease;
+        z-index: 2;
+    }
+
+    .btn-cara::before {
+        content: '';
+        position: absolute;
+        top: 6px; left: 6px; right: 6px; bottom: 6px;
+        border: 1px solid rgba(0, 229, 255, 0.2);
+        pointer-events: none;
+        clip-path: polygon(
+            20px 0, calc(100% - 20px) 0, 100% 20px, 100% calc(100% - 20px),
+            calc(100% - 20px) 100%, 20px 100%, 0 calc(100% - 20px), 0 20px
+        );
+        transition: all 0.3s ease;
+    }
+
+    .btn-cara::after {
+        content: '';
+        position: absolute;
+        top: 0; right: 0;
+        width: 70px; height: 70px;
+        background: linear-gradient(135deg, transparent 50%, rgba(0, 229, 255, 0.15) 50%);
+        pointer-events: none;
+    }
+
+    .btn-base {
+        position: absolute;
+        top: 12px; left: 0; width: 100%; height: 100%;
+        background: #000;
+        border: 1px solid rgba(0, 229, 255, 0.3);
+        clip-path: polygon(
+            25px 0, calc(100% - 25px) 0, 100% 25px, 100% calc(100% - 25px),
+            calc(100% - 25px) 100%, 25px 100%, 0 calc(100% - 25px), 0 25px
+        );
+        transform: translateZ(0);
+        z-index: 1;
+    }
+
+    /* --- CONTENIDO --- */
+    .contenido {
+        display: flex;
+        align-items: center;
+        transform: translateZ(5px);
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+    }
+
+    .btn-numero {
+        font-size: 40px;
+        font-weight: 900;
+        color: var(--naranja);
+        margin-right: 25px;
+        text-shadow: 0 0 10px rgba(255, 140, 0, 0.8);
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .btn-texto {
+        font-family: 'Share Tech Mono', monospace;
+        font-size: 15px;
+        letter-spacing: 4px;
+        color: var(--texto);
+        text-transform: uppercase;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    /* --- HOVER --- */
+    .btn-modulo:hover .btn-cara {
+        border-color: #fff;
+        box-shadow:
+            0 12px 0px #a04000,
+            0 20px 30px rgba(0, 229, 255, 0.3),
+            inset 0 0 20px rgba(0, 229, 255, 0.3);
+    }
+
+    /* --- ACTIVO (Cyan) --- */
+    .btn-modulo.activo .btn-cara {
+        border-color: var(--cyan);
+        background: #041213;
+        box-shadow:
+            0 12px 0px var(--cyan-oscuro),
+            0 20px 40px rgba(0, 229, 255, 0.6),
+            inset 0 0 30px rgba(0, 229, 255, 0.4);
+        animation: pulso-cyan 2s infinite;
+    }
+
+    .btn-modulo.activo .btn-cara::before {
+        border-color: var(--cyan);
+        box-shadow: inset 0 0 15px rgba(0, 229, 255, 0.5);
+    }
+
+    .btn-modulo.activo .btn-numero {
+        color: var(--cyan);
+        text-shadow: 0 0 20px var(--cyan), 0 0 40px var(--cyan);
+    }
+
+    .btn-modulo.activo .btn-texto {
+        color: #ffffff;
+        text-shadow: 0 0 10px var(--cyan);
+    }
+
+    /* --- CLIC (se hunde) --- */
+    .btn-modulo:active .btn-cara {
+        transform: translateZ(5px);
+        box-shadow:
+            0 2px 0px var(--naranja-oscuro),
+            0 5px 10px rgba(0, 0, 0, 0.9);
+    }
+
+    @keyframes pulso-cyan {
+        0% { box-shadow: 0 12px 0px var(--cyan-oscuro), 0 20px 30px rgba(0, 229, 255, 0.3), inset 0 0 20px rgba(0, 229, 255, 0.2); }
+        50% { box-shadow: 0 12px 0px var(--cyan-oscuro), 0 20px 50px rgba(0, 229, 255, 0.7), inset 0 0 40px rgba(0, 229, 255, 0.5); }
+        100% { box-shadow: 0 12px 0px var(--cyan-oscuro), 0 20px 30px rgba(0, 229, 255, 0.3), inset 0 0 20px rgba(0, 229, 255, 0.2); }
+    }
+</style>
+</head>
+<body>
+
+    <div class="btn-modulo activo" onclick="seleccionar(this)">
+        <div class="btn-base"></div>
+        <div class="btn-cara">
+            <div class="contenido">
+                <span class="btn-numero">01</span>
+                <span class="btn-texto">Datos del Equipo</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-modulo" onclick="seleccionar(this)">
+        <div class="btn-base"></div>
+        <div class="btn-cara">
+            <div class="contenido">
+                <span class="btn-numero">02</span>
+                <span class="btn-texto">Selección de Pruebas</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-modulo" onclick="seleccionar(this)">
+        <div class="btn-base"></div>
+        <div class="btn-cara">
+            <div class="contenido">
+                <span class="btn-numero">03</span>
+                <span class="btn-texto">Diagramas de Bloques</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="btn-modulo" onclick="seleccionar(this)">
+        <div class="btn-base"></div>
+        <div class="btn-cara">
+            <div class="contenido">
+                <span class="btn-numero">04</span>
+                <span class="btn-texto">Captura de Lecturas</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function seleccionar(elementoClickeado) {
+            document.querySelectorAll('.btn-modulo').forEach(boton => boton.classList.remove('activo'));
+            elementoClickeado.classList.add('activo');
+        }
+    </script>
+
+</body>
+</html>
