@@ -6526,7 +6526,7 @@ def _boton_menu_ra(
             placa = Image.alpha_composite(placa, cuerpo)
             if cara == "activo":
                 iluminada = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-                ImageDraw.Draw(iluminada).polygon(_cortado(0, 0, lw - 1, lh - 1), fill=((0, 229, 255, 30) if es_paso else (255, 200, 120, 170)))
+                ImageDraw.Draw(iluminada).polygon(_cortado(0, 0, lw - 1, lh - 1), fill=((0, 229, 255, 60) if es_paso else (255, 200, 120, 170)))
                 placa = Image.alpha_composite(placa, iluminada)
             lineas = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ld = ImageDraw.Draw(lineas)
@@ -6548,7 +6548,9 @@ def _boton_menu_ra(
                 interior = Image.new("RGBA", placa.size, (0, 0, 0, 0))
                 marco_int = _cortado(6, 6, lw - 7, lh - 7, 16)
                 ImageDraw.Draw(interior).line(marco_int + [marco_int[0]], fill=(0, 229, 255, 150), width=1)
-                ImageDraw.Draw(interior).polygon([(lw - 56, 0), (lw, 0), (lw, 56)], fill=(0, 0, 0, 0))
+                ImageDraw.Draw(interior).line([(lw * 0.1, 3), (lw * 0.9, 3)], fill=(255, 140, 0, 220), width=2)
+                ImageDraw.Draw(interior).line([(lw * 0.1, lh - 4), (lw * 0.9, lh - 4)], fill=(255, 140, 0, 220), width=2)
+                ImageDraw.Draw(interior).polygon([(lw - 56, 0), (lw, 0), (lw, 56)], fill=(0, 229, 255, 40))
                 placa = Image.alpha_composite(placa, Image.composite(interior, Image.new("RGBA", placa.size, (0, 0, 0, 0)), mascara))
             # Resplandor y borde cian.
             puntos_borde = _cortado(0, 0, lw - 1, lh - 1)
@@ -6564,8 +6566,8 @@ def _boton_menu_ra(
                 # Pulso cian: el resplandor del paso seleccionado sube y baja.
                 pulso = (math.sin(estado.get("fase", 0.0)) + 1) / 2
                 halo_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
-                ImageDraw.Draw(halo_img).line(puntos_borde + [puntos_borde[0]], fill=(0, 229, 255, int(150 + 105 * pulso)), width=9)
-                halo_img = halo_img.filter(ImageFilter.GaussianBlur(9))
+                ImageDraw.Draw(halo_img).line(puntos_borde + [puntos_borde[0]], fill=(0, 229, 255, int(120 + 100 * pulso)), width=7)
+                halo_img = halo_img.filter(ImageFilter.GaussianBlur(5))
                 halo_img = Image.alpha_composite(halo_img, halo_img)
                 placa = Image.alpha_composite(placa, halo_img)
             fuente_brillo_letra = _orbitron(30 if es_paso else 36, "Bold")
