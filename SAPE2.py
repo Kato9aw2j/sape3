@@ -6242,8 +6242,9 @@ def _boton_menu_ra(
 
     # Las teclas con letra (A, B, C) son el doble de grandes.
     alto_tecla = (104 if str(marca).isdigit() else 84) if marca else 58
+    cor_numero = (52, 211, 153) if (tema == "verde" and str(marca).isdigit()) else (255, 140, 0)
     cor_neon, cor_nucleo, cor_texto = (
-        ((255, 122, 26), (255, 200, 120), (255, 190, 120)) if (tema == "naranja" and str(marca).isdigit())
+        ((52, 211, 153), (110, 231, 183), (200, 250, 225)) if (tema == "verde" and str(marca).isdigit()) else ((255, 122, 26), (255, 200, 120), (255, 190, 120)) if (tema == "naranja" and str(marca).isdigit())
         else ((0, 255, 255), (90, 245, 255), (160, 255, 255))
     )
     if marca:
@@ -6478,7 +6479,7 @@ def _boton_menu_ra(
             y_marca = lh / 2 if es_paso else lh / 2 - 12
             x_nombre_ini = 100 if es_paso else None
             y_nombre = lh / 2 if es_paso else lh / 2 + 22
-            color_letra = "#FF8C00" if (tema == "naranja" and str(marca).isdigit()) else ("#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF")
+            color_letra = ("#34D399" if tema == "verde" else "#FF8C00") if str(marca).isdigit() else ("#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF")
             # Fuente Orbitron (la de la referencia), incluida en la carpeta fonts.
             def _orbitron(tam, estilo):
                 ruta = Path(__file__).with_name("fonts") / "Orbitron.ttf"
@@ -6512,7 +6513,7 @@ def _boton_menu_ra(
             placa = Image.new("RGBA", (ancho_img, alto_img), (0, 0, 0, 0))
             # Base de profundidad, cuerpo oscuro con degradado y líneas de escaneo.
             off_pared = 12 if es_paso else 4
-            ImageDraw.Draw(placa).polygon(_cortado(0, off_pared, lw - 1, lh - 1 + off_pared), fill=((0, 77, 85, 255) if activa_paso else (128, 48, 0, 255)) if es_paso else (0, 40, 44, 255))
+            ImageDraw.Draw(placa).polygon(_cortado(0, off_pared, lw - 1, lh - 1 + off_pared), fill=((0, 77, 85, 255) if activa_paso else ((6, 78, 59, 255) if tema == "verde" else (128, 48, 0, 255))) if es_paso else (0, 40, 44, 255))
             grad = Image.new("RGBA", placa.size, (0, 0, 0, 255))
             gd = ImageDraw.Draw(grad)
             for yy in range(placa.size[1]):
@@ -6580,7 +6581,7 @@ def _boton_menu_ra(
             capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(capa_texto).text(
                 (x_marca, y_marca), marca, font=fuente_brillo_letra,
-                fill=(255, 255, 255, 255) if False else ((0, 229, 255, 255) if activa_paso else ((255, 140, 0, 255) if es_paso else cor_nucleo + (255,))), anchor="mm",
+                fill=(255, 255, 255, 255) if False else ((0, 229, 255, 255) if activa_paso else (cor_numero + (255,) if es_paso else cor_nucleo + (255,))), anchor="mm",
             )
             # Nombre con letras espaciadas, en monoespaciada como la referencia.
             fuente_nombre_tecla = (
