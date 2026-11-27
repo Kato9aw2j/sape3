@@ -6471,13 +6471,13 @@ def _boton_menu_ra(
             if es_paso:
                 fuente_medida = ImageFont.truetype(str(Path(__file__).with_name("fonts") / "ShareTechMono-Regular.ttf"), 11)
                 ancho_texto_paso = sum(fuente_medida.getlength(ch) for ch in texto.upper()) + 1.5 * (len(texto) - 1)
-                lw = int(78 + ancho_texto_paso + 22)
+                lw = 262
             else:
                 lw = 190
             lh = 80 if es_paso else 76
-            x_marca = 34 if es_paso else lw / 2
+            x_marca = 40 if es_paso else lw / 2
             y_marca = lh / 2 if es_paso else lh / 2 - 12
-            x_nombre_ini = 78 if es_paso else None
+            x_nombre_ini = 96 if es_paso else None
             y_nombre = lh / 2 if es_paso else lh / 2 + 22
             color_letra = ("#34D399" if tema == "verde" else "#FF8C00") if str(marca).isdigit() else ("#00E5FF" if tema in ("neon", "morado", "neon_morado") else "#00FFFF")
             # Fuente Orbitron (la de la referencia), incluida en la carpeta fonts.
@@ -6513,7 +6513,7 @@ def _boton_menu_ra(
             placa = Image.new("RGBA", (ancho_img, alto_img), (0, 0, 0, 0))
             # Base de profundidad, cuerpo oscuro con degradado y líneas de escaneo.
             off_pared = 12 if es_paso else 4
-            ImageDraw.Draw(placa).polygon(_cortado(0, off_pared, lw - 1, lh - 1 + off_pared), fill=((0, 77, 85, 255) if activa_paso else ((6, 78, 59, 255) if tema == "verde" else (128, 48, 0, 255))) if es_paso else (0, 40, 44, 255))
+            ImageDraw.Draw(placa).polygon(_cortado(0, off_pared, lw - 1, lh - 1 + off_pared), fill=((0, 77, 85, 255) if activa_paso else ((6, 78, 59, 255) if tema == "verde" else (0, 0, 0, 255))) if es_paso else (0, 40, 44, 255))
             grad = Image.new("RGBA", placa.size, (0, 0, 0, 255))
             gd = ImageDraw.Draw(grad)
             for yy in range(placa.size[1]):
@@ -6588,6 +6588,10 @@ def _boton_menu_ra(
                 placa = Image.alpha_composite(placa, aura)
             # Letra y nombre van dentro de la imagen, para que se inclinen con la tecla.
             # Texto en capas transparentes para que no deje cuadros de color detrás.
+            if es_paso:
+                chip = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+                ImageDraw.Draw(chip).rounded_rectangle((x_marca - 30, y_marca - 26, x_marca + 30, y_marca + 26), radius=4, fill=(0, 0, 0, 170))
+                placa = Image.alpha_composite(placa, chip)
             capa_texto = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(capa_texto).text(
                 (x_marca, y_marca), marca, font=fuente_brillo_letra,
