@@ -6560,6 +6560,13 @@ def _boton_menu_ra(
             borde_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(borde_img).line(puntos_borde + [puntos_borde[0]], fill=cor_borde_tecla + (255,), width=2)
             placa = Image.alpha_composite(placa, borde_img)
+            if activa_paso:
+                # Pulso cian: el resplandor del paso seleccionado sube y baja.
+                pulso = (math.sin(estado.get("fase", 0.0)) + 1) / 2
+                halo_img = Image.new("RGBA", placa.size, (0, 0, 0, 0))
+                ImageDraw.Draw(halo_img).line(puntos_borde + [puntos_borde[0]], fill=(0, 229, 255, int(90 + 150 * pulso)), width=6)
+                halo_img = halo_img.filter(ImageFilter.GaussianBlur(6))
+                placa = Image.alpha_composite(placa, halo_img)
             fuente_brillo_letra = _orbitron(30 if es_paso else 36, "Bold")
             brillo = Image.new("RGBA", placa.size, (0, 0, 0, 0))
             ImageDraw.Draw(brillo).text(
@@ -6664,6 +6671,17 @@ def _boton_menu_ra(
         comando()
         dibujar()
 
+    def latir():
+        """Redibuja el paso seleccionado para que su resplandor pulse."""
+        try:
+            if estado["activo"] and lienzo.winfo_exists():
+                estado["fase"] = estado.get("fase", 0.0) + 0.2
+                dibujar()
+            lienzo.after(60, latir)
+        except tk.TclError:
+            pass
+
+    lienzo.after(60, latir)
     lienzo.bind("<Configure>", dibujar)
     lienzo.bind("<Motion>", al_mover)
     lienzo.bind("<Enter>", al_entrar)
