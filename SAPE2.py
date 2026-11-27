@@ -6241,7 +6241,7 @@ def _boton_menu_ra(
     from PIL import Image, ImageDraw, ImageTk
 
     # Las teclas con letra (A, B, C) son el doble de grandes.
-    alto_tecla = (74 if str(marca).isdigit() else 84) if marca else 58
+    alto_tecla = (104 if str(marca).isdigit() else 84) if marca else 58
     cor_neon, cor_nucleo, cor_texto = (
         ((255, 122, 26), (255, 200, 120), (255, 190, 120)) if (tema == "naranja" and str(marca).isdigit())
         else ((0, 255, 255), (90, 245, 255), (160, 255, 255))
@@ -6473,7 +6473,7 @@ def _boton_menu_ra(
                 lw = int(100 + ancho_texto_paso + 22)
             else:
                 lw = 190
-            lh = 58 if es_paso else 76
+            lh = 80 if es_paso else 76
             x_marca = 52 if es_paso else lw / 2
             y_marca = lh / 2 if es_paso else lh / 2 - 12
             x_nombre_ini = 100 if es_paso else None
